@@ -87,7 +87,18 @@ public class Server extends AbstractServer {
 	  }
 	  
 	public static void main(String[] args) {
-	    Server sv = new Server(DEFAULT_PORT);
+	    int port = 0; //Port to listen on
+
+	    try
+	    {
+	      port = Integer.parseInt(args[0]); //Get port from command line
+	    }
+	    catch(Throwable t)
+	    {
+	      port = DEFAULT_PORT; //Set port to 5555
+	    }
+
+	    Server sv = new Server(port);
 	    
 	    try 
 	    {
