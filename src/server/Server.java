@@ -82,7 +82,14 @@ public class Server extends AbstractServer {
 	  synchronized protected void clientException
 	  	(ConnectionToClient client, Throwable exception) 
 	  {
-		  String msg = ((Client)client.getInfo("UserInfo")).getUsername() + " has disconnected";
+		  String msg;
+		  
+		  if((Client)client.getInfo("UserInfo") != null){
+			  msg = ((Client)client.getInfo("UserInfo")).getUsername() + " has disconnected";
+		  }
+		  else {
+			  msg = "A client has disconnected.";
+		  }
 		  System.out.println(msg);
 	  }
 	  
@@ -97,7 +104,7 @@ public class Server extends AbstractServer {
 	    {
 	      port = DEFAULT_PORT; //Set port to 5555
 	    }
-
+		
 	    Server sv = new Server(port);
 	    
 	    try 

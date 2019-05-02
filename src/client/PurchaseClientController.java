@@ -15,14 +15,14 @@ public class PurchaseClientController extends AbstractClient
 {
 	// Variables
 	private static Client m_currentClient = null;
-
+	
   public PurchaseClientController(String host, int port) {
 		super(host, port);
 		// TODO Auto-generated constructor stub
 	}
 
 //Instance variables **********************************************
-
+  
   /**
    * The interface type variable.  It allows the implementation of 
    * the display method in the client.
@@ -34,9 +34,9 @@ public class PurchaseClientController extends AbstractClient
    */
   String loginID;
 
-
+  
   //Constructors ****************************************************
-
+  
   /**
    * Constructs an instance of the chat client.
    *
@@ -44,15 +44,16 @@ public class PurchaseClientController extends AbstractClient
    * @param port The port number to connect on.
    * @param clientUI The interface type variable.
    */
-
+  
   public PurchaseClientController(String host, int port, ChatIF clientUI) 
     throws IOException 
   {
     super(host, port); //Call the superclass constructor
     this.clientUI = clientUI;
     openConnection();
-    this.loginID = "ANONYMOUS";
-    sendToServer("#login ANONYMOUS");
+    System.out.println("To login please enter \"login\"");
+    //this.loginID = "ANONYMOUS";
+    //sendToServer("#login ANONYMOUS");
   }
 
   /**
@@ -63,7 +64,7 @@ public class PurchaseClientController extends AbstractClient
    * @param port The port number to connect on.
    * @param clientUI The interface type variable.
    */
-
+  
   public PurchaseClientController(String loginID, String host, int port, ChatIF clientUI) 
     throws IOException 
   {
@@ -71,18 +72,19 @@ public class PurchaseClientController extends AbstractClient
     this.clientUI = clientUI;
     this.loginID = loginID;
     openConnection();
+    System.out.println("To login please enter \"login\"");
     //sendToServer("#login " + loginID);
   }
 
-
+  
   //Instance methods ************************************************
-
+    
   /**
    * This method handles all data that comes in from the server.
    *
    * @param msg The message from the server.
    */
-
+  
   public void handleMessageFromServer(Object msg) 
   {
 	  Message currMsg = (Message)msg;
@@ -116,7 +118,7 @@ public class PurchaseClientController extends AbstractClient
 	      	  break;
 	  }
   }
-
+ 
 
    /**
    * This method handles all data coming from the UI            
@@ -161,7 +163,7 @@ public class PurchaseClientController extends AbstractClient
 	    			sendToServer(myMessage);
 	    		}
 	    		else {
-	    			System.out.println("You need to login.\n");
+	    			System.out.println("You need to login.\n");	    			
 	    		}
 	  	    break;
 	    	case "show details":  
@@ -172,7 +174,7 @@ public class PurchaseClientController extends AbstractClient
 	    			sendToServer(myMessage);
 	    		}
 	    		else {
-	    			System.out.println("You need to login.\n");
+	    			System.out.println("You need to login.\n");	    			
 	    		}
 	      	    break;
 	    	default: System.out.println("ERROR: INVALID ENUM in client"); 
@@ -262,7 +264,7 @@ public class PurchaseClientController extends AbstractClient
       clientUI.display("Current port: " + Integer.toString(getPort()));
     }
   }
-
+  
   /**
    * This method terminates the client.
    */
