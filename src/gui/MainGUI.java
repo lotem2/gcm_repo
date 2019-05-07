@@ -2,6 +2,7 @@ package gui;
 import java.io.IOException;
 import java.net.URL;
 import javafx.application.Application;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
@@ -13,7 +14,7 @@ public class MainGUI extends Application
 public void start(Stage primaryStage) throws IOException 
 {
 	// constructing our scene
-	URL url = getClass().getResource("/gui/fxmls/MainGUIScene.fxml");
+	URL url = getClass().getResource("/MainGUIScene.fxml");
 	AnchorPane pane = FXMLLoader.load(url);
 	Scene scene = new Scene(pane);
 	// setting the stage
