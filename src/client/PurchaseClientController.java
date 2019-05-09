@@ -1,10 +1,11 @@
  package client;
 
-import client.*;
 import entity.*;
 import common.*;
 import java.io.*;
 import java.util.ArrayList;
+
+import javax.swing.JOptionPane;
 
 /**
  * This class overrides some of the methods defined in the abstract
@@ -83,7 +84,6 @@ public class PurchaseClientController extends AbstractClient
   public void handleMessageFromServer(Object msg) 
   {
 	  Message currMsg = (Message)msg;
-
 	  switch (currMsg.getAction()) {
 	  case LOGIN:
 	      	 if((Integer)currMsg.getData().get(0) == 0) {
@@ -92,6 +92,16 @@ public class PurchaseClientController extends AbstractClient
 	      	 else {
 	      		 clientUI.display(currMsg.getData().get(1).toString() + "\n"
 	      				 + "For retry please enter \"login\"");
+	      	 }
+	    	  break;
+	  case SEARCH:
+	      	 if((Integer)currMsg.getData().get(0) == 0) {
+	      		 //sendDataToGUI(currMsg);
+	      	     System.out.println("The message was sent to the gui");
+	      	 }
+	      	 else {
+	      		 clientUI.display(currMsg.getData().get(1).toString() + "\n"
+	      				 + "The message was not sent to the gui.Please retry\"");
 	      	 }
 	    	  break;
 	  case ADD_PURCHASE:
@@ -119,6 +129,7 @@ public class PurchaseClientController extends AbstractClient
    *
    * @param message The message from the UI.    
    */
+  /*
   public void handleMessageFromClientUI(String message)
   {
 	// detect commands
@@ -132,12 +143,12 @@ public class PurchaseClientController extends AbstractClient
 		{
 	    	  Message myMessage;
 	    	  ArrayList<Object> data = new ArrayList<Object>();
-	    	  BufferedReader fromConsole = 
+	    	  /*BufferedReader fromConsole = 
 	  		        new BufferedReader(new InputStreamReader(System.in));
 	    	  String userName = "";
 	    	  switch (message) {
 	    	  case "login":
-	    	  //if(message.contentEquals("get purchase count"))  {	
+	    	  if(message.contentEquals("get purchase count"))  {	
 	    		  System.out.println("Enter user name: ");
 	    		  userName = fromConsole.readLine();
 	 		      data.add(userName);
@@ -169,7 +180,7 @@ public class PurchaseClientController extends AbstractClient
 	        quit();
 	      }
 	}
-  }
+  }*/
 
   /**
    * This method executes client commands. Benjamin Bergman, Oct 22, 

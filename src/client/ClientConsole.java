@@ -56,7 +56,6 @@ public class ClientConsole implements ChatIF
    * This method waits for input from the console.  Once it is 
    * received, it sends it to the client's message handler.
    */
-  //String delStr = "send";
   public void accept() 
   {
     try
@@ -68,7 +67,7 @@ public class ClientConsole implements ChatIF
       while (true) 
       {
         message = fromConsole.readLine();
-        client.handleMessageFromClientUI(message);
+        //client.handleMessageFromClientUI(message);
       }
     } 
     catch (Exception ex) 
