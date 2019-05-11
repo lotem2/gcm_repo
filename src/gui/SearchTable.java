@@ -1,7 +1,7 @@
 package gui;
 
 public class SearchTable {
-	String cityName,siteName,description;
+	private  String cityName ,siteName ,description;
 
 	public SearchTable(String cityName, String siteName, String description) {
 		super();
