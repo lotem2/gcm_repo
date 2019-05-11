@@ -26,7 +26,7 @@ import javafx.scene.text.Text;
 import javax.swing.JOptionPane;//library for popup messages
 
 public class MainGUIController {
-	PurchaseClientController client;
+	MainGuiClient client;
 	
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -93,9 +93,9 @@ public class MainGUIController {
       try
       {
   	  Message myMessage;
-  	  String userName=""/*,password*/;
+  	  String userName="shanil"/*,password*/;
   	  ArrayList<Object> data = new ArrayList<Object>();
-  	  userName=tfCitySearch.getText();
+//  	  userName=tfCitySearch.getText();
   	  //password=tfCitySearch.getText();
 	  	  if((userName!=null)/*||(password!=null)*/)
 		  	  {
@@ -180,6 +180,17 @@ public class MainGUIController {
     @FXML
     void show(ActionEvent event) {
         // handle the event here
+    }
+    
+    public void initializeServer(String host, int port) {
+    	System.out.println(host + port);
+    	try {
+			client = new MainGuiClient(host, port);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
