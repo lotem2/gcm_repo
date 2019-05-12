@@ -1,6 +1,7 @@
 package server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import common.*;
 import entity.*;
@@ -17,28 +18,36 @@ public class Server extends AbstractServer {
 	public void handleMessageFromClient
     (Object msg, ConnectionToClient client) {
 		// Variables
-		Message currMsg = (Message)msg;
-		Message replyMsg;
+		Message currMsg  = (Message)msg;
+		Message replyMsg = null;
 		ArrayList<Object> params;
 		
 		try {
 			switch (currMsg.getAction()) {
 			case LOGIN:
-				if(client.getInfo("UserInfo") != null) {
-					ArrayList<Object> al = new ArrayList<Object>();
-					al.add(new Integer(1));
-					al.add(new String("Client already connected."));
-					replyMsg = new Message(Action.LOGIN, al);
+				if(DoesUserExists(currMsg.getData().get(0).toString())) {
+					params = new ArrayList<Object>();
+					params.add(new Integer(1));
+					params.add(new String("Client already connected."));
+					replyMsg = new Message(Action.LOGIN, params);
 				}
 				else {
-					replyMsg = ClientDB.getInstance().getUser(currMsg.getData());
+					replyMsg = UsersDB.getInstance().getUser(currMsg.getData());
 					if(((Integer)replyMsg.getData().get(0)) == 0)
-						client.setInfo("UserInfo", replyMsg.getData().get(1));
+						client.setName(currMsg.getData().get(0).toString());
 				}
-				
-				client.sendToClient(replyMsg);
 				break;
-			case ADD_PURCHASE:
+			case LOGOUT:
+				// Set thread name to empty and return success message to client
+				client.setName("");
+				params = new ArrayList<Object>();
+				params.add(new Integer(0));
+				replyMsg = new Message(Action.LOGOUT, params);
+				break;
+			case SEARCH:
+				replyMsg = MapDB.getInstance().Search(currMsg.getData());
+				break;
+			/*case ADD_PURCHASE:
 				params = new ArrayList<Object>();
 				params.add(((Client)client.getInfo("UserInfo")).getUsername());
 				client.sendToClient(PurchaseDB.getInstance().AddPurchase(params));
@@ -47,14 +56,16 @@ public class Server extends AbstractServer {
 				params = new ArrayList<Object>();
 				params.add(((Client)client.getInfo("UserInfo")).getUsername());
 				
-				replyMsg = ClientDB.getInstance().getUser(params);
+				replyMsg = UsersDB.getInstance().getUser(params);
 				if(((Integer)replyMsg.getData().get(0)) == 0)
 					client.setInfo("UserInfo", replyMsg.getData().get(1));
 				client.sendToClient(replyMsg);
-				break;
+				break;*/
 			default:
 				break;
-			}			
+			}
+
+			client.sendToClient(replyMsg);	// Send message to the current client
 		}
 		catch (Exception e) {
 			// TODO: handle exception
@@ -73,8 +84,8 @@ public class Server extends AbstractServer {
 	  protected void clientDisconnected(ConnectionToClient client) 
 	  {
 	    // display on server and clients that the client has connected.
-		  String msg = ((Client)client.getInfo("UserInfo")).getUsername() + " has disconnected";
-	    System.out.println(msg);
+		  //String msg = ((Client)client.getInfo("UserInfo")).getUsername() + " has disconnected";
+	    //System.out.println(msg);
 	    //client.sen(msg);
 	  }
 	  
@@ -84,13 +95,29 @@ public class Server extends AbstractServer {
 	  {
 		  String msg;
 		  
-		  if((Client)client.getInfo("UserInfo") != null){
-			  msg = ((Client)client.getInfo("UserInfo")).getUsername() + " has disconnected";
+		  if((User)client.getInfo("UserInfo") != null){
+			  msg = ((User)client.getInfo("UserInfo")).getFirstName() + " " + 
+					  ((User)client.getInfo("UserInfo")).getLastName() + " has disconnected";
 		  }
 		  else {
 			  msg = "A client has disconnected.";
 		  }
 		  System.out.println(msg);
+	  }
+	  
+	  /** Private method to get current user name
+	   * params: {@value} user name
+	   * return value: {@value} true if user exists, else false **/
+	  private boolean DoesUserExists(String username) {
+		  Thread[] clients = getClientConnections();
+		  
+		  for (Thread client : clients) {
+			if (client.getName() == username) {
+				return true;
+			}
+		  }
+		  
+		  return false;
 	  }
 	  
 	public static void main(String[] args) {

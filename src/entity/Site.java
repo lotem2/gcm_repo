@@ -1,25 +1,26 @@
 package entity;
 
+import common.*;
 import java.awt.Point;
 
-public class Site {	
+public class Site {
 	private String name;
-	private int classification;
+	private Classification classification;
 	private String description;
-	private boolean isAccesiable;
-	private float visitTime;
+	private boolean isAccessible;
+	private float visitDuration;
 	private Point location;
-	
-	public Site(String name, int classification, String description, boolean isAccesiable, float visitTime,
+
+	public Site(String name, Classification classification, String description, boolean isAccessible, float visitTime,
 			Point location) {
 		this.name = name;
 		this.classification = classification;
 		this.description = description;
-		this.isAccesiable = isAccesiable;
-		this.visitTime = visitTime;
+		this.isAccessible = isAccessible;
+		this.visitDuration = visitTime;
 		this.location = location;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -28,20 +29,20 @@ public class Site {
 		this.name = name;
 	}
 
-	public int getClassification() {
+	public Classification getClassification() {
 		return classification;
 	}
 
-	public void setClassification(int classification) {
+	public void setClassification(Classification classification) {
 		this.classification = classification;
 	}
-	
+
 	public float getVisitTime() {
-		return visitTime;
+		return visitDuration;
 	}
 
 	public void setVisitTime(float visitTime) {
-		this.visitTime = visitTime;
+		this.visitDuration = visitTime;
 	}
 
 	public String getDescription() {
@@ -52,12 +53,12 @@ public class Site {
 		this.description = description;
 	}
 
-	public boolean isAccesiable() {
-		return isAccesiable;
+	public boolean isAccessible() {
+		return isAccessible;
 	}
 
 	public Point getLocation() {
 		return location;
 	}
-	
+
 }

@@ -20,7 +20,11 @@ public class Message implements java.io.Serializable{
     public Action getAction() {
         return action;
     }
- 
+
+    public void setAction(Action action) {
+        this.action = action;
+    }
+    
     public ArrayList<Object> getData() {
         return data;
     }
