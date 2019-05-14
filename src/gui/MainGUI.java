@@ -17,13 +17,13 @@ public class MainGUI extends Application
 @Override
 public void start(Stage primaryStage) throws IOException 
 {
-	// constructing our scene
+	// Constructing our scene
     FXMLLoader loader=new FXMLLoader(getClass().getResource("/MainGUIScene.fxml"));
-//	URL url = getClass().getResource("/MainGUIScene.fxml");
 	AnchorPane pane = loader.load();
     MainGUIController controller = loader.getController();
-//    System.out.println(InetAddress.getLocalHost().toString());
-    controller.initializeServer(InetAddress.getLocalHost().getHostAddress().toString(), 5555);
+    controller.setHost(InetAddress.getLocalHost().getHostAddress().toString());
+    controller.setPort(5555);
+    controller.openConnection();
 
 	Scene scene = new Scene(pane);
 	// setting the stage
