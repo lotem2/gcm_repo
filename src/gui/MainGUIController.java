@@ -27,7 +27,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import javax.swing.JOptionPane;//library for popup messages
 
-public class MainGUIController extends AbstractClient {
+public class MainGUIController {
+	MainGuiClient client;
 	
     @FXML private ResourceBundle resources;
     @FXML private URL location;
@@ -47,6 +48,36 @@ public class MainGUIController extends AbstractClient {
     @FXML private TextField tfDesSearch; 
     @FXML private TextField tfSiteSearch; 
     @FXML private Text txtMapsCatalog; 
+       
+//    @FXML
+//    void Login(ActionEvent event) 
+//    {
+//        // handle the event here
+//      try
+//      {
+//  	  Message myMessage;
+//  	  String userName=""/*,password*/;
+//  	  ArrayList<Object> data = new ArrayList<Object>();
+//  	  userName=tfCitySearch.getText();
+//  	  //password=tfCitySearch.getText();
+//	  	  if((userName!=null)/*||(password!=null)*/)
+//		  	  {
+//				      data.add(userName);
+//				      //data.add(password);
+//		  	  }
+//			     myMessage = new Message(Action.LOGIN,data);
+//			     client.sendToServer(myMessage);
+//      }
+//	  catch(IOException e)
+//	  {
+//		  JOptionPane.showMessageDialog(null, 
+//				  e.toString()+"Could not send message to server.  Terminating client.", 
+//                  "Error", 
+//                  JOptionPane.WARNING_MESSAGE);
+//		        //quit();
+//	  }
+//    }
+
     
     /**
      * @param event
@@ -101,18 +132,17 @@ public class MainGUIController extends AbstractClient {
       try
       {
   	  Message myMessage;
-  	  String userName=""/*,password*/;
+  	  String userName="shanil"/*,password*/;
   	  ArrayList<Object> data = new ArrayList<Object>();
-      userName=tfUser.getText();
-  	//  password=pfPassword.getText();
+      //userName=tfCitySearch.getText();
+  	  //password=tfCitySearch.getText();
 	  	  if((userName!=null)/*||(password!=null)*/)
 		  	  {
 				      data.add(userName);
-				    //  data.add(password);
+				      //data.add(password);
 		  	  }
 			     myMessage = new Message(Action.LOGIN,data);
-			     this.sendToServer(myMessage);
-			    
+			     client.sendToServer(myMessage);
       }
 	  catch(IOException e)
 	  {
@@ -138,59 +168,22 @@ public class MainGUIController extends AbstractClient {
         // handle the event here
     }
     
-    public void connectToServer() {
+    public void initializeServer(String host, int port) {
+    	System.out.println(host + port);
     	try {
-			this.openConnection();
+			client = new MainGuiClient(host, port);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
     }
 
     @FXML 
     void initialize() 
     {
-
+			//setTableViewForMapsSearchResult(maps);
     }
-
-	@Override
-	protected void handleMessageFromServer(Object msg) {
-		Message currMsg = (Message)msg;
-	    switch (currMsg.getAction()) {
-		  case LOGIN:
-	      	// if((Integer)currMsg.getData().get(0) == 0) 
-		 
-	      		 System.out.println(((Client)currMsg.getData().get(1)).toString());
-	    	  break;
-		  case SEARCH:
-	      	 if((Integer)currMsg.getData().get(0) == 0) {
-	      		 //sendDataToGUI(currMsg);
-	      	     System.out.println("The message was sent to the gui");
-	      	 }
-	      	 else {
-	      		// clientUI.display(currMsg.getData().get(1).toString() + "\n"
-	      			//	 + "The message was not sent to the gui.Please retry\"");
-	      	 }
-	    	  break;
-		  case ADD_PURCHASE:
-	      	 if((Integer)currMsg.getData().get(0) == 0) {
-	      	//	 clientUI.display("Purchase added successfully\n");
-	      	 }
-	      	 else {
-	      	//	 clientUI.display(currMsg.getData().get(1).toString() + "\n");
-	      	 }
-	      	  break;
-		  case SHOW_CLIENT_DETAILS:
-	      		if((Integer)currMsg.getData().get(0) == 0) {
-	      	//		clientUI.display(currMsg.getData().get(1).toString());	      			
-	      		}
-	      		else {
-	      		//	clientUI.display(currMsg.getData().get(1).toString() + "\n");
-	      		}
-	      	  break;
-		  }
-		
-	}
 
 		
 //		public void setTableViewForMapsSearchResult(ArrayList<Map> maps) {
