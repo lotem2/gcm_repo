@@ -9,6 +9,7 @@ public abstract class User implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	// Variables
+	private final String m_userName;
 	private final String m_firstName;
 	private final String m_lastName;
 	private final String m_email;
@@ -16,7 +17,8 @@ public abstract class User implements java.io.Serializable{
 	private final Permission m_permission;
 	
 	/* Constructor */
-	public User(String first, String last, String email, String password, Permission permission) {
+	public User(String username, String first, String last, String email, String password, Permission permission) {
+		m_userName = username;
 		m_firstName = first;
 		m_lastName = last;
 		m_email = email;
@@ -25,6 +27,7 @@ public abstract class User implements java.io.Serializable{
 	}
 	
 	/* Getters */
+	public String getUserName() { return m_userName; }
 	public String getFirstName() { return m_firstName; }
 	public String getLastName() { return m_lastName; }
 	public String getEmail() { return m_email; }
@@ -33,6 +36,6 @@ public abstract class User implements java.io.Serializable{
 	
 	@Override
 	public String toString() {
-		return "First name: " + m_firstName + "\nLast name: " + m_lastName;
+		return "User name: " + m_userName + " First name: " + m_firstName + "\nLast name: " + m_lastName;
 	}
 }

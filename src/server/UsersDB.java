@@ -27,7 +27,6 @@ public class UsersDB {
 	public Message getUser(ArrayList<Object> params) {
 		// Variables
 		ArrayList<Object> data = new ArrayList<Object>();
-		Message           msg  = new Message(Action.LOGIN, new ArrayList<Object>());
 		ResultSet         rs   = null;
 				
 		try {
@@ -45,7 +44,7 @@ public class UsersDB {
 				throw new Exception("Client does not exist.");
 			}
 			else {
-				msg.getData().add(new Integer(0)); // set query result as success
+				data.add(new Integer(0)); // set query result as success
 				rs.beforeFirst();	// Moves cursor to the start of the result set	
 						
 				// Reads data
@@ -74,8 +73,7 @@ public class UsersDB {
 								Permission.valueOf(rs.getString("permission").toUpperCase()),
 								rs.getInt("id"));
 					}
-					
-					data.add(new Integer(0));
+
 					data.add(currUser);
 				}
 			}

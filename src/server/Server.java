@@ -34,7 +34,9 @@ public class Server extends AbstractServer {
 				else {
 					replyMsg = UsersDB.getInstance().getUser(currMsg.getData());
 					if(((Integer)replyMsg.getData().get(0)) == 0)
-						client.setName(currMsg.getData().get(0).toString());
+						client.setName(((User)currMsg.getData().get(1)).getUserName());
+					
+					replyMsg.setAction(Action.LOGIN);
 				}
 				break;
 			case LOGOUT:
@@ -46,6 +48,7 @@ public class Server extends AbstractServer {
 				break;
 			case SEARCH:
 				replyMsg = MapDB.getInstance().Search(currMsg.getData());
+				replyMsg.setAction(Action.SEARCH);
 				break;
 			/*case ADD_PURCHASE:
 				params = new ArrayList<Object>();
@@ -95,9 +98,8 @@ public class Server extends AbstractServer {
 	  {
 		  String msg;
 		  
-		  if((User)client.getInfo("UserInfo") != null){
-			  msg = ((User)client.getInfo("UserInfo")).getFirstName() + " " + 
-					  ((User)client.getInfo("UserInfo")).getLastName() + " has disconnected";
+		  if(!client.getName().startsWith("Thread")){
+			  msg = client.getName() + " has disconnected.";
 		  }
 		  else {
 			  msg = "A client has disconnected.";
