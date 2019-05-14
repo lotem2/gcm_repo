@@ -56,7 +56,7 @@ public class UsersDB {
 						currUser = new Client(
 								rs.getString("firstname"),
 								rs.getString("lastname"),
-								rs.getString("passowrd"),
+								rs.getString("password"),
 								rs.getString("username"),
 								rs.getString("email"),
 								Permission.valueOf(rs.getString("permission").toUpperCase()),
@@ -67,7 +67,7 @@ public class UsersDB {
 						currUser = new Employee(
 								rs.getString("firstname"),
 								rs.getString("lastname"),
-								rs.getString("passowrd"),
+								rs.getString("password"),
 								rs.getString("username"),
 								rs.getString("role"),
 								rs.getString("email"),

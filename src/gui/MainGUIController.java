@@ -30,7 +30,12 @@ import javax.swing.JOptionPane;//library for popup messages
 public class MainGUIController extends AbstractClient {
 //	MainGuiClient client;
 	
-    @FXML private ResourceBundle resources;
+    public MainGUIController() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	@FXML private ResourceBundle resources;
     @FXML private URL location;
     @FXML private AnchorPane MapSearchWindow; 
     @FXML private TableView<SearchTable> SearchResultsTable; 
@@ -102,14 +107,14 @@ public class MainGUIController extends AbstractClient {
       try
       {
   	  Message myMessage;
-  	  String userName=""/*,password*/;
+  	  String userName="", password;
   	  ArrayList<Object> data = new ArrayList<Object>();
       userName=tfUser.getText();
-  	//  password=pfPassword.getText();
-	  	  if((userName!=null)/*||(password!=null)*/)
+  	  password=pfPassword.getText();
+	  	  if((userName!=null) ||(password!=null))
 		  	  {
 				      data.add(userName);
-				    //  data.add(password);
+				      data.add(password);
 		  	  }
 			     myMessage = new Message(Action.LOGIN,data);
 			     this.sendToServer(myMessage);
@@ -157,7 +162,10 @@ public class MainGUIController extends AbstractClient {
 	@Override
 	protected void handleMessageFromServer(Object msg) {
 		Message currMsg = (Message)msg;
-	    switch (currMsg.getAction()) {
+		if (currMsg.getAction() == null) {
+			System.out.println("Null action retuned from server.");
+		}
+		switch (currMsg.getAction()) {
 		  case LOGIN:
 	      	// if((Integer)currMsg.getData().get(0) == 0) 
 		 
@@ -189,6 +197,9 @@ public class MainGUIController extends AbstractClient {
 	      		//	clientUI.display(currMsg.getData().get(1).toString() + "\n");
 	      		}
 	      	  break;
+		default:
+			System.out.println("No action handler defined");
+			break;
 		  }
 		
 	}

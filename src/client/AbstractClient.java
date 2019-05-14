@@ -90,8 +90,12 @@ public abstract class AbstractClient implements Runnable
 //  }
 
 // INSTANCE METHODS *************************************************
-  
-  /**
+
+public AbstractClient() {
+	// TODO Auto-generated constructor stub
+}
+
+/**
    * Opens the connection with the server.
    * If the connection is already opened, this call has no effect.
    *
@@ -256,6 +260,7 @@ public abstract class AbstractClient implements Runnable
     }
     catch (Exception exception)
     {
+    	exception.printStackTrace();
       if(!readyToStop)
       {
         try
@@ -263,7 +268,7 @@ public abstract class AbstractClient implements Runnable
           closeAll();
         }
         catch (Exception ex) { }
-
+    	
         connectionException(exception);
       }
     }
