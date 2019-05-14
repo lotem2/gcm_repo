@@ -102,14 +102,14 @@ public class MainGUIController extends AbstractClient {
       try
       {
   	  Message myMessage;
-  	  String userName=""/*,password*/;
+  	  String userName="",password;
   	  ArrayList<Object> data = new ArrayList<Object>();
       userName=tfUser.getText();
-  	//  password=pfPassword.getText();
-	  	  if((userName!=null)/*||(password!=null)*/)
+  	  password=pfPassword.getText();
+	  	  if((userName!=null)||(password!=null))
 		  	  {
 				      data.add(userName);
-				    //  data.add(password);
+				      data.add(password);
 		  	  }
 			     myMessage = new Message(Action.LOGIN,data);
 			     this.sendToServer(myMessage);
