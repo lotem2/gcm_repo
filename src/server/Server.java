@@ -35,6 +35,7 @@ public class Server extends AbstractServer {
 					replyMsg = UsersDB.getInstance().getUser(currMsg.getData());
 					if(((Integer)replyMsg.getData().get(0)) == 0)
 						client.setName(currMsg.getData().get(0).toString());
+					replyMsg.setAction(Action.LOGIN);
 				}
 				break;
 			case LOGOUT:
@@ -46,6 +47,7 @@ public class Server extends AbstractServer {
 				break;
 			case SEARCH:
 				replyMsg = MapDB.getInstance().Search(currMsg.getData());
+				replyMsg.setAction(Action.SEARCH);
 				break;
 			/*case ADD_PURCHASE:
 				params = new ArrayList<Object>();

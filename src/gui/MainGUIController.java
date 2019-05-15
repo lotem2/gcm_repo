@@ -18,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableColumn;
@@ -39,7 +40,8 @@ public class MainGUIController extends AbstractClient {
     @FXML private TableColumn<SearchTable, String> col_DescName; 
     @FXML private TableColumn<SearchTable, String> col_SiteName;   
     @FXML private Button btnDownload; 
-    @FXML private Button btnLogin; 
+    @FXML private Button btnLogin;
+    @FXML private Button btnLogout;
     @FXML private Button btnSearch; 
     @FXML private Button btnShow;  
     @FXML private TextField tfUser; 
@@ -48,52 +50,52 @@ public class MainGUIController extends AbstractClient {
     @FXML private TextField tfDesSearch; 
     @FXML private TextField tfSiteSearch; 
     @FXML private Text txtMapsCatalog; 
-    
+    @FXML private Label lblWelcome;
     /**
      * @param event
      * making the data to send to the server
      */
     
-//    @FXML
-//    void Search(ActionEvent event) 
-//    {
-//    try
-//	    {
-//	  	Message myMessage;
-//	  	String cityName,siteName,description;
-//	  	ArrayList<Object> data = new ArrayList<Object>();
-//	  	cityName=tfCitySearch.getText();
-//	  	siteName=tfSiteSearch.getText();
-//	  	description=tfDesSearch.getText();
-//		  	if (cityName!=null)
-//		  	{
-//			         data.add("cityName");
-//				     data.add(cityName);
-//				     if(siteName!=null)
-//				     {
-//				       	data.add("siteName");
-//				       	data.add(siteName);
-//				     }
-//				     if(description!=null) 
-//				     {
-//				    	 data.add("description");
-//			    	     data.add(description);
-//				     }
-//		  	}
-//		  	else
-//		  	{
-//		  		JOptionPane.showMessageDialog(null, "No paramaters were typed in.", "Error", JOptionPane.WARNING_MESSAGE);
-//		  	}
-//	  	myMessage = new Message(Action.SEARCH,data);
-//		client.sendToServer(myMessage);
-//	    }
-//	catch(IOException e)
-//		{
-//			   JOptionPane.showMessageDialog(null,e.toString()+"Could not send message to server. Terminating client.", 
-//			                  "Error", JOptionPane.WARNING_MESSAGE);
-//					          client.quit();
-//		}
-//    }
+    @FXML
+    void Search(ActionEvent event) 
+    {
+    try
+	    {
+	  	Message myMessage;
+	  	String cityName,siteName,description;
+	  	ArrayList<Object> data = new ArrayList<Object>();
+	  	cityName=tfCitySearch.getText();
+	  	siteName=tfSiteSearch.getText();
+	  	description=tfDesSearch.getText();
+		  	if (cityName!=null)
+		  	{
+			         data.add("cityName");
+				     data.add(cityName);
+		  	}
+		  	else if(siteName!=null)
+			{
+				       	data.add("siteName");
+				       	data.add(siteName);
+			}
+		  	else if(description!=null) 
+			{
+				    	 data.add("description");
+			    	     data.add(description);
+			}
+		  	else
+		  	{
+		  		JOptionPane.showMessageDialog(null, "No paramaters were typed in.", "Error", JOptionPane.WARNING_MESSAGE);
+		  	}
+	  	myMessage = new Message(Action.SEARCH,data);
+		this.sendToServer(myMessage);
+	    }
+	catch(IOException e)
+		{
+			   JOptionPane.showMessageDialog(null,e.toString()+"Could not send message to server. Terminating client.", 
+			                  "Error", JOptionPane.WARNING_MESSAGE);
+					          //this.quit();
+		}
+    }
 
     
     @FXML
@@ -125,10 +127,10 @@ public class MainGUIController extends AbstractClient {
 	  }
     }
     
-    @FXML
-    void Search(ActionEvent event) {
-        // handle the event here
-    }
+//    @FXML
+//    void Search(ActionEvent event) {
+//        // handle the event here
+//    }
     @FXML
     void download(ActionEvent event) {
         // handle the event here
@@ -137,6 +139,10 @@ public class MainGUIController extends AbstractClient {
     @FXML
     void show(ActionEvent event) {
         // handle the event here
+    }
+    
+    @FXML
+    void Logout(ActionEvent event) {
     }
     
     public void connectToServer() {
@@ -165,8 +171,7 @@ public class MainGUIController extends AbstractClient {
 	    	  break;
 		  case SEARCH:
 	      	 if((Integer)currMsg.getData().get(0) == 0) {
-	      		 //sendDataToGUI(currMsg);
-	      	     System.out.println("The message was sent to the gui");
+	      		System.out.println(((Map)currMsg.getData().get(1)).toString());
 	      	 }
 	      	 else {
 	      		// clientUI.display(currMsg.getData().get(1).toString() + "\n"
@@ -194,20 +199,21 @@ public class MainGUIController extends AbstractClient {
 	}
 
 		
-//		public void setTableViewForMapsSearchResult(ArrayList<Map> maps) {
-//			Platform.runLater(new Runnable() {
-//				@SuppressWarnings("unchecked")
-//				@Override
-//				public void run() {
-//			      	ObservableList<SearchTable> mapList = FXCollections.observableArrayList();
-//	      	        col_CityName.setCellValueFactory(new PropertyValueFactory<SearchTable,String>("cityName"));
-//	      	        col_SiteName.setCellValueFactory(new PropertyValueFactory<SearchTable,String>("siteName"));
-//	      	        col_DescName.setCellValueFactory(new PropertyValueFactory<SearchTable,String>("description"));
-//	      	        
-//	      	        SearchResultsTable.getColumns().addAll(col_CityName, col_SiteName, col_DescName);           
-//                    SearchResultsTable.setItems(mapList);
-//				}
-//			});
+		public void setTableViewForMapsSearchResult(ArrayList<Map> maps) {
+			Platform.runLater(new Runnable() {
+				@SuppressWarnings("unchecked")
+				@Override
+				public void run() {
+			      	ObservableList<SearchTable> mapList = FXCollections.observableArrayList();
+	      	        col_CityName.setCellValueFactory(new PropertyValueFactory<SearchTable,String>("cityName"));
+	      	        col_SiteName.setCellValueFactory(new PropertyValueFactory<SearchTable,String>("siteName"));
+	      	        col_DescName.setCellValueFactory(new PropertyValueFactory<SearchTable,String>("description"));
+	      	        
+	      	        SearchResultsTable.getColumns().addAll(col_CityName, col_SiteName, col_DescName);           
+                    SearchResultsTable.setItems(mapList);
+				}
+			});
+		}
 }
 
 
