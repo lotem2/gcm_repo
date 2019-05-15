@@ -42,6 +42,7 @@ public class MainGUIController extends AbstractClient {
     @FXML private Button btnDownload; 
     @FXML private Button btnLogin;
     @FXML private Button btnLogout;
+    @FXML private Button btnRegister;
     @FXML private Button btnSearch; 
     @FXML private Button btnShow;  
     @FXML private TextField tfUser; 
@@ -132,17 +133,21 @@ public class MainGUIController extends AbstractClient {
 //        // handle the event here
 //    }
     @FXML
-    void download(ActionEvent event) {
+    void Download(ActionEvent event) {
         // handle the event here
     }
 
     @FXML
-    void show(ActionEvent event) {
+    void Show(ActionEvent event) {
         // handle the event here
     }
     
     @FXML
     void Logout(ActionEvent event) {
+    }
+    
+    @FXML
+    void Register(ActionEvent event) {
     }
     
     public void connectToServer() {

@@ -19,14 +19,15 @@
     <TextField fx:id="tfCitySearch" layoutX="41.0" layoutY="127.0" onAction="#Search" prefWidth="166.0" promptText="City Name" text="" />
     <TextField fx:id="tfSiteSearch" layoutX="222.0" layoutY="127.0" onAction="#Search" prefWidth="200.0" promptText="Site Name" text="" />
     <TextField fx:id="tfDesSearch" layoutX="41.0" layoutY="172.0" onAction="#Search" prefWidth="381.0" promptText="Description" text="" />
-    <Text fx:id="txtMapsCatalog" layoutX="250.0" layoutY="70.0" scaleX="5.294572443371362" scaleY="3.6471364157257784" strokeType="OUTSIDE" strokeWidth="0.0" text="Maps Catalog" />
+    <Text fx:id="txtMapsCatalog" layoutX="226.0" layoutY="80.0" scaleX="5.294572443371362" scaleY="4.665439462944591" strokeType="OUTSIDE" strokeWidth="0.0" text="Maps Catalog" />
     <Button fx:id="btnSearch" layoutX="437.0" layoutY="153.0" mnemonicParsing="false" onAction="#Search" text="Search" />
-    <TextField fx:id="tfUser" layoutX="555.0" layoutY="38.0" onAction="#Login" prefWidth="113.0" promptText="User Name" text="" />
-    <Button fx:id="btnLogin" layoutX="569.0" layoutY="113.0" mnemonicParsing="false" onAction="#Login" text="Log in" />
-    <PasswordField fx:id="pfPassword" layoutX="555.0" layoutY="74.0" onAction="#Login" prefWidth="113.0" promptText="Password" />
-    <Button fx:id="btnShow" layoutX="522.0" layoutY="619.0" mnemonicParsing="false" onAction="#show" prefWidth="94.0" text="Show" visible="false" />
+    <TextField fx:id="tfUser" layoutX="524.0" layoutY="38.0" onAction="#Login" prefWidth="162.0" promptText="User Name" text="" />
+    <Button fx:id="btnLogin" layoutX="524.0" layoutY="113.0" mnemonicParsing="false" onAction="#Login" text="Log in" />
+    <PasswordField fx:id="pfPassword" layoutX="524.0" layoutY="74.0" onAction="#Login" prefWidth="162.0" promptText="Password" />
+    <Button fx:id="btnShow" layoutX="522.0" layoutY="619.0" mnemonicParsing="false" onAction="#Show" prefWidth="94.0" text="Show" visible="false" />
     <Button fx:id="btnDownload" layoutX="522.0" layoutY="662.0" mnemonicParsing="false" onAction="#download" prefWidth="94.0" text="Download" visible="false" />
     <Button id="btnLogin" fx:id="btnLogout" cancelButton="false" layoutX="555.0" layoutY="47.0" mnemonicParsing="false" onAction="#Logout" text="Log out" visible="false" />
-    <Label fx:id="lblWelcome" layoutX="555.0" layoutY="14.0" text="Welcome" />
+    <Label fx:id="lblWelcome" layoutX="524.0" layoutY="14.0" text="Welcome " />
+    <Button id="btnLogin" fx:id="btnRegister" layoutX="597.0" layoutY="113.0" mnemonicParsing="false" onAction="#Register" prefWidth="89.0" text="Register" />
   </children>
 </AnchorPane>
