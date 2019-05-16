@@ -31,6 +31,7 @@ import javax.swing.JOptionPane;//library for popup messages
 public class MainGUIController extends AbstractClient {
 //	MainGuiClient client;
 	
+	
     @FXML private ResourceBundle resources;
     @FXML private URL location;
     @FXML private AnchorPane MapSearchWindow; 
@@ -63,32 +64,40 @@ public class MainGUIController extends AbstractClient {
     try
 	    {
 	  	Message myMessage;
-	  	String cityName,siteName,description;
+	  	String cityName,siteName,mapDescription;
 	  	ArrayList<Object> data = new ArrayList<Object>();
 	  	cityName=tfCitySearch.getText();
 	  	siteName=tfSiteSearch.getText();
-	  	description=tfDesSearch.getText();
-		  	if (cityName!=null)
+	  	mapDescription=tfDesSearch.getText();
+		  	if (!cityName.isEmpty())
 		  	{
 			         data.add("cityName");
 				     data.add(cityName);
 		  	}
-		  	else if(siteName!=null)
+		  	if(!siteName.isEmpty())
 			{
 				       	data.add("siteName");
 				       	data.add(siteName);
 			}
-		  	else if(description!=null) 
+		  	if(!mapDescription.isEmpty()) 
 			{
-				    	 data.add("description");
-			    	     data.add(description);
+				    	 data.add("mapDescription");
+			    	     data.add(mapDescription);
 			}
-		  	else
+		  	if((cityName.isEmpty())&&(siteName.isEmpty())&&(mapDescription.isEmpty()))
 		  	{
 		  		JOptionPane.showMessageDialog(null, "No paramaters were typed in.", "Error", JOptionPane.WARNING_MESSAGE);
 		  	}
-	  	myMessage = new Message(Action.SEARCH,data);
-		this.sendToServer(myMessage);
+		  	else
+		  	{
+		  		  	myMessage = new Message(Action.SEARCH,data);
+		  		  	this.sendToServer(myMessage);
+		  	}	
+//  		for(int i=0; i<data.size();i++)
+//  		{
+//  			System.out.println(data.get(i).toString()+ " ,");
+//  		}
+//			System.out.println(data.size());
 	    }
 	catch(IOException e)
 		{
@@ -116,12 +125,11 @@ public class MainGUIController extends AbstractClient {
 		  	  }
 			     myMessage = new Message(Action.LOGIN,data);
 			     this.sendToServer(myMessage);
-			    
       }
 	  catch(IOException e)
 	  {
 		  JOptionPane.showMessageDialog(null, 
-				  e.toString()+"Could not send message to server.  Terminating client.", 
+				  e.toString()+" Could not send message to server.  Terminating client.", 
                   "Error", 
                   JOptionPane.WARNING_MESSAGE);
 		        //quit();
@@ -162,7 +170,7 @@ public class MainGUIController extends AbstractClient {
     @FXML 
     void initialize() 
     {
-
+    
     }
 
 	@Override
@@ -175,13 +183,13 @@ public class MainGUIController extends AbstractClient {
 	      		 System.out.println(((Client)currMsg.getData().get(1)).toString());
 	    	  break;
 		  case SEARCH:
-	      	 if((Integer)currMsg.getData().get(0) == 0) {
+	      	// if((Integer)currMsg.getData().get(0) == 0) {
 	      		System.out.println(((Map)currMsg.getData().get(1)).toString());
-	      	 }
-	      	 else {
+	      	 //}
+	      	 //else {
 	      		// clientUI.display(currMsg.getData().get(1).toString() + "\n"
 	      			//	 + "The message was not sent to the gui.Please retry\"");
-	      	 }
+	      	 //}
 	    	  break;
 		  case ADD_PURCHASE:
 	      	 if((Integer)currMsg.getData().get(0) == 0) {

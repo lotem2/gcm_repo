@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="btn" fx:id="RegisterWindow" prefHeight="833.0" prefWidth="738.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="gui.RegisterController">
+  <!-- TODO Add Nodes -->
+  <children>
+    <Button layoutX="343.0" layoutY="461.0" mnemonicParsing="false" onAction="#Register" text="Register" />
+    <TextField fx:id="tfFirstName" layoutX="329.0" layoutY="263.0" onAction="#Register" prefWidth="200.0" promptText="First Name" />
+    <TextField fx:id="tfLastName" layoutX="329.0" layoutY="306.0" onAction="#Register" prefWidth="200.0" promptText="Last Name" />
+    <TextField fx:id="tfEmail" layoutX="329.0" layoutY="348.0" onAction="#Register" prefWidth="200.0" promptText="e-mail" />
+    <PasswordField fx:id="tfPassword" layoutX="329.0" layoutY="386.0" onAction="#Register" prefWidth="200.0" promptText="Password" />
+    <Label layoutX="184.0" layoutY="84.0" text="Registration Form">
+      <font>
+        <Font name="Arial" size="50.0" />
+      </font>
+    </Label>
+    <TextField fx:id="tfUserName" layoutX="329.0" layoutY="216.0" onAction="#Register" prefWidth="200.0" promptText="User Name" />
+    <Text layoutX="230.0" layoutY="232.0" strokeType="OUTSIDE" strokeWidth="0.0" text="User Name:" />
+    <Text layoutX="230.0" layoutY="279.0" strokeType="OUTSIDE" strokeWidth="0.0" text="First Name:" />
+    <Text layoutX="230.0" layoutY="322.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Last Name:" />
+    <Text layoutX="230.0" layoutY="364.0" strokeType="OUTSIDE" strokeWidth="0.0" text="e-mail:" />
+    <Text layoutX="230.0" layoutY="402.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Password:" />
+  </children>
+</AnchorPane>

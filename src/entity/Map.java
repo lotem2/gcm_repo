@@ -26,4 +26,8 @@ public class Map {
 	public void setSites(ArrayList<Site> sites) {
 		this.sites = sites;
 	}
+	
+	public String toString() {
+		return super.toString() + "\nDescription: " + description + "\nNumber of sites: " + sites.size();
+	}
 }
