@@ -6,25 +6,27 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="MapSearchWindow" disable="false" focusTraversable="false" prefHeight="833.0" prefWidth="738.0" snapToPixel="true" visible="true" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="gui.MainGUIController">
+<AnchorPane fx:id="MapSearchWindow" disable="false" focusTraversable="false" prefHeight="775.0" prefWidth="700.0" snapToPixel="true" visible="true" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="gui.MainGUIController">
   <children>
-    <TableView fx:id="SearchResultsTable" focusTraversable="true" layoutX="41.0" layoutY="265.0" prefHeight="504.0" prefWidth="458.0" tableMenuButtonVisible="false" visible="true">
+    <TableView fx:id="SearchResultsTable" focusTraversable="true" layoutX="30.0" layoutY="233.0" prefHeight="504.0" prefWidth="458.0" tableMenuButtonVisible="false" visible="true">
       <columns>
-        <TableColumn editable="true" maxWidth="5000.0" minWidth="10.0" prefWidth="42.0" resizable="false" text="" fx:id="choicePanel" />
-        <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="99.0" text="City Name" fx:id="tcCityName" />
-        <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="117.0" text="Site Name" fx:id="tcSiteName" />
-        <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="200.0" text="Description" fx:id="tcDescName" />
+        <TableColumn editable="true" maxWidth="5000.0" minWidth="10.0" prefWidth="42.0" resizable="false" text="" fx:id="col_choicePanel" />
+        <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="99.0" text="City" fx:id="col_CityName" />
+        <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="146.0" text="Number of sites" fx:id="col_SiteName" />
+        <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="200.0" text="Description" fx:id="col_DescName" />
       </columns>
     </TableView>
     <TextField fx:id="tfCitySearch" layoutX="41.0" layoutY="127.0" onAction="#Search" prefWidth="166.0" promptText="City Name" text="" />
     <TextField fx:id="tfSiteSearch" layoutX="222.0" layoutY="127.0" onAction="#Search" prefWidth="200.0" promptText="Site Name" text="" />
     <TextField fx:id="tfDesSearch" layoutX="41.0" layoutY="172.0" onAction="#Search" prefWidth="381.0" promptText="Description" text="" />
-    <Text fx:id="txtMapsCatalog" layoutX="259.0" layoutY="70.0" scaleX="5.478480645784816" scaleY="3.6471364157257784" strokeType="OUTSIDE" strokeWidth="0.0" text="Maps Catalog" />
-    <Button fx:id="btnSearch" layoutX="437.0" layoutY="153.0" mnemonicParsing="false" onAction="#search" text="Search" />
-    <TextField id="btnUser" fx:id="tfUser" layoutX="584.0" layoutY="21.0" onAction="#Login" prefWidth="113.0" promptText="User Name" text="" />
-    <Button fx:id="btnLogin" layoutX="600.0" layoutY="100.0" mnemonicParsing="false" onAction="#login" text="Log in" />
-    <PasswordField fx:id="pfPassword" layoutX="584.0" layoutY="57.0" onAction="#Login" prefWidth="113.0" promptText="Password" />
-    <Button fx:id="btnShow" layoutX="570.0" layoutY="627.0" mnemonicParsing="false" onAction="#show" prefWidth="94.0" text="Show" />
-    <Button fx:id="btnDownload" layoutX="570.0" layoutY="670.0" mnemonicParsing="false" onAction="#download" text="Download" />
+    <Text fx:id="txtMapsCatalog" layoutX="250.0" layoutY="70.0" scaleX="5.294572443371362" scaleY="3.6471364157257784" strokeType="OUTSIDE" strokeWidth="0.0" text="Maps Catalog" />
+    <Button fx:id="btnSearch" layoutX="437.0" layoutY="153.0" mnemonicParsing="false" onAction="#Search" text="Search" />
+    <TextField fx:id="tfUser" layoutX="555.0" layoutY="38.0" onAction="#Login" prefWidth="113.0" promptText="User Name" text="" />
+    <Button fx:id="btnLogin" layoutX="569.0" layoutY="113.0" mnemonicParsing="false" onAction="#Login" text="Log in" />
+    <PasswordField fx:id="pfPassword" layoutX="555.0" layoutY="74.0" onAction="#Login" prefWidth="113.0" promptText="Password" />
+    <Button fx:id="btnShow" layoutX="522.0" layoutY="619.0" mnemonicParsing="false" onAction="#show" prefWidth="94.0" text="Show" visible="false" />
+    <Button fx:id="btnDownload" layoutX="522.0" layoutY="662.0" mnemonicParsing="false" onAction="#download" prefWidth="94.0" text="Download" visible="false" />
+    <Button id="btnLogin" fx:id="btnLogout" cancelButton="false" layoutX="555.0" layoutY="47.0" mnemonicParsing="false" onAction="#Logout" text="Log out" visible="false" />
+    <Label fx:id="lblWelcome" layoutX="555.0" layoutY="14.0" text="Welcome" />
   </children>
 </AnchorPane>

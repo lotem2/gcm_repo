@@ -8,7 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import java.net.InetAddress;
-
+import java.awt.Label;
 import java.io.*;
 import common.*;
 
@@ -25,13 +25,14 @@ public void start(Stage primaryStage) throws IOException
     controller.setPort(5555);
     controller.openConnection();
 
+    
 	Scene scene = new Scene(pane);
 	// setting the stage
 	primaryStage.setScene(scene);
 	primaryStage.setTitle("Global City Map");
 	primaryStage.show();
 	 }
-final public static int DEFAULT_PORT = 5555;
+//final public static int DEFAULT_PORT = 5555;
 public static void main(String[] args) 
 	{
 	launch(args);

@@ -18,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableColumn;
@@ -25,17 +26,14 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
+import javafx.stage.Popup;
+
 import javax.swing.JOptionPane;//library for popup messages
 
 public class MainGUIController extends AbstractClient {
 //	MainGuiClient client;
 	
-    public MainGUIController() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	@FXML private ResourceBundle resources;
+    @FXML private ResourceBundle resources;
     @FXML private URL location;
     @FXML private AnchorPane MapSearchWindow; 
     @FXML private TableView<SearchTable> SearchResultsTable; 
@@ -44,7 +42,9 @@ public class MainGUIController extends AbstractClient {
     @FXML private TableColumn<SearchTable, String> col_DescName; 
     @FXML private TableColumn<SearchTable, String> col_SiteName;   
     @FXML private Button btnDownload; 
-    @FXML private Button btnLogin; 
+    @FXML private Button btnLogin;
+    @FXML private Button btnLogout;
+    @FXML private Button btnRegister;
     @FXML private Button btnSearch; 
     @FXML private Button btnShow;  
     @FXML private TextField tfUser; 
@@ -53,52 +53,52 @@ public class MainGUIController extends AbstractClient {
     @FXML private TextField tfDesSearch; 
     @FXML private TextField tfSiteSearch; 
     @FXML private Text txtMapsCatalog; 
-    
+    @FXML private Label lblWelcome;
     /**
      * @param event
      * making the data to send to the server
      */
     
-//    @FXML
-//    void Search(ActionEvent event) 
-//    {
-//    try
-//	    {
-//	  	Message myMessage;
-//	  	String cityName,siteName,description;
-//	  	ArrayList<Object> data = new ArrayList<Object>();
-//	  	cityName=tfCitySearch.getText();
-//	  	siteName=tfSiteSearch.getText();
-//	  	description=tfDesSearch.getText();
-//		  	if (cityName!=null)
-//		  	{
-//			         data.add("cityName");
-//				     data.add(cityName);
-//				     if(siteName!=null)
-//				     {
-//				       	data.add("siteName");
-//				       	data.add(siteName);
-//				     }
-//				     if(description!=null) 
-//				     {
-//				    	 data.add("description");
-//			    	     data.add(description);
-//				     }
-//		  	}
-//		  	else
-//		  	{
-//		  		JOptionPane.showMessageDialog(null, "No paramaters were typed in.", "Error", JOptionPane.WARNING_MESSAGE);
-//		  	}
-//	  	myMessage = new Message(Action.SEARCH,data);
-//		client.sendToServer(myMessage);
-//	    }
-//	catch(IOException e)
-//		{
-//			   JOptionPane.showMessageDialog(null,e.toString()+"Could not send message to server. Terminating client.", 
-//			                  "Error", JOptionPane.WARNING_MESSAGE);
-//					          client.quit();
-//		}
-//    }
+    @FXML
+    void Search(ActionEvent event) 
+    {
+    try
+	    {
+	  	Message myMessage;
+	  	String cityName,siteName,description;
+	  	ArrayList<Object> data = new ArrayList<Object>();
+	  	cityName=tfCitySearch.getText();
+	  	siteName=tfSiteSearch.getText();
+	  	description=tfDesSearch.getText();
+		  	if (cityName!=null)
+		  	{
+			         data.add("cityName");
+				     data.add(cityName);
+		  	}
+		  	else if(siteName!=null)
+			{
+				       	data.add("siteName");
+				       	data.add(siteName);
+			}
+		  	else if(description!=null) 
+			{
+				    	 data.add("description");
+			    	     data.add(description);
+			}
+		  	else
+		  	{
+		  		JOptionPane.showMessageDialog(null, "No paramaters were typed in.", "Error", JOptionPane.WARNING_MESSAGE);
+		  	}
+	  	myMessage = new Message(Action.SEARCH,data);
+		this.sendToServer(myMessage);
+	    }
+	catch(IOException e)
+		{
+			   JOptionPane.showMessageDialog(null,e.toString()+"Could not send message to server. Terminating client.", 
+			                  "Error", JOptionPane.WARNING_MESSAGE);
+					          //this.quit();
+		}
+    }
 
     
     @FXML
@@ -107,11 +107,11 @@ public class MainGUIController extends AbstractClient {
       try
       {
   	  Message myMessage;
-  	  String userName="", password;
+  	  String userName="",password;
   	  ArrayList<Object> data = new ArrayList<Object>();
       userName=tfUser.getText();
   	  password=pfPassword.getText();
-	  	  if((userName!=null) ||(password!=null))
+	  	  if((userName!=null)||(password!=null))
 		  	  {
 				      data.add(userName);
 				      data.add(password);
@@ -130,18 +130,35 @@ public class MainGUIController extends AbstractClient {
 	  }
     }
     
+//    @FXML
+//    void Search(ActionEvent event) {
+//        // handle the event here
+//    }
     @FXML
-    void Search(ActionEvent event) {
-        // handle the event here
-    }
-    @FXML
-    void download(ActionEvent event) {
+    void Download(ActionEvent event) {
         // handle the event here
     }
 
     @FXML
-    void show(ActionEvent event) {
+    void Show(ActionEvent event) {
         // handle the event here
+    }
+    
+    @FXML
+    void Logout(ActionEvent event) {
+    	 tfUser.setText("");
+     	  pfPassword.setText("");
+    	 tfUser.setVisible(true);
+    	   pfPassword.setVisible(true);
+    	   btnLogin.setVisible(true);
+    	   btnRegister.setVisible(true);
+    	   lblWelcome.setVisible(false);
+       	   btnLogout.setVisible(false);
+       	   
+    }
+    
+    @FXML
+    void Register(ActionEvent event) {
     }
     
     public void connectToServer() {
@@ -156,26 +173,53 @@ public class MainGUIController extends AbstractClient {
     @FXML 
     void initialize() 
     {
+ 	   lblWelcome.setVisible(false);
 
     }
 
 	@Override
 	protected void handleMessageFromServer(Object msg) {
 		Message currMsg = (Message)msg;
-		if (currMsg.getAction() == null) {
-			System.out.println("Null action retuned from server.");
-		}
-		switch (currMsg.getAction()) {
+	    switch (currMsg.getAction()) {
 		  case LOGIN:
-	      	// if((Integer)currMsg.getData().get(0) == 0) 
-		 
-	      		 System.out.println(((Client)currMsg.getData().get(1)).toString());
-	    	  break;
+			  if((Integer)currMsg.getData().get(0) == 0) { 
+		      	 //  System.out.println(((Client)currMsg.getData().get(1)).toString());
+		      	   tfUser.setVisible(false);
+		      	   pfPassword.setVisible(false);
+		      	   btnLogin.setVisible(false);
+		      	   btnRegister.setVisible(false);
+		      	   lblWelcome.setVisible(true);
+		       	   btnLogout.setVisible(true);
+		       	Permission permission =((User)currMsg.getData().get(1)).getPermission();
+		       	switch(permission) {
+		       	case CLIENT:
+		       		
+		       		break;
+		       	case EDITOR:
+		       		
+		       		break;
+		       	case MANAGING_EDITOR:
+		       		
+		       		break;
+		       	case CEO:
+		       		
+		       		break;
+		       	}
+			  } else {
+		      		// System.out.println((currMsg.getData().get(1)).toString());
+		      		 JOptionPane.showMessageDialog(null, "Incorrect username or password, please try again.", 
+			                  "", JOptionPane.INFORMATION_MESSAGE);
+		      		tfUser.setText("");
+		      		pfPassword.setText("");
+		      	 }
+		    	  break;
 		  case SEARCH:
 	      	 if((Integer)currMsg.getData().get(0) == 0) {
-	      		 //sendDataToGUI(currMsg);
-	      	     System.out.println("The message was sent to the gui");
+	      		System.out.println(((Map)currMsg.getData().get(1)).toString());
 	      	 }
+	      	 
+	      	 
+	      	 
 	      	 else {
 	      		// clientUI.display(currMsg.getData().get(1).toString() + "\n"
 	      			//	 + "The message was not sent to the gui.Please retry\"");
@@ -197,28 +241,56 @@ public class MainGUIController extends AbstractClient {
 	      		//	clientUI.display(currMsg.getData().get(1).toString() + "\n");
 	      		}
 	      	  break;
-		default:
-			System.out.println("No action handler defined");
-			break;
 		  }
 		
 	}
 
 		
-//		public void setTableViewForMapsSearchResult(ArrayList<Map> maps) {
-//			Platform.runLater(new Runnable() {
-//				@SuppressWarnings("unchecked")
-//				@Override
-//				public void run() {
-//			      	ObservableList<SearchTable> mapList = FXCollections.observableArrayList();
-//	      	        col_CityName.setCellValueFactory(new PropertyValueFactory<SearchTable,String>("cityName"));
-//	      	        col_SiteName.setCellValueFactory(new PropertyValueFactory<SearchTable,String>("siteName"));
-//	      	        col_DescName.setCellValueFactory(new PropertyValueFactory<SearchTable,String>("description"));
-//	      	        
-//	      	        SearchResultsTable.getColumns().addAll(col_CityName, col_SiteName, col_DescName);           
-//                    SearchResultsTable.setItems(mapList);
-//				}
-//			});
+		public void setTableViewForMapsSearchResult(ArrayList<Map> maps) {
+			Platform.runLater(new Runnable() {
+				@SuppressWarnings("unchecked")
+				@Override
+				public void run() {
+			      	ObservableList<SearchTable> mapList = FXCollections.observableArrayList();
+	      	        col_CityName.setCellValueFactory(new PropertyValueFactory<SearchTable,String>("cityName"));
+	      	        col_SiteName.setCellValueFactory(new PropertyValueFactory<SearchTable,String>("siteName"));
+	      	        col_DescName.setCellValueFactory(new PropertyValueFactory<SearchTable,String>("description"));
+	      	        
+	      	        SearchResultsTable.getColumns().addAll(col_CityName, col_SiteName, col_DescName);           
+                    SearchResultsTable.setItems(mapList);
+				}
+			});
+		}
+		/*
+		  public void windowClosing(WindowEvent e) {
+			  
+			          // if my Server exist
+			  
+			          if(server != null) {
+			  
+			              try {
+			  
+			                  server.stop();          // ask the server to close the conection
+			  
+			              }
+			  
+			              catch(Exception eClose) {
+			  
+			              }
+			  
+			              server = null;
+			  
+			          }
+			  
+			          // dispose the frame
+			  
+			          dispose();
+			  
+			          System.exit(0);
+			      }
+		  */
+		  
+
 }
 
 

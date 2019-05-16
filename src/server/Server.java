@@ -34,7 +34,7 @@ public class Server extends AbstractServer {
 				else {
 					replyMsg = UsersDB.getInstance().getUser(currMsg.getData());
 					if(((Integer)replyMsg.getData().get(0)) == 0)
-						client.setName(((User)currMsg.getData().get(1)).getUserName());
+						client.setName(currMsg.getData().get(0).toString());
 					
 					replyMsg.setAction(Action.LOGIN);
 				}
