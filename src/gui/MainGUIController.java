@@ -184,12 +184,11 @@ public class MainGUIController extends AbstractClient {
 	    	  break;
 		  case SEARCH:
 	      	// if((Integer)currMsg.getData().get(0) == 0) {
-	      		System.out.println(((Map)currMsg.getData().get(1)).toString());
-	      	 //}
-	      	 //else {
-	      		// clientUI.display(currMsg.getData().get(1).toString() + "\n"
-	      			//	 + "The message was not sent to the gui.Please retry\"");
-	      	 //}
+	      		System.out.println(((Map)currMsg.getData().get(0)).toString());
+//	      	 else {
+//	      		 clientUI.display(currMsg.getData().get(1).toString() + "\n"
+//	      				 + "The message was not sent to the gui.Please retry\"");
+//	      	 }
 	    	  break;
 		  case ADD_PURCHASE:
 	      	 if((Integer)currMsg.getData().get(0) == 0) {
@@ -218,6 +217,7 @@ public class MainGUIController extends AbstractClient {
 				@Override
 				public void run() {
 			      	ObservableList<SearchTable> mapList = FXCollections.observableArrayList();
+
 	      	        col_CityName.setCellValueFactory(new PropertyValueFactory<SearchTable,String>("cityName"));
 	      	        col_SiteName.setCellValueFactory(new PropertyValueFactory<SearchTable,String>("siteName"));
 	      	        col_DescName.setCellValueFactory(new PropertyValueFactory<SearchTable,String>("description"));
