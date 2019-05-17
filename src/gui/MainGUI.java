@@ -21,10 +21,11 @@ public void start(Stage primaryStage) throws IOException
     FXMLLoader loader=new FXMLLoader(getClass().getResource("/MainGUIScene.fxml"));
 	AnchorPane pane = loader.load();
     MainGUIController controller = loader.getController();
-    controller.setHost(InetAddress.getLocalHost().getHostAddress().toString());
-    controller.setPort(5555);
-    controller.openConnection();
-
+    GUIClient client = new GUIClient();
+    client.setHost(InetAddress.getLocalHost().getHostAddress().toString());
+    client.setPort(5555);
+    client.openConnection();
+    controller.setGUIClient(client);
     
 	Scene scene = new Scene(pane);
 	// setting the stage
