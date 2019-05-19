@@ -46,13 +46,13 @@ public class UsersDB {
 			// Add 0 to indicate success
 			data.add(new Integer(0));
 
-			return (new Message(Action.REGISTER, data));
 		} catch (SQLException e) {
 			// TODO: handle exception
 		}
 		catch (Exception e) {
 
 		}
+		return (new Message(Action.REGISTER, data));
 	}
 
 
