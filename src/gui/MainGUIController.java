@@ -30,9 +30,9 @@ import javafx.stage.Popup;
 
 import javax.swing.JOptionPane;//library for popup messages
 
-public class MainGUIController extends AbstractClient {
-//	MainGuiClient client;
+public class MainGUIController implements ControllerListener {
 	
+	GUIClient client;
 	
     @FXML private ResourceBundle resources;
     @FXML private URL location;
@@ -59,6 +59,11 @@ public class MainGUIController extends AbstractClient {
      * @param event
      * making the data to send to the server
      */
+    
+    void setGUIClient(GUIClient client) {
+    	this.client = client;
+    	client.addControllerListener(this);
+    }
     
     @FXML
     void Search(ActionEvent event) 
@@ -94,7 +99,7 @@ public class MainGUIController extends AbstractClient {
 		  	else
 		  	{
 		  		  	myMessage = new Message(Action.SEARCH,data);
-		  		  	this.sendToServer(myMessage);
+		  		  	client.sendToServer(myMessage);
 		  	}	
 //  		for(int i=0; i<data.size();i++)
 //  		{
@@ -127,7 +132,7 @@ public class MainGUIController extends AbstractClient {
 				      data.add(password);
 		  	  }
 			     myMessage = new Message(Action.LOGIN,data);
-			     this.sendToServer(myMessage);
+			     client.sendToServer(myMessage);
       }
 	  catch(IOException e)
 	  {
@@ -168,15 +173,6 @@ public class MainGUIController extends AbstractClient {
     @FXML
     void Register(ActionEvent event) {
     }
-    
-    public void connectToServer() {
-    	try {
-			this.openConnection();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    }
 
     @FXML 
     void initialize() 
@@ -184,8 +180,8 @@ public class MainGUIController extends AbstractClient {
  	   lblWelcome.setVisible(false);
     }
 
-	@Override
-	protected void handleMessageFromServer(Object msg) {
+    @Override
+    public void handleMessageFromServer(Object msg) {
 		Message currMsg = (Message)msg;
 	    switch (currMsg.getAction()) {
 		  case LOGIN:
