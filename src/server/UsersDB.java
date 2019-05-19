@@ -91,8 +91,7 @@ public class UsersDB {
 								rs.getString("username"),
 								rs.getString("email"),
 								Permission.valueOf(rs.getString("permission").toUpperCase()),
-								rs.getLong("telephone"),
-								rs.getInt("purchases"));	
+								rs.getLong("telephone"));	
 					}
 					else {
 						currUser = new Employee(
