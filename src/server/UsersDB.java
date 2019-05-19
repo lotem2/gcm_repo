@@ -22,23 +22,55 @@ public class UsersDB {
 		
 		return m_instance;
 	}
-	
-	// TODO: AddUser function
+
+	public Message AddUser(ArrayList<Object> params) {
+		// Variables
+		ArrayList<Object> data = new ArrayList<Object>();
+
+		try {
+			// Connect to DB
+			SQLController.Connect();
+
+			// Prepare statement to insert new user
+			String sql = "INSERT INTO Clients ('firstname', 'lastname', 'username', 'password', 'email'," +
+							"'permission', 'telephone') VALUES (?, ?, ?, ?, ? ,? ,?)";
+
+			// Execute sql query, get number of changed rows
+			int changedRows = SQLController.ExecuteUpdate(sql, params);
+
+			// Check if insert was successful - result should be greater than zero
+			if (changedRows == 0) {
+				 throw new Exception("User was not added successfully.");
+			}
+
+			// Add 0 to indicate success
+			data.add(new Integer(0));
+
+			return (new Message(Action.REGISTER, data));
+		} catch (SQLException e) {
+			// TODO: handle exception
+		}
+		catch (Exception e) {
+
+		}
+	}
+
+
 	public Message getUser(ArrayList<Object> params) {
 		// Variables
 		ArrayList<Object> data = new ArrayList<Object>();
 		ResultSet         rs   = null;
-				
+
 		try {
 			// Connect to DB
 			SQLController.Connect();
-								
+
 			// Prepare statement to get current client's details
 			String sql = "SELECT * FROM Clients WHERE username = ? AND password = ?";
-								
+
 			// Execute sql query, get results
 			rs = SQLController.ExecuteQuery(sql, params);
-					
+
 			// check if query succeeded
 			if(!rs.next()) {
 				throw new Exception("Client does not exist.");
@@ -46,7 +78,7 @@ public class UsersDB {
 			else {
 				data.add(new Integer(0)); // set query result as success
 				rs.beforeFirst();	// Moves cursor to the start of the result set	
-						
+
 				// Reads data
 				while (rs.next()) {
 					User currUser;
@@ -90,7 +122,7 @@ public class UsersDB {
 			// Disconnect DB
 			SQLController.Disconnect(rs);
 		}
-				
+
 		return new Message(null, data);
 	}
 }
