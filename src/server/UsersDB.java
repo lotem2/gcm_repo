@@ -33,7 +33,9 @@ public class UsersDB {
 
 			// Prepare statement to insert new user
 			String sql = "INSERT INTO Clients ('firstname', 'lastname', 'username', 'password', 'email'," +
-							"'permission', 'telephone') VALUES (?, ?, ?, ?, ? ,? ,?)";
+						"'permission', 'telephone', 'cardnumber', 'id', 'expirydate')" +
+						" VALUES (?, ?, ?, ?, ? ,? ,?, ?, ?, ?)";
+
 
 			// Execute sql query, get number of changed rows
 			int changedRows = SQLController.ExecuteUpdate(sql, params);
@@ -46,12 +48,20 @@ public class UsersDB {
 			// Add 0 to indicate success
 			data.add(new Integer(0));
 
-		} catch (SQLException e) {
-			// TODO: handle exception
+			}
+		catch (SQLException e) {
+			data.add(new Integer(1));
+			data.add("There was a problem with the SQL service.");
 		}
-		catch (Exception e) {
+		catch(Exception e) {
+			data.add(new Integer(1));
+			data.add(e.getMessage());
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(null);
+		}
 
-		}
 		return (new Message(Action.REGISTER, data));
 	}
 
@@ -91,7 +101,10 @@ public class UsersDB {
 								rs.getString("username"),
 								rs.getString("email"),
 								Permission.valueOf(rs.getString("permission").toUpperCase()),
-								rs.getLong("telephone"));	
+								rs.getLong("telephone"),
+								rs.getLong("cardnumber"),
+								rs.getLong("id"),
+								rs.getDate("expirydate").toLocalDate());
 					}
 					else {
 						currUser = new Employee(

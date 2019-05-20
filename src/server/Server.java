@@ -45,6 +45,9 @@ public class Server extends AbstractServer {
 				params.add(new Integer(0));
 				replyMsg = new Message(Action.LOGOUT, params);
 				break;
+			case REGISTER:
+				replyMsg = UsersDB.getInstance().AddUser(currMsg.getData());
+				break;
 			case SEARCH:
 				replyMsg = MapDB.getInstance().Search(currMsg.getData());
 				replyMsg.setAction(Action.SEARCH);
