@@ -32,7 +32,7 @@ public class UsersDB {
 			SQLController.Connect();
 
 			// Prepare statement to insert new user
-			String sql = "INSERT INTO Clients ('firstname', 'lastname', 'username', 'password', 'email'," +
+			String sql = "INSERT INTO Clients ('firstname', 'lastname', 'username', 'password', 'email', " +
 						"'permission', 'telephone', 'cardnumber', 'id', 'expirydate')" +
 						" VALUES (?, ?, ?, ?, ? ,? ,?, ?, ?, ?)";
 

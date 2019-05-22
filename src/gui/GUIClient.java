@@ -13,11 +13,11 @@ public class GUIClient extends AbstractClient {
 	String loginID;
 
 	List<ControllerListener> listeners = new ArrayList<>();
-	
+
 	public void addControllerListener(ControllerListener contollerListener) {
 		listeners.add(contollerListener);
 	}
-	
+
 	/**
 	 * This method handles all data that comes in from the server.
 	 *
