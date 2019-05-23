@@ -13,9 +13,15 @@ public class SiteDB {
 	// Variables
 	private static SiteDB m_instance = null;
 	
-	/* Constructor */
+	/**
+	 * Private constructor - prevent this object's creation 
+	 */
 	private SiteDB() {}
-	
+
+	/**
+	 * Returns a static instance of SiteDB object
+	 * @return SiteDB
+	 */
 	public static synchronized SiteDB getInstance() {
 		if (m_instance == null) {
 			m_instance = new SiteDB();
@@ -23,7 +29,12 @@ public class SiteDB {
 		
 		return m_instance;
 	}
-	
+
+	/**
+	 * Get Map's sites according to the map's name provided by the client
+	 * @param params - Contain {@link Action} type and the map's name of the requested map
+	 * @return {@link Message} - Contain {@link ArrayList} of the maps's sites or failure message
+	 */
 	public Message getSites(ArrayList<Object> params){
 		// Variables
 		ArrayList<Site>   sites = new ArrayList<Site>();
