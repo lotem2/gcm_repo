@@ -46,6 +46,9 @@ public class Server extends AbstractServer {
 			case REGISTER:
 				replyMsg = UsersDB.getInstance().AddUser(currMsg.getData());
 				break;
+			case EDIT_USER_DETAILS:
+				replyMsg = UsersDB.getInstance().EditUser(currMsg.getData());
+				break;
 			case SEARCH:
 				replyMsg = MapDB.getInstance().Search(currMsg.getData());
 				replyMsg.setAction(Action.SEARCH);
