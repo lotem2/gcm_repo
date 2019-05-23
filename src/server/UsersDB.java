@@ -11,10 +11,15 @@ public class UsersDB {
 	// Variables
 	private static UsersDB m_instance = null;
 	
-	/* Constructor */
+	/**
+	 * Private constructor - prevent this object's creation 
+	 */
 	private UsersDB() {}
 	
-	/* Getters */
+	/**
+	 * Returns a static instance of UsersDB object
+	 * @return UserDB
+	 */
 	public static synchronized UsersDB getInstance() {
 		if (m_instance == null) {
 			m_instance = new UsersDB();
@@ -23,6 +28,11 @@ public class UsersDB {
 		return m_instance;
 	}
 
+	/**
+	 * Add a new {@link User} to database
+	 * @param params - Contain {@link Action} type and details of the new user
+	 * @return {@link Message} - Indicating success/failure with corresponding message
+	 */
 	public Message AddUser(ArrayList<Object> params) {
 		// Variables
 		ArrayList<Object> data = new ArrayList<Object>();
@@ -65,7 +75,11 @@ public class UsersDB {
 		return (new Message(Action.REGISTER, data));
 	}
 
-
+	/**
+	 * Get {@link User} according to the user's name and password provided by the client
+	 * @param params - Contain {@link Action} type and the user's name of the requested user
+	 * @return {@link Message} - Indicating success/failure with corresponding message
+	 */
 	public Message getUser(ArrayList<Object> params) {
 		// Variables
 		ArrayList<Object> data = new ArrayList<Object>();
@@ -136,5 +150,52 @@ public class UsersDB {
 		}
 
 		return new Message(null, data);
+	}
+
+	/**
+	 * Edit a specific user's details 
+	 * @param params - Contain {@link Action} type, user name of the requested user and the new details
+	 * @return {@link Message} - Indicating success/failure with corresponding message
+	 */
+	public Message EditUser(ArrayList<Object> params) {
+		// Variables
+		ArrayList<Object> data = new ArrayList<Object>();
+
+		try {
+			// Connect to DB
+			SQLController.Connect();
+
+			// Prepare statement to insert new user
+			String sql = "UPDATE Clients SET firstname = ?, lastname = ?, username = ?, password = ?," +
+						" email = ?, permission = ?, telephone = ?, cardnumber = ?, id = ?, expirydate = ?" +
+						" WHERE username = ?";
+
+
+			// Execute sql query, get number of changed rows
+			int changedRows = SQLController.ExecuteUpdate(sql, params);
+
+			// Check if update was successful - result should be greater than zero
+			if (changedRows == 0) {
+				 throw new Exception("User was not added successfully.");
+			}
+
+			// Add 0 to indicate success
+			data.add(new Integer(0));
+
+			}
+		catch (SQLException e) {
+			data.add(new Integer(1));
+			data.add("There was a problem with the SQL service.");
+		}
+		catch(Exception e) {
+			data.add(new Integer(1));
+			data.add(e.getMessage());
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(null);
+		}
+
+		return (new Message(Action.EDIT_USER_DETAILS, data));
 	}
 }
