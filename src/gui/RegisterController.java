@@ -88,13 +88,13 @@ public class RegisterController implements ControllerListener {
 		try {
 			Message myMessage;
 			String firstName = null, lastName = null, userName = null, password = null, email = null,
-					permission = "CLEINT";
+					permission = "Client";
 			long telephone = 0L, cardNumber = 0L, id = 0L;
-			String expireDate, fullCardNum = tfCreditCard1.getText() + tfCreditCard2.getText()
+			String expiryDate, fullCardNum = tfCreditCard1.getText() + tfCreditCard2.getText()
 					+ tfCreditCard3.getText() + tfCreditCard4.getText();
+			LocalDate expireDate = null;
 
 			ArrayList<Object> data = new ArrayList<Object>();
-			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 			firstName = tfFirstName.getText();
 			lastName = tfLastName.getText();
@@ -106,18 +106,18 @@ public class RegisterController implements ControllerListener {
 			id = (tfIDNumber.getText().equals("")) ? 0L : Long.parseLong(tfIDNumber.getText());
 			
 			try {
-				expireDate = tfExpiryDate.getText();
+				expiryDate = tfExpiryDate.getText();
 				// Validate date is a valid string
-				expireDate= dtf.parse(expireDate).toString();
+				expireDate= LocalDate.parse(expiryDate);
 			} catch (Exception e) {
-				JOptionPane.showMessageDialog(null, "Date invalid - ", tfExpiryDate.getText(),
+				JOptionPane.showMessageDialog(null, "Date invalid - " + tfExpiryDate.getText(), "Registration error",
 						JOptionPane.INFORMATION_MESSAGE);
 				return;
 			}
 
 			if ((!userName.isBlank()) && (!firstName.isBlank()) && (!lastName.isBlank())
 					&& (!password.isBlank()) && (!email.isBlank())
-					&& (telephone != 0L) && (cardNumber != 0L) && (!expireDate.isBlank()) && (id != 0L)) {
+					&& (telephone != 0L) && (cardNumber != 0L) && (!expiryDate.isBlank()) && (id != 0L)) {
 				data.add(firstName);
 				data.add(lastName);
 				data.add(userName);
@@ -127,11 +127,11 @@ public class RegisterController implements ControllerListener {
 				data.add(telephone);
 				data.add(cardNumber);
 				data.add(id);
-				data.add(expireDate);
+				data.add(expiryDate);
 				myMessage = new Message(Action.REGISTER, data);
 				client.sendToServer(myMessage);
 			} else {
-				JOptionPane.showMessageDialog(null, "One or more of the fields are incorrect, please try again", "",
+				JOptionPane.showMessageDialog(null, "One or more fields are either incorrect or empty", "",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 			
