@@ -36,75 +36,45 @@ public class PurchaseDB {
 	 * @return {@link Message} - Indicating success/failure with corresponding message
 	 */
 	public Message AddPurchase(ArrayList<Object> params) {
-		// TODO: add purchase into Purchases table in DB
 		// Variables
-		Message msg  = new Message(Action.ADD_PURCHASE, new ArrayList<Object>());
-		ResultSet rs = null;
+		ArrayList<Object> data = new ArrayList<Object>();
+		ResultSet 		  rs   = null;
 		
 		try {
 			// Connect to DB
 			SQLController.Connect();
 			
 			// Prepare statement to get current client's purchase
-			String sql = "SELECT purchases FROM Clients WHERE username = ?";
+			String sql = "INSERT INTO Purchases (`userame`, `cityName`, `purchaseType`, `purchaseDate`," +
+						 " `expiryDate`, `renew`, `views`, `downloads`, `price`)" +
+						 " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			
-			// Execute sql query, get results
-			rs = SQLController.ExecuteQuery(sql, params);
-			
-			// check if query succeeded
-			if(!rs.next()) {
-				msg.getData().add(new Integer(1));
-				msg.getData().add(new String("Client does not exist."));
+			// Execute sql query, get number of changed rows
+			int changedRows = SQLController.ExecuteUpdate(sql, params);
+
+			// Check if insert was successful - result should be greater than zero
+			if (changedRows == 0) {
+				 throw new Exception("Purchase was not completed successfully.");
 			}
-			else {
-				int numOfPurchases = 0;	
-				rs.beforeFirst();	// Moves cursor to the start of the result set
-				
-				// Reads data 
-				while (rs.next()) {
-					numOfPurchases = rs.getInt("purchases");	
-				}
-				
-				// Adding another purchase
-				numOfPurchases++;
-				
-				// Updating the row with the new number	
-				sql = "UPDATE Clients SET purchases = ? WHERE username = ?";
-				ArrayList<Object> input = new ArrayList<Object>();
-				input.add(new Integer(numOfPurchases));
-				
-				// Add parameters for the prepared statement
-				for (Object obj : params) {
-					input.add(obj);
-				}
-				
-				// Execute update for the specific row
-				if(SQLController.ExecuteUpdate(sql, input) == 0) {
-					// Update failed, return 1 to indicate failure
-					msg.getData().add(new Integer(1));
-					msg.getData().add(new String("Add purchase was not successful"));
-				}
-				else {
-					// Update succeeded, return 0 to indicate success
-					msg.getData().add(new Integer(0));
-				}
+
+			// Add 0 to indicate success
+			data.add(new Integer(0));
+
 			}
-			
-			// Disconnect DB
-			SQLController.Disconnect(rs);
-			
-		} catch (Exception e) {
-			// Update failed, return 1 to indicate failure
-			msg.getData().add(new Integer(1));
-			msg.getData().add(e.getMessage());
+		catch (SQLException e) {
+			data.add(new Integer(1));
+			data.add("There was a problem with the SQL service.");
+		}
+		catch(Exception e) {
+			data.add(new Integer(1));
+			data.add(e.getMessage());
 		}
 		finally {
 			// Disconnect DB
-			SQLController.Disconnect(rs);
+			SQLController.Disconnect(null);
 		}
-		
-		// Return message
-		return msg;
+
+		return (new Message(Action.ADD_PURCHASE, data));
 	}
 
 	/**
@@ -144,7 +114,7 @@ public class PurchaseDB {
 							rs.getDate("expiryDate").toLocalDate(),
 							rs.getInt("renew"), 
 							rs.getInt("views"), 
-							rs.getInt("wownloads"), 
+							rs.getInt("downloads"), 
 							rs.getFloat("price"));
 
 					purchases.add(currPurchase);

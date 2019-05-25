@@ -5,15 +5,17 @@ import java.awt.Point;
 
 public class Site {
 	private String name;
+	private String cityname;
 	private Classification classification;
 	private String description;
 	private boolean isAccessible;
 	private float visitDuration;
 	private Point location;
 
-	public Site(String name, Classification classification, String description, boolean isAccessible, float visitTime,
+	public Site(String name, String cityname, Classification classification, String description, boolean isAccessible, float visitTime,
 			Point location) {
 		this.name = name;
+		this.cityname = cityname;
 		this.classification = classification;
 		this.description = description;
 		this.isAccessible = isAccessible;
@@ -29,6 +31,14 @@ public class Site {
 		this.name = name;
 	}
 
+	public String getcityName() {
+		return cityname;
+	}
+	
+	public void setcityName(String cityname) {
+		this.cityname = cityname;
+	}
+	
 	public Classification getClassification() {
 		return classification;
 	}
