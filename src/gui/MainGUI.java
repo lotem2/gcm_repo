@@ -17,9 +17,10 @@ import common.*;
 public class MainGUI extends Application {
 
 	static Stage MainsStage;
-
+ 
 	@Override
 	public void start(Stage primaryStage) throws IOException {
+		
 		this.MainsStage = primaryStage;
 		// Constructing our scene
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainGUIScene.fxml"));

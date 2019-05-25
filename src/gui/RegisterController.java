@@ -12,7 +12,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.time.LocalDate;
 
-
 import javax.swing.JOptionPane;
 
 import com.google.protobuf.TextFormat.ParseException;
@@ -23,6 +22,9 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -30,12 +32,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-
 public class RegisterController implements ControllerListener {
 
 	GUIClient client;
-
-
 
 	@FXML
 	private ResourceBundle resources;
@@ -75,6 +74,7 @@ public class RegisterController implements ControllerListener {
 	private TextField tfUserName;
 	@FXML
 	private TextField tfphone;
+	
 
 	void setGUIClient(GUIClient client) {
 		this.client = client;
@@ -89,8 +89,8 @@ public class RegisterController implements ControllerListener {
 			String firstName = null, lastName = null, userName = null, password = null, email = null,
 					permission = "Client";
 			long telephone = 0L, cardNumber = 0L, id = 0L;
-			String expiryDate, fullCardNum = tfCreditCard1.getText() + tfCreditCard2.getText()
-					+ tfCreditCard3.getText() + tfCreditCard4.getText();
+			String expiryDate, fullCardNum = tfCreditCard1.getText() + tfCreditCard2.getText() + tfCreditCard3.getText()
+					+ tfCreditCard4.getText();
 			LocalDate expireDate = null;
 
 			ArrayList<Object> data = new ArrayList<Object>();
@@ -107,16 +107,16 @@ public class RegisterController implements ControllerListener {
 			try {
 				expiryDate = tfExpiryDate.getText();
 				// Validate date is a valid string
-				expireDate= LocalDate.parse(expiryDate);
+				expireDate = LocalDate.parse(expiryDate);
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(null, "Date invalid - " + tfExpiryDate.getText(), "Registration error",
 						JOptionPane.INFORMATION_MESSAGE);
 				return;
 			}
 
-			if ((!userName.isBlank()) && (!firstName.isBlank()) && (!lastName.isBlank())
-					&& (!password.isBlank()) && (!email.isBlank())
-					&& (telephone != 0L) && (cardNumber != 0L) && (!expiryDate.isBlank()) && (id != 0L)) {
+			if ((!userName.isBlank()) && (!firstName.isBlank()) && (!lastName.isBlank()) && (!password.isBlank())
+					&& (!email.isBlank()) && (telephone != 0L) && (cardNumber != 0L) && (!expiryDate.isBlank())
+					&& (id != 0L)) {
 				data.add(firstName);
 				data.add(lastName);
 				data.add(userName);
@@ -150,13 +150,27 @@ public class RegisterController implements ControllerListener {
 	@Override
 	public void handleMessageFromServer(Object msg) {
 		Message currMsg = (Message) msg;
+		switch (currMsg.getAction()) {
+		case REGISTER:
 		if ((Integer) currMsg.getData().get(0) == 0) {
 			JOptionPane.showMessageDialog(null, "Registration completed successfully", "",
 					JOptionPane.INFORMATION_MESSAGE);
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/MainGUIScene.fxml"));
-			MainGUIController controller = loader.getController();
-			controller.setGUIClient(client);
-			Platform.exit();
+
+			Platform.runLater(() -> {
+				try {
+				    MainGUIController.RegisterStage.close();
+					FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/MainGUIScene.fxml"));
+					Parent root = (Parent) fxmlLoader.load();
+					Stage stage = new Stage();
+					stage.setScene(new Scene(root));
+					MainGUIController controller = fxmlLoader.getController();
+					controller.setGUIClient(client);
+					stage.show();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+
 		}
 
 		else {
@@ -164,5 +178,5 @@ public class RegisterController implements ControllerListener {
 					JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
-
+	}
 }

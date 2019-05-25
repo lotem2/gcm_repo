@@ -42,7 +42,7 @@ public class UsersDB {
 		String password = params.get(3).toString();
 		// Create a unique and random salt to the new user
 		byte[] salt = common.Jhash.Hash.randomSalt(24);
-		try {
+		try { 
 			hash = common.Jhash.Hash.createHash(password, salt);
 		}
 		catch (Exception e)	{

@@ -258,7 +258,7 @@ public AbstractClient() {
         handleMessageFromServer(msg);
       }
     }
-    catch (Exception exception)
+    catch (Exception exception) 
     {
     	exception.printStackTrace();
       if(!readyToStop)

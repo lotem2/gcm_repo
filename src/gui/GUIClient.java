@@ -26,7 +26,7 @@ public class GUIClient extends AbstractClient {
 	public void handleMessageFromServer(Object msg) {
 		for (ControllerListener listener : listeners) {
 			listener.handleMessageFromServer(msg);
-		}
+		} 
 	}
 
 	/**

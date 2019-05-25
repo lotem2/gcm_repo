@@ -20,7 +20,7 @@ public class Server extends AbstractServer {
 		Message currMsg = (Message) msg;
 		Message replyMsg = null;
 		ArrayList<Object> params;
-
+ 
 		try {
 			switch (currMsg.getAction()) {
 			case LOGIN:

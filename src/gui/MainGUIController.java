@@ -35,6 +35,9 @@ import javax.swing.JOptionPane;//library for popup messages
 
 public class MainGUIController implements ControllerListener {
 
+	public static Stage RegisterStage;
+
+
 	GUIClient client;
 
 	@FXML
@@ -158,14 +161,10 @@ public class MainGUIController implements ControllerListener {
 		}
 	}
 
-//    @FXML
-//    void Search(ActionEvent event) {
-//        // handle the event here
-//    }
 	@FXML
 	void Download(ActionEvent event) {
 		// handle the event here
-	}
+	} 
 
 	@FXML
 	void Show(ActionEvent event) {
@@ -190,11 +189,12 @@ public class MainGUIController implements ControllerListener {
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/RegisterScene.fxml"));
 			Parent root = (Parent) fxmlLoader.load();
 			Stage stage = new Stage();
+
 			stage.setScene(new Scene(root));
 
 			RegisterController controller = fxmlLoader.getController();
 			controller.setGUIClient(client);
-
+			this.RegisterStage = stage;
 			stage.show();
 		    MainGUI.MainsStage.close();
 		} catch (Exception e) {
@@ -204,7 +204,7 @@ public class MainGUIController implements ControllerListener {
 
 	@FXML
 	void initialize() {
-		lblWelcome.setVisible(false);
+		lblWelcome.setVisible(false); 
 	}
 
 	@Override
@@ -219,6 +219,7 @@ public class MainGUIController implements ControllerListener {
 				btnLogin.setVisible(false);
 				btnRegister.setVisible(false);
 				lblWelcome.setVisible(true);
+				
 				btnLogout.setVisible(true);
 				Permission permission = ((User) currMsg.getData().get(1)).getPermission();
 				switch (permission) {
