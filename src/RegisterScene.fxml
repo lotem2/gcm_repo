@@ -6,10 +6,10 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="btn" fx:id="RegisterWindow" prefHeight="833.0" prefWidth="738.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="gui.RegisterController">
+<AnchorPane id="btn" fx:id="RegisterWindow" prefHeight="833.0" prefWidth="738.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.RegisterController">
   <!-- TODO Add Nodes -->
   <children>
-    <Button layoutX="328.0" layoutY="724.0" mnemonicParsing="false" onAction="#Register" text="Register" />
+    <Button layoutX="266.0" layoutY="724.0" mnemonicParsing="false" onAction="#Register" text="Register" />
     <TextField fx:id="tfUserName" layoutX="329.0" layoutY="199.0" onAction="#Register" prefWidth="200.0" promptText="User Name" />
     <TextField fx:id="tfFirstName" layoutX="329.0" layoutY="246.0" onAction="#Register" prefWidth="200.0" promptText="First Name" />
     <TextField fx:id="tfLastName" layoutX="329.0" layoutY="289.0" onAction="#Register" prefWidth="200.0" promptText="Last Name" />
@@ -42,5 +42,6 @@
     </Label>
     <Text id="tfIDnumber" fx:id="lblExpiryDate" layoutX="418.0" layoutY="669.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Expiry Date:" />
     <TextField id="tfEmail" fx:id="tfExpiryDate" layoutX="508.0" layoutY="650.0" onAction="#Register" prefWidth="87.0" promptText="Expiry Date" />
+      <Button fx:id="btnCancel" layoutX="369.0" layoutY="724.0" mnemonicParsing="false" onAction="#Cancel" text="Cancel" />
   </children>
 </AnchorPane>

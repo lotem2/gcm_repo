@@ -36,6 +36,23 @@ public class RegisterController implements ControllerListener {
 
 	GUIClient client;
 
+	public void openMainScene() {
+		Platform.runLater(() -> {
+			try {
+				MainGUIController.RegisterStage.close();
+				FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/MainGUIScene.fxml"));
+				Parent root = (Parent) fxmlLoader.load();
+				Stage stage = new Stage();
+				stage.setScene(new Scene(root));
+				MainGUIController controller = fxmlLoader.getController();
+				controller.setGUIClient(client);
+				stage.show();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+	}
+
 	@FXML
 	private ResourceBundle resources;
 	@FXML
@@ -74,7 +91,6 @@ public class RegisterController implements ControllerListener {
 	private TextField tfUserName;
 	@FXML
 	private TextField tfphone;
-	
 
 	void setGUIClient(GUIClient client) {
 		this.client = client;
@@ -144,6 +160,11 @@ public class RegisterController implements ControllerListener {
 	}
 
 	@FXML
+	void Cancel(ActionEvent event) {
+		openMainScene();
+	}
+
+	@FXML
 	void initialize() {
 	}
 
@@ -152,31 +173,17 @@ public class RegisterController implements ControllerListener {
 		Message currMsg = (Message) msg;
 		switch (currMsg.getAction()) {
 		case REGISTER:
-		if ((Integer) currMsg.getData().get(0) == 0) {
-			JOptionPane.showMessageDialog(null, "Registration completed successfully", "",
-					JOptionPane.INFORMATION_MESSAGE);
+			if ((Integer) currMsg.getData().get(0) == 0) {
+				JOptionPane.showMessageDialog(null, "Registration completed successfully", "",
+						JOptionPane.INFORMATION_MESSAGE);
+				openMainScene();
+			}
 
-			Platform.runLater(() -> {
-				try {
-				    MainGUIController.RegisterStage.close();
-					FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/MainGUIScene.fxml"));
-					Parent root = (Parent) fxmlLoader.load();
-					Stage stage = new Stage();
-					stage.setScene(new Scene(root));
-					MainGUIController controller = fxmlLoader.getController();
-					controller.setGUIClient(client);
-					stage.show();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			});
-
-		}
-
-		else {
-			JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
-					JOptionPane.INFORMATION_MESSAGE);
+			else {
+				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
 		}
 	}
-	}
+
 }
