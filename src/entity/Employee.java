@@ -13,9 +13,9 @@ public class Employee extends User implements java.io.Serializable{
 	private final int m_id;
 	
 	/* Constructor */
-	public Employee(String first, String last, String password,String username, String role,
+	public Employee(String first, String last, String password, byte[] salt, String username, String role,
 			String email, Permission permission, int id) {
-		super(username, first, last, email, password, permission);
+		super(username, first, last, email, password, salt, permission);
 		m_role = role;
 		m_id = id;
 	}

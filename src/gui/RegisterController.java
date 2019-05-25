@@ -12,13 +12,12 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.time.LocalDate;
 
+
 import javax.swing.JOptionPane;
 
 import com.google.protobuf.TextFormat.ParseException;
 
-import common.Action;
-import common.Message;
-import common.Permission;
+import common.*;
 import entity.User;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -35,7 +34,7 @@ import javafx.stage.Stage;
 public class RegisterController implements ControllerListener {
 
 	GUIClient client;
-	
+
 
 
 	@FXML
@@ -104,7 +103,7 @@ public class RegisterController implements ControllerListener {
 			telephone = (tfphone.getText().isBlank()) ? 0L : Long.parseLong(tfphone.getText());
 			cardNumber = (fullCardNum.equals("")) ? 0L : Long.parseLong(fullCardNum);
 			id = (tfIDNumber.getText().equals("")) ? 0L : Long.parseLong(tfIDNumber.getText());
-			
+
 			try {
 				expiryDate = tfExpiryDate.getText();
 				// Validate date is a valid string
@@ -122,6 +121,7 @@ public class RegisterController implements ControllerListener {
 				data.add(lastName);
 				data.add(userName);
 				data.add(password);
+				data.add(0);
 				data.add(email);
 				data.add(permission);
 				data.add(telephone);
@@ -134,7 +134,7 @@ public class RegisterController implements ControllerListener {
 				JOptionPane.showMessageDialog(null, "One or more fields are either incorrect or empty", "",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
-			
+
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null,
 					e.toString() + " Could not send message to server.  Terminating client.", "Error",
@@ -157,13 +157,12 @@ public class RegisterController implements ControllerListener {
 			MainGUIController controller = loader.getController();
 			controller.setGUIClient(client);
 			Platform.exit();
-		} 
-		
+		}
+
 		else {
 			JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
 					JOptionPane.INFORMATION_MESSAGE);
 		}
-		
 	}
 
 }

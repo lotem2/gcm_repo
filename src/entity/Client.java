@@ -17,9 +17,9 @@ public class Client extends User implements java.io.Serializable{
 
 	
 	/* Constructor */
-	public Client(String first, String last, String password, String username,
+	public Client(String first, String last, String password, byte[] salt, String username,
 				  String email, Permission permission, long tel, long cardnumber, long id, LocalDate expirydate) {
-		super(username, first, last, email, password, permission);
+		super(username, first, last, email, password, salt, permission);
 		m_telephone = tel;
 		m_cardnumber = cardnumber;
 		m_id = id;
