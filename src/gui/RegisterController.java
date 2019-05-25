@@ -105,25 +105,35 @@ public class RegisterController implements ControllerListener {
 			String firstName = null, lastName = null, userName = null, password = null, email = null,
 					permission = "Client";
 			long telephone = 0L, cardNumber = 0L, id = 0L;
-			String expiryDate, fullCardNum = tfCreditCard1.getText() + tfCreditCard2.getText() + tfCreditCard3.getText()
-					+ tfCreditCard4.getText();
-			LocalDate expireDate = null;
+			String expiryDate;
 
 			ArrayList<Object> data = new ArrayList<Object>();
 
-			firstName = tfFirstName.getText();
-			lastName = tfLastName.getText();
-			userName = tfUserName.getText();
-			password = tfPassword.getText();
-			email = tfEmail.getText();
-			telephone = (tfphone.getText().isBlank()) ? 0L : Long.parseLong(tfphone.getText());
-			cardNumber = (fullCardNum.equals("")) ? 0L : Long.parseLong(fullCardNum);
-			id = (tfIDNumber.getText().equals("")) ? 0L : Long.parseLong(tfIDNumber.getText());
+			try {
+				String fullCardString = tfCreditCard1.getText() + tfCreditCard2.getText() + tfCreditCard3.getText()
+				+ tfCreditCard4.getText();
+				firstName = tfFirstName.getText();
+				lastName = tfLastName.getText();
+				userName = tfUserName.getText();
+				password = tfPassword.getText();
+				email = tfEmail.getText();
+				// verify all numbers have correct amount of digits.			
+				telephone = (tfphone.getText().isBlank() || tfphone.getText().length() <= 10) ?
+						Long.parseLong(tfphone.getText()) : 0L;
+				id = (tfIDNumber.getText().isBlank() || tfIDNumber.getText().length() <= 9) ?
+						Long.parseLong(tfIDNumber.getText()) : 0L;
+				cardNumber = (fullCardString.equals("") || fullCardString.length() >= 17) 
+						? 0L : Long.parseLong(fullCardString);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "One or more fields are either incorrect or empty", "",
+						JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}
 
 			try {
 				expiryDate = tfExpiryDate.getText();
 				// Validate date is a valid string
-				expireDate = LocalDate.parse(expiryDate);
+				LocalDate.parse(expiryDate);
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(null, "Date invalid - " + tfExpiryDate.getText(), "Registration error",
 						JOptionPane.INFORMATION_MESSAGE);
@@ -131,7 +141,7 @@ public class RegisterController implements ControllerListener {
 			}
 
 			if ((!userName.isBlank()) && (!firstName.isBlank()) && (!lastName.isBlank()) && (!password.isBlank())
-					&& (!email.isBlank()) && (telephone != 0L) && (cardNumber != 0L) && (!expiryDate.isBlank())
+					&& isValidEmail(email) && (telephone != 0L) && (cardNumber != 0L) && (!expiryDate.isBlank())
 					&& (id != 0L)) {
 				data.add(firstName);
 				data.add(lastName);
@@ -151,14 +161,17 @@ public class RegisterController implements ControllerListener {
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null,
 					e.toString() + " Could not send message to server.  Terminating client.", "Error",
 					JOptionPane.WARNING_MESSAGE);
-			// quit();
 		}
 	}
 
+	private boolean isValidEmail(String email) {
+		return email != null && email.contains("@") && email.lastIndexOf("@") != email.length() - 1;
+	}
+	
 	@FXML
 	void Cancel(ActionEvent event) {
 		openMainScene();
