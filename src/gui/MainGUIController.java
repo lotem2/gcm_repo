@@ -219,7 +219,9 @@ public class MainGUIController implements ControllerListener {
 				btnLogin.setVisible(false);
 				btnRegister.setVisible(false);
 				lblWelcome.setVisible(true);
-				
+				Platform.runLater(() -> {
+				lblWelcome.setText("Welcome " + ((Client)currMsg.getData().get(1)).getUserName() + "!");
+				});  
 				btnLogout.setVisible(true);
 				Permission permission = ((User) currMsg.getData().get(1)).getPermission();
 				switch (permission) {
