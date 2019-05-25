@@ -214,6 +214,7 @@ public class MainGUIController implements ControllerListener {
 		case LOGIN:
 			if ((Integer) currMsg.getData().get(0) == 0) {
 				// System.out.println(((Client)currMsg.getData().get(1)).toString());
+				GUIClient.currClient = ((Client)currMsg.getData().get(1));
 				tfUser.setVisible(false);
 				pfPassword.setVisible(false);
 				btnLogin.setVisible(false);

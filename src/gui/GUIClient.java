@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import client.AbstractClient;
+import entity.Client;
 
 public class GUIClient extends AbstractClient {
+	public static Client currClient;
 	/**
 	 * The Login ID of the user.
 	 */
