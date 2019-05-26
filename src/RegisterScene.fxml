@@ -6,42 +6,42 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane id="btn" fx:id="RegisterWindow" prefHeight="833.0" prefWidth="738.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.RegisterController">
+<AnchorPane id="btn" fx:id="RegisterWindow" prefHeight="775.0" prefWidth="700.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="gui.RegisterController">
   <!-- TODO Add Nodes -->
   <children>
-    <Button layoutX="266.0" layoutY="724.0" mnemonicParsing="false" onAction="#Register" text="Register" />
-    <TextField fx:id="tfUserName" layoutX="329.0" layoutY="199.0" onAction="#Register" prefWidth="200.0" promptText="User Name" />
-    <TextField fx:id="tfFirstName" layoutX="329.0" layoutY="246.0" onAction="#Register" prefWidth="200.0" promptText="First Name" />
-    <TextField fx:id="tfLastName" layoutX="329.0" layoutY="289.0" onAction="#Register" prefWidth="200.0" promptText="Last Name" />
-    <TextField fx:id="tfEmail" layoutX="329.0" layoutY="331.0" onAction="#Register" prefWidth="200.0" promptText="e-mail" />
-    <TextField id="tfEmail" fx:id="tfphone" layoutX="329.0" layoutY="371.0" onAction="#Register" prefWidth="200.0" promptText="Telephone" />
-    <PasswordField fx:id="tfPassword" layoutX="329.0" layoutY="410.0" onAction="#Register" prefWidth="200.0" promptText="Password" />
-    <Label fx:id="lblRegistrationForm" layoutX="184.0" layoutY="84.0" text="Registration Form">
+    <Button layoutX="263.0" layoutY="698.0" mnemonicParsing="false" onAction="#Register" prefHeight="27.0" prefWidth="80.0" text="Register" />
+    <TextField fx:id="tfUserName" layoutX="295.0" layoutY="164.0" onAction="#Register" prefWidth="200.0" promptText="User Name" />
+    <TextField fx:id="tfFirstName" layoutX="295.0" layoutY="211.0" onAction="#Register" prefWidth="200.0" promptText="First Name" />
+    <TextField fx:id="tfLastName" layoutX="295.0" layoutY="254.0" onAction="#Register" prefWidth="200.0" promptText="Last Name" />
+    <TextField fx:id="tfEmail" layoutX="295.0" layoutY="296.0" onAction="#Register" prefWidth="200.0" promptText="e-mail" />
+    <TextField id="tfEmail" fx:id="tfphone" layoutX="295.0" layoutY="336.0" onAction="#Register" prefWidth="200.0" promptText="Telephone" />
+    <PasswordField fx:id="tfPassword" layoutX="295.0" layoutY="375.0" onAction="#Register" prefWidth="200.0" promptText="Password" />
+    <Label fx:id="lblRegistrationForm" layoutX="150.0" layoutY="49.0" text="Registration Form">
       <font>
         <Font name="Arial" size="50.0" />
       </font>
     </Label>
-    <Text layoutX="230.0" layoutY="215.0" strokeType="OUTSIDE" strokeWidth="0.0" text="User Name:" />
-    <Text layoutX="230.0" layoutY="262.0" strokeType="OUTSIDE" strokeWidth="0.0" text="First Name:" />
-    <Text layoutX="230.0" layoutY="305.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Last Name:" />
-    <Text layoutX="230.0" layoutY="347.0" strokeType="OUTSIDE" strokeWidth="0.0" text="e-mail:" />
-    <Text layoutX="226.0" layoutY="429.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Password:" />
-    <Text layoutX="226.0" layoutY="390.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Telephone:" />
-    <Text id="lblCreditCard" fx:id="lblCardNumebr" layoutX="110.0" layoutY="624.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Card Numebr:" />
-    <TextField id="tfEmail" fx:id="tfCreditCard1" layoutX="209.0" layoutY="605.0" onAction="#Register" prefWidth="87.0" promptText="" />
-    <TextField id="tfEmail" fx:id="tfCreditCard2" layoutX="308.0" layoutY="605.0" onAction="#Register" prefWidth="87.0" promptText="" />
-    <TextField id="tfEmail" fx:id="tfCreditCard3" layoutX="408.0" layoutY="605.0" onAction="#Register" prefWidth="87.0" promptText="" />
-    <TextField id="tfEmail" fx:id="tfCreditCard4" layoutX="508.0" layoutY="605.0" onAction="#Register" prefWidth="87.0" promptText="" />
-    <Separator layoutX="-2.0" layoutY="481.0" prefWidth="740.0" />
-    <TextField id="tfEmail" fx:id="tfIDNumber" layoutX="209.0" layoutY="650.0" onAction="#Register" prefWidth="200.0" promptText="ID Number" />
-    <Text id="tfIDnumber" fx:id="lblIDnumber" layoutX="113.0" layoutY="669.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ID Number:" />
-    <Label layoutX="225.0" layoutY="508.0" text="Payment Details">
+    <Text layoutX="196.0" layoutY="180.0" strokeType="OUTSIDE" strokeWidth="0.0" text="User Name:" />
+    <Text layoutX="196.0" layoutY="227.0" strokeType="OUTSIDE" strokeWidth="0.0" text="First Name:" />
+    <Text layoutX="196.0" layoutY="270.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Last Name:" />
+    <Text layoutX="196.0" layoutY="312.0" strokeType="OUTSIDE" strokeWidth="0.0" text="e-mail:" />
+    <Text layoutX="192.0" layoutY="394.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Password:" />
+    <Text layoutX="192.0" layoutY="355.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Telephone:" />
+    <Text id="lblCreditCard" fx:id="lblCardNumebr" layoutX="94.0" layoutY="571.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Card Numebr:" />
+    <TextField id="tfEmail" fx:id="tfCreditCard1" layoutX="193.0" layoutY="552.0" onAction="#Register" prefWidth="87.0" promptText="" />
+    <TextField id="tfEmail" fx:id="tfCreditCard2" layoutX="292.0" layoutY="552.0" onAction="#Register" prefWidth="87.0" promptText="" />
+    <TextField id="tfEmail" fx:id="tfCreditCard3" layoutX="392.0" layoutY="552.0" onAction="#Register" prefWidth="87.0" promptText="" />
+    <TextField id="tfEmail" fx:id="tfCreditCard4" layoutX="492.0" layoutY="552.0" onAction="#Register" prefWidth="87.0" promptText="" />
+    <Separator layoutX="-4.0" layoutY="429.0" prefWidth="704.0" />
+    <TextField id="tfEmail" fx:id="tfIDNumber" layoutX="193.0" layoutY="597.0" onAction="#Register" prefWidth="200.0" promptText="ID Number" />
+    <Text id="tfIDnumber" fx:id="lblIDnumber" layoutX="97.0" layoutY="616.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ID Number:" />
+    <Label layoutX="209.0" layoutY="455.0" text="Payment Details">
       <font>
         <Font size="40.0" />
       </font>
     </Label>
-    <Text id="tfIDnumber" fx:id="lblExpiryDate" layoutX="418.0" layoutY="669.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Expiry Date:" />
-    <TextField id="tfEmail" fx:id="tfExpiryDate" layoutX="508.0" layoutY="650.0" onAction="#Register" prefWidth="87.0" promptText="Expiry Date" />
-      <Button fx:id="btnCancel" layoutX="369.0" layoutY="724.0" mnemonicParsing="false" onAction="#Cancel" text="Cancel" />
+    <Text id="tfIDnumber" fx:id="lblExpiryDate" layoutX="402.0" layoutY="616.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Expiry Date:" />
+    <TextField id="tfEmail" fx:id="tfExpiryDate" layoutX="492.0" layoutY="597.0" onAction="#Register" prefWidth="87.0" promptText="Expiry Date" />
+    <Button fx:id="btnCancel" layoutX="366.0" layoutY="698.0" mnemonicParsing="false" onAction="#Cancel" prefHeight="27.0" prefWidth="80.0" text="Cancel" />
   </children>
 </AnchorPane>
