@@ -29,9 +29,9 @@
         <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="140.0" text="Map description" fx:id="col_mapDescription" />
         <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="57.0" text="City" fx:id="col_city" />
         <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="128.0" text="City description" fx:id="col_cityDescription" />
-        <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="62.0" text="Price" fx:id="col_price" />
-        <TableColumn prefWidth="75.0" text="Version" fx:id="col_version" />
-        <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="120.0" text="Sites Number" fx:id="col_sitesNumber" />
+        <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="108.0" text="Sites Numebr" fx:id="col_sitesNumber" />
+        <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="78.0" text="Price" fx:id="col_price" />
+        <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="68.0" text="Version" fx:id="col_version" />
       </columns>
     </TableView>
   </children>
