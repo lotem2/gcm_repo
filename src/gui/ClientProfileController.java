@@ -13,6 +13,7 @@ import common.Message;
 import common.Permission;
 import entity.Client;
 import entity.User;
+import gui.MainGUI.SceneType;
 import entity.Map;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -120,31 +121,16 @@ GUIClient client;
     @FXML
     void LogOut(ActionEvent event) {
 		ArrayList<Object> data = new ArrayList<Object>();
-		String userName = GUIClient.currClient.getUserName();
+		String userName = MainGUI.currClient.getUserName();
 		data.add(userName);
-		Message myMessage = new Message(Action.LOGOUT,data);
+		Message myMessage = new Message(Action.LOGOUT, data);
 		try {
-			client.sendToServer(myMessage);
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/MainGUIScene.fxml"));
-			Parent root = (Parent) fxmlLoader.load();
-			Stage stage = new Stage();
-
-			stage.setScene(new Scene(root));
-			MainGUIController controller = fxmlLoader.getController();
-			MainGUI.MainsStage.setTitle("Global City Map");
-			stage.show();
-			MainGUIController.MyProfileStage.close();
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null,
-					e.toString() + "The log out failed.", "Error",
-					JOptionPane.WARNING_MESSAGE);
-		}		
+			MainGUI.GUIclient.sendToServer(myMessage);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		MainGUI.openScene(SceneType.MAIN_GUI);
     }
-
-    void setGUIClient(GUIClient client) {
-		this.client = client;
-		client.addControllerListener(this);
-	}
 
 	@FXML
 	void Save(ActionEvent event) {
@@ -156,7 +142,6 @@ GUIClient client;
 			String expiryDate;
 			String fullCardString = tfCreditCard1.getText() + tfCreditCard2.getText() + tfCreditCard3.getText()
 			+ tfCreditCard4.getText();
-			LocalDate expireDate = null;
 			ArrayList<Object> data = new ArrayList<Object>();
 			firstName = tfFirstName.getText();
 			lastName = tfLastName.getText();
@@ -173,7 +158,7 @@ GUIClient client;
 			try {
 				expiryDate = tfExpiryDate.getText();
 				// Validate date is a valid string
-				expireDate= LocalDate.parse(expiryDate);
+				LocalDate.parse(expiryDate);
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(null, "Date invalid - " + tfExpiryDate.getText(), "Update Information error",
 						JOptionPane.INFORMATION_MESSAGE);
@@ -215,23 +200,23 @@ GUIClient client;
 	@FXML
 	void initialize() {
 		//set the initial details of the user in the fields
-		lblWelcome.setText("Welcome " + GUIClient.currClient.getUserName() + "!");
-		String telephoneAsString = String.valueOf(GUIClient.currClient.getTelephone());
-		Permission permission = (GUIClient.currClient.getPermission());
+		lblWelcome.setText("Welcome " + MainGUI.currClient.getUserName() + "!");
+		String telephoneAsString = String.valueOf(MainGUI.currClient.getTelephone());
+		Permission permission = (MainGUI.currClient.getPermission());
 				switch(permission) 
 				{
 					case CLIENT:
 					{
-						tfUserName.setText(GUIClient.currClient.getUserName());
-						tfFirstName.setText(GUIClient.currClient.getFirstName());
-						tfLastName.setText(GUIClient.currClient.getLastName());
-						tfEmail.setText(GUIClient.currClient.getEmail());
+						tfUserName.setText(MainGUI.currClient.getUserName());
+						tfFirstName.setText(MainGUI.currClient.getFirstName());
+						tfLastName.setText(MainGUI.currClient.getLastName());
+						tfEmail.setText(MainGUI.currClient.getEmail());
 						tfphone.setText(telephoneAsString);
 						break;
 					}
 					case CEO:
 					{
-						lblMyProfile.setText(GUIClient.currClient.getUserName() + "'s Profile");
+						lblMyProfile.setText(MainGUI.currClient.getUserName() + "'s Profile");
 						tfUserName.setEditable(false);
 						tfFirstName.setEditable(false);
 						tfLastName.setEditable(false);
@@ -247,20 +232,7 @@ GUIClient client;
 
     @FXML
     void backToMainGUI(ActionEvent event) {
-		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/MainGUIScene.fxml"));
-			Parent root = (Parent) fxmlLoader.load();
-			Stage stage = new Stage();
-			stage.setScene(new Scene(root));
-			MainGUIController controller = fxmlLoader.getController();
-			controller.setGUIClient(client);
-			MainGUI.MainsStage.setTitle("Global City Map");
-			stage.show();
-			MainGUIController.MyProfileStage.close();
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "An error has occured", "",
-					JOptionPane.WARNING_MESSAGE);
-		}
+    	MainGUI.openScene(SceneType.MAIN_GUI);
     }
 
 	@Override

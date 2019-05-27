@@ -1,5 +1,6 @@
 package gui;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -10,6 +11,7 @@ import common.Action;
 import common.Message;
 import entity.Client;
 import entity.Map;
+import gui.MainGUI.SceneType;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -64,70 +66,32 @@ GUIClient client;
     @FXML
     void LogOut(ActionEvent event) {
 		ArrayList<Object> data = new ArrayList<Object>();
-		String userName = GUIClient.currClient.getUserName();
+		String userName = MainGUI.currClient.getUserName();
 		data.add(userName);
 		Message myMessage = new Message(Action.LOGOUT,data);
 		try {
-			client.sendToServer(myMessage);
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/MainGUIScene.fxml"));
-			Parent root = (Parent) fxmlLoader.load();
-			Stage stage = new Stage();
-
-			stage.setScene(new Scene(root));
-			MainGUIController controller = fxmlLoader.getController();
-			MainGUI.MainsStage.setTitle("Global City Map");
-			stage.show();
-			MainGUIController.ClientsManagementStage.close();
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null,
-					e.toString() + "An error has occured", "Error",
-					JOptionPane.WARNING_MESSAGE);
+			MainGUI.GUIclient.sendToServer(myMessage);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		MainGUI.openScene(SceneType.MAIN_GUI);
     }
 
     @FXML
     void backToMainGUI(ActionEvent event) {
-		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/MainGUIScene.fxml"));
-			Parent root = (Parent) fxmlLoader.load();
-			Stage stage = new Stage();
-
-			stage.setScene(new Scene(root));
-
-			ClientProfileController controller = fxmlLoader.getController();
-			controller.setGUIClient(client);
-			MainGUI.MainsStage.setTitle("Global City Map");
-			stage.show();
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null,
-					e.toString() + "An error has occured", "Error",
-					JOptionPane.WARNING_MESSAGE);
-		}
+		MainGUI.openScene(SceneType.MAIN_GUI);
     }
 
     @FXML
     void ShowDetails(ActionEvent event) {
-		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/ClientProfileScene.fxml"));
-			Parent root = (Parent) fxmlLoader.load();
-			Stage stage = new Stage();
-
-			stage.setScene(new Scene(root));
-
-			ClientProfileController controller = fxmlLoader.getController();
-			controller.setGUIClient(client);
-			stage.show();
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null,
-					e.toString() + "An error has occured", "Error",
-					JOptionPane.WARNING_MESSAGE);
-		}
+		MainGUI.openScene(MainGUI.SceneType.ClientProfile);
     }
 
     @FXML
     void initialize() {
     	//setTableViewForClients(clients);
-		lblWelcome.setText("Welcome " + GUIClient.currClient.getUserName() + "!");
+		lblWelcome.setText("Welcome " + MainGUI.currClient.getUserName() + "!");
     }
 
 	@Override
@@ -158,13 +122,6 @@ GUIClient client;
 		
 		
 	}
-
-    void setGUIClient(GUIClient client) {
-		this.client = client;
-		client.addControllerListener(this);
-	}
-    
-
      
 	public void setTableViewForClients(ArrayList<Client> clients) {
 		Platform.runLater(new Runnable() {

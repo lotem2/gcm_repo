@@ -27,12 +27,16 @@ public class MainGUI extends Application {
 		MAIN_GUI,
 		REGISTER,
 		BUY,
+		ClientProfile,
+		ClientsManagement,
 	}
 	
 	static final Map<SceneType, String> sceneMapping = Map.ofEntries(
 	    Map.entry(SceneType.MAIN_GUI, "/MainGUIScene.fxml"),
 	    Map.entry(SceneType.REGISTER, "/RegisterScene.fxml"),
-	    Map.entry(SceneType.BUY, "/BuyScene.fxml")
+	    Map.entry(SceneType.BUY, "/BuyScene.fxml"),
+	    Map.entry(SceneType.ClientProfile, "/ClientProfileScene.fxml"),
+	    Map.entry(SceneType.ClientsManagement, "/ClientManagementScene.fxml")
 	);
 	
 	static Stage MainStage;

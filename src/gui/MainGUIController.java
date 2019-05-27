@@ -52,30 +52,30 @@ public class MainGUIController implements ControllerListener {
 //	private TableColumn<SearchTable, String> col_DescName;
 //	@FXML
 //	private TableColumn<Map, String> col_SiteName;
-    @FXML
-    private TableColumn<Map, String> col_city;
-    @FXML
-    private TableColumn<Map, String> col_cityDescription;
-    @FXML
-    private TableColumn<Map, String> col_map;
-    @FXML
-    private TableColumn<Map, String> col_mapDescription;
-    @FXML
-    private TableColumn<Map, String> col_price;
-    @FXML
-    private TableColumn<Map, String> col_sitesNumber;
-    @FXML
-    private TableColumn<Map, String> col_version;
+	@FXML
+	private TableColumn<Map, String> col_city;
+	@FXML
+	private TableColumn<Map, String> col_cityDescription;
+	@FXML
+	private TableColumn<Map, String> col_map;
+	@FXML
+	private TableColumn<Map, String> col_mapDescription;
+	@FXML
+	private TableColumn<Map, String> col_price;
+	@FXML
+	private TableColumn<Map, String> col_sitesNumber;
+	@FXML
+	private TableColumn<Map, String> col_version;
 	@FXML
 	private Button btnDownload;
 	@FXML
 	private Button btnLogin;
 	@FXML
 	private Button btnLogout;
-    @FXML
-    private Button btnManage;
-    @FXML
-    private Button btnMyProfile;
+	@FXML
+	private Button btnManage;
+	@FXML
+	private Button btnMyProfile;
 	@FXML
 	private Button btnRegister;
 	@FXML
@@ -183,7 +183,7 @@ public class MainGUIController implements ControllerListener {
 		ArrayList<Object> data = new ArrayList<Object>();
 		String userName = MainGUI.currClient.getUserName();
 		data.add(userName);
-		Message myMessage = new Message(Action.LOGOUT,data);
+		Message myMessage = new Message(Action.LOGOUT, data);
 		try {
 			MainGUI.GUIclient.sendToServer(myMessage);
 			tfUser.setText("");
@@ -195,10 +195,8 @@ public class MainGUIController implements ControllerListener {
 			lblWelcome.setVisible(false);
 			btnLogout.setVisible(false);
 			btnMyProfile.setVisible(false);
-		}
-		catch(Exception e) {
-			JOptionPane.showMessageDialog(null,
-					e.toString() + "The log out failed.", "Error",
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.toString() + "The log out failed.", "Error",
 					JOptionPane.WARNING_MESSAGE);
 		}
 	}
@@ -207,51 +205,49 @@ public class MainGUIController implements ControllerListener {
 	void Register(ActionEvent event) {
 		MainGUI.openScene(MainGUI.SceneType.REGISTER);
 	}
-	
+
 	@FXML
 	void MyProfile(ActionEvent event) {
 		MainGUI.MainStage.setTitle("Global City Map - My Profile");
 		MainGUI.openScene(SceneType.ClientProfile);
 	}
-	
+
 	@FXML
 	void initialize() {
 	}
 
 	@Override
 	public void handleMessageFromServer(Object msg) {
+		try {
 		Message currMsg = (Message) msg;
-		MainGUI.currClient = (Client)currMsg.getData().get(1);
 		switch (currMsg.getAction()) {
 		case LOGIN:
 			if ((Integer) currMsg.getData().get(0) == 0) {
-				// System.out.println(((Client)currMsg.getData().get(1)).toString());
-				MainGUI.currUser = ((Client) currMsg.getData().get(1));
 				tfUser.setVisible(false);
 				pfPassword.setVisible(false);
 				btnLogin.setVisible(false);
 				btnRegister.setVisible(false);
-				Platform.runLater(() -> {
-					lblWelcome.setText("Welcome " + ((Client) currMsg.getData().get(1)).getUserName() + "!");
-				});
 				btnLogout.setVisible(true);
 				Permission permission = ((User) currMsg.getData().get(1)).getPermission();
 				switch (permission) {
-				case CLIENT:
-					MainGUI.currClient = (Client) MainGUI.currUser;
-					btnMyProfile.setVisible(true);
-					break;
-				case EDITOR:
-					MainGUI.currEmployee = (Employee) MainGUI.currUser;
-					break;
-				case MANAGING_EDITOR:
-					MainGUI.currEmployee = (Employee) MainGUI.currUser;
-					break;
-				case CEO:
-					MainGUI.currEmployee = (Employee) MainGUI.currUser;
-					btnManage.setVisible(true);
-					break;
+					case CLIENT:
+						MainGUI.currClient = (Client) currMsg.getData().get(1);
+						btnMyProfile.setVisible(true);
+						break;
+					case EDITOR:
+						MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
+						break;
+					case MANAGING_EDITOR:
+						MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
+						break;
+					case CEO:
+						MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
+						btnManage.setVisible(true);
+						break;
 				}
+				Platform.runLater(() -> {
+					lblWelcome.setText("Welcome " + ((User) currMsg.getData().get(1)).getUserName() + "!");
+				});
 			} else {
 				// System.out.println((currMsg.getData().get(1)).toString());
 				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
@@ -283,39 +279,39 @@ public class MainGUIController implements ControllerListener {
 			}
 			break;
 		}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 
-	public void setTableViewForMapsSearchResult(ArrayList<Map> maps) 
-	{
+	public void setTableViewForMapsSearchResult(ArrayList<Map> maps) {
 		Platform.runLater(new Runnable() {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void run() {
 				ObservableList<Map> mapsList = FXCollections.observableArrayList();
-				col_map.setCellValueFactory(new PropertyValueFactory<Map,String>("Map"));
-				col_mapDescription.setCellValueFactory(new PropertyValueFactory<Map,String>("mapDescription"));
-				col_city.setCellValueFactory(new PropertyValueFactory<Map,String>("city"));
-				col_cityDescription.setCellValueFactory(new PropertyValueFactory<Map,String>("cityDescription"));
-				col_price.setCellValueFactory(new PropertyValueFactory<Map,String>("price"));
-				col_version.setCellValueFactory(new PropertyValueFactory<Map,String>("version"));
-				col_sitesNumber.setCellValueFactory(new PropertyValueFactory<Map,String>("typeOfAccount"));
+				col_map.setCellValueFactory(new PropertyValueFactory<Map, String>("Map"));
+				col_mapDescription.setCellValueFactory(new PropertyValueFactory<Map, String>("mapDescription"));
+				col_city.setCellValueFactory(new PropertyValueFactory<Map, String>("city"));
+				col_cityDescription.setCellValueFactory(new PropertyValueFactory<Map, String>("cityDescription"));
+				col_price.setCellValueFactory(new PropertyValueFactory<Map, String>("price"));
+				col_version.setCellValueFactory(new PropertyValueFactory<Map, String>("version"));
+				col_sitesNumber.setCellValueFactory(new PropertyValueFactory<Map, String>("typeOfAccount"));
 
-				SearchResultsTable.getColumns().addAll(col_map, col_mapDescription, col_city,col_cityDescription,col_price,col_version,col_sitesNumber);
+				SearchResultsTable.getColumns().addAll(col_map, col_mapDescription, col_city, col_cityDescription,
+						col_price, col_version, col_sitesNumber);
 				SearchResultsTable.setItems(mapsList);
 			}
 		});
 	}
-	
 
-
-
-    @FXML
-    void Manage(ActionEvent event) {
+	@FXML
+	void Manage(ActionEvent event) {
 		MainGUI.MainStage.setTitle("Global City Map - Clients Management");
-    	MainGUI.openScene(SceneType.ClientsManagement);
-    }
-    
+		MainGUI.openScene(SceneType.ClientsManagement);
+	}
+
 	/*
 	 * public void windowClosing(WindowEvent e) {
 	 * 
