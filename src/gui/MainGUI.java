@@ -1,7 +1,7 @@
 package gui;
 
 import java.io.IOException;
-
+import java.util.HashMap;
 import java.util.Map;
 
 import javafx.application.Application;
@@ -31,13 +31,15 @@ public class MainGUI extends Application {
 		ClientsManagement,
 	}
 	
-	static final Map<SceneType, String> sceneMapping = Map.ofEntries(
+	static final Map<SceneType, String> sceneFxmlLocationMapping = Map.ofEntries(
 	    Map.entry(SceneType.MAIN_GUI, "/MainGUIScene.fxml"),
 	    Map.entry(SceneType.REGISTER, "/RegisterScene.fxml"),
 	    Map.entry(SceneType.BUY, "/BuyScene.fxml"),
 	    Map.entry(SceneType.ClientProfile, "/ClientProfileScene.fxml"),
 	    Map.entry(SceneType.ClientsManagement, "/ClientManagementScene.fxml")
 	);
+	
+	static final Map<SceneType, Scene> sceneMapping = new HashMap<>();
 	
 	static Stage MainStage;
 	static GUIClient GUIclient;
@@ -61,11 +63,21 @@ public class MainGUI extends Application {
 	}
 	
 	public static void openScene(SceneType sceneType) {
+		openScene(sceneType, false);
+	}
+	
+	public static void openScene(SceneType sceneType, boolean restorePreviousScene) {
 		Platform.runLater(() -> {
 			try {
-				FXMLLoader fxmlLoader = new FXMLLoader(MainGUI.class.getResource(sceneMapping.get(sceneType)));
+				FXMLLoader fxmlLoader = new FXMLLoader(MainGUI.class.getResource(sceneFxmlLocationMapping.get(sceneType)));
 				AnchorPane root = (AnchorPane) fxmlLoader.load();
-				Scene scene = new Scene(root);
+				Scene scene;
+				if ((restorePreviousScene || sceneType == SceneType.MAIN_GUI) && sceneMapping.get(sceneType) != null) {
+					scene =  sceneMapping.get(sceneType);
+				} else {
+					scene = new Scene(root);
+					sceneMapping.put(sceneType, scene);
+				}
 				MainGUI.MainStage.setScene(scene);
 				GUIclient.setCurrentControllerListener(fxmlLoader.getController());
 			} catch (Exception e) {
