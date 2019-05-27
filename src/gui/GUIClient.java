@@ -5,19 +5,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import client.AbstractClient;
-import entity.Client;
 
 public class GUIClient extends AbstractClient {
-	public static Client currClient;
 	/**
 	 * The Login ID of the user.
 	 */
 	String loginID;
 
-	List<ControllerListener> listeners = new ArrayList<>();
+	ControllerListener currListener;
 
-	public void addControllerListener(ControllerListener contollerListener) {
-		listeners.add(contollerListener);
+	public void setCurrentControllerListener(ControllerListener contollerListener) {
+		currListener = contollerListener;
 	}
 
 	/**
@@ -26,9 +24,15 @@ public class GUIClient extends AbstractClient {
 	 * @param msg The message from the server.
 	 */
 	public void handleMessageFromServer(Object msg) {
-		for (ControllerListener listener : listeners) {
-			listener.handleMessageFromServer(msg);
-		} 
+		try {
+			currListener.handleMessageFromServer(msg);
+		} catch (Exception e) {
+			System.out.println(e);
+			System.out.println(msg);
+			System.out.println(currListener);
+
+		}
+			
 	}
 
 	/**

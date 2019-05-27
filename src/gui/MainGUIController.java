@@ -35,11 +35,6 @@ import javax.swing.JOptionPane;//library for popup messages
 
 public class MainGUIController implements ControllerListener {
 
-	public static Stage RegisterStage;
-
-
-	GUIClient client;
-
 	@FXML
 	private ResourceBundle resources;
 	@FXML
@@ -69,6 +64,8 @@ public class MainGUIController implements ControllerListener {
 	@FXML
 	private Button btnShow;
 	@FXML
+	private Button btnBuy;
+	@FXML
 	private TextField tfUser;
 	@FXML
 	private PasswordField pfPassword;
@@ -86,12 +83,6 @@ public class MainGUIController implements ControllerListener {
 	/**
 	 * @param event making the data to send to the server
 	 */
-
-	void setGUIClient(GUIClient client) {
-		this.client = client;
-		client.addControllerListener(this);
-	}
-
 	@FXML
 	void Search(ActionEvent event) {
 		try {
@@ -119,7 +110,7 @@ public class MainGUIController implements ControllerListener {
 						JOptionPane.WARNING_MESSAGE);
 			} else {
 				myMessage = new Message(Action.SEARCH, data);
-				client.sendToServer(myMessage);
+				MainGUI.GUIclient.sendToServer(myMessage);
 			}
 //  		for(int i=0; i<data.size();i++)
 //  		{
@@ -152,7 +143,7 @@ public class MainGUIController implements ControllerListener {
 				pfPassword.setText("");
 			}
 			myMessage = new Message(Action.LOGIN, data);
-			client.sendToServer(myMessage);
+			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null,
 					e.toString() + " Could not send message to server.  Terminating client.", "Error",
@@ -162,9 +153,14 @@ public class MainGUIController implements ControllerListener {
 	}
 
 	@FXML
+	void Buy(ActionEvent event) {
+		MainGUI.openScene(MainGUI.SceneType.BUY);
+	}
+
+	@FXML
 	void Download(ActionEvent event) {
 		// handle the event here
-	} 
+	}
 
 	@FXML
 	void Show(ActionEvent event) {
@@ -181,30 +177,27 @@ public class MainGUIController implements ControllerListener {
 		btnRegister.setVisible(true);
 		lblWelcome.setVisible(false);
 		btnLogout.setVisible(false);
-	}
-
-	@FXML
-	void Register(ActionEvent event) {
+		Message myMessage;
+		ArrayList<Object> data = new ArrayList<Object>();
+		data.add(0);
 		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/RegisterScene.fxml"));
-			Parent root = (Parent) fxmlLoader.load();
-			Stage stage = new Stage();
-
-			stage.setScene(new Scene(root));
-
-			RegisterController controller = fxmlLoader.getController();
-			controller.setGUIClient(client);
-			this.RegisterStage = stage;
-			stage.show();
-		    MainGUI.MainsStage.close();
-		} catch (Exception e) {
-			e.printStackTrace();
+			myMessage = new Message(Action.LOGOUT, data);
+			MainGUI.GUIclient.sendToServer(myMessage);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null,
+					e.toString() + " Could not send message to server.  Terminating client.", "Error",
+					JOptionPane.WARNING_MESSAGE);
 		}
 	}
 
 	@FXML
+	void Register(ActionEvent event) {
+		MainGUI.openScene(MainGUI.SceneType.REGISTER);
+	}
+
+	@FXML
 	void initialize() {
-		lblWelcome.setVisible(false); 
+		lblWelcome.setVisible(false);
 	}
 
 	@Override
@@ -214,29 +207,29 @@ public class MainGUIController implements ControllerListener {
 		case LOGIN:
 			if ((Integer) currMsg.getData().get(0) == 0) {
 				// System.out.println(((Client)currMsg.getData().get(1)).toString());
-				GUIClient.currClient = ((Client)currMsg.getData().get(1));
+				MainGUI.currUser = ((Client) currMsg.getData().get(1));
 				tfUser.setVisible(false);
 				pfPassword.setVisible(false);
 				btnLogin.setVisible(false);
 				btnRegister.setVisible(false);
 				lblWelcome.setVisible(true);
 				Platform.runLater(() -> {
-				lblWelcome.setText("Welcome " + ((Client)currMsg.getData().get(1)).getUserName() + "!");
-				});  
+					lblWelcome.setText("Welcome " + ((Client) currMsg.getData().get(1)).getUserName() + "!");
+				});
 				btnLogout.setVisible(true);
 				Permission permission = ((User) currMsg.getData().get(1)).getPermission();
 				switch (permission) {
 				case CLIENT:
-
+					MainGUI.currClient = (Client) MainGUI.currUser;
 					break;
 				case EDITOR:
-
+					MainGUI.currEmployee = (Employee) MainGUI.currUser;
 					break;
 				case MANAGING_EDITOR:
-
+					MainGUI.currEmployee = (Employee) MainGUI.currUser;
 					break;
 				case CEO:
-
+					MainGUI.currEmployee = (Employee) MainGUI.currUser;
 					break;
 				}
 			} else {

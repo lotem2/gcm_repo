@@ -33,26 +33,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class RegisterController implements ControllerListener {
-
-	GUIClient client;
-
-	public void openMainScene() {
-		Platform.runLater(() -> {
-			try {
-				MainGUIController.RegisterStage.close();
-				FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/MainGUIScene.fxml"));
-				Parent root = (Parent) fxmlLoader.load();
-				Stage stage = new Stage();
-				stage.setScene(new Scene(root));
-				MainGUIController controller = fxmlLoader.getController();
-				controller.setGUIClient(client);
-				stage.show();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
-	}
-
+	
 	@FXML
 	private ResourceBundle resources;
 	@FXML
@@ -91,11 +72,6 @@ public class RegisterController implements ControllerListener {
 	private TextField tfUserName;
 	@FXML
 	private TextField tfphone;
-
-	void setGUIClient(GUIClient client) {
-		this.client = client;
-		client.addControllerListener(this);
-	}
 
 	@FXML
 	void Register(ActionEvent event) {
@@ -155,7 +131,7 @@ public class RegisterController implements ControllerListener {
 				data.add(id);
 				data.add(expiryDate);
 				myMessage = new Message(Action.REGISTER, data);
-				client.sendToServer(myMessage);
+				MainGUI.GUIclient.sendToServer(myMessage);
 			} else {
 				JOptionPane.showMessageDialog(null, "One or more fields are either incorrect or empty", "",
 						JOptionPane.INFORMATION_MESSAGE);
@@ -174,7 +150,7 @@ public class RegisterController implements ControllerListener {
 	
 	@FXML
 	void Cancel(ActionEvent event) {
-		openMainScene();
+		MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
 	}
 
 	@FXML
@@ -189,7 +165,7 @@ public class RegisterController implements ControllerListener {
 			if ((Integer) currMsg.getData().get(0) == 0) {
 				JOptionPane.showMessageDialog(null, "Registration completed successfully", "",
 						JOptionPane.INFORMATION_MESSAGE);
-				openMainScene();
+				MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
 			}
 
 			else {
