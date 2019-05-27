@@ -16,6 +16,11 @@ public class Message implements java.io.Serializable{
         this.action = action;
         this.data = data;
     }
+    
+//    public Message(Action action) {
+//        super();
+//        this.action = action;
+//    }
  
     public Action getAction() {
         return action;
