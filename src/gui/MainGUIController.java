@@ -246,7 +246,9 @@ public class MainGUIController implements ControllerListener {
 						break;
 				}
 				Platform.runLater(() -> {
-					lblWelcome.setText("Welcome " + ((User) currMsg.getData().get(1)).getUserName() + "!");
+					String name = ((User) currMsg.getData().get(1)).getUserName();
+					System.out.println("#@!$@#!@" + name);
+					lblWelcome.setText("Welcome " + name + "!");
 				});
 			} else {
 				// System.out.println((currMsg.getData().get(1)).toString());

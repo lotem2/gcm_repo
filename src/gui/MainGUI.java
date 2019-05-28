@@ -12,6 +12,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.util.Pair;
+
 import java.net.InetAddress;
 import java.awt.Label;
 import java.io.*;
@@ -39,14 +41,13 @@ public class MainGUI extends Application {
 	    Map.entry(SceneType.ClientsManagement, "/ClientManagementScene.fxml")
 	);
 	
-	static final Map<SceneType, Scene> sceneMapping = new HashMap<>();
+	static final Map<SceneType, Pair<Scene, ControllerListener>> sceneMapping = new HashMap<>();
 	
 	static Stage MainStage;
 	static GUIClient GUIclient;
+	
 	static Client currClient;
-
 	public static Employee currEmployee;
-
 	public static User currUser;
  
 	@Override
@@ -69,17 +70,20 @@ public class MainGUI extends Application {
 	public static void openScene(SceneType sceneType, boolean restorePreviousScene) {
 		Platform.runLater(() -> {
 			try {
-				FXMLLoader fxmlLoader = new FXMLLoader(MainGUI.class.getResource(sceneFxmlLocationMapping.get(sceneType)));
-				AnchorPane root = (AnchorPane) fxmlLoader.load();
-				Scene scene;
-				if ((restorePreviousScene || sceneType == SceneType.MAIN_GUI) && sceneMapping.get(sceneType) != null) {
-					scene =  sceneMapping.get(sceneType);
+				Pair<Scene, ControllerListener> sceneController;
+				if ((restorePreviousScene || sceneType == SceneType.MAIN_GUI) &&
+						sceneMapping.get(sceneType) != null) {
+					sceneController = sceneMapping.get(sceneType);
 				} else {
-					scene = new Scene(root);
-					sceneMapping.put(sceneType, scene);
+					FXMLLoader fxmlLoader = new FXMLLoader(
+							MainGUI.class.getResource(sceneFxmlLocationMapping.get(sceneType)));
+					AnchorPane root = (AnchorPane) fxmlLoader.load();
+					sceneController = new Pair<Scene, ControllerListener>(
+							new Scene(root), fxmlLoader.getController());
+					sceneMapping.put(sceneType, sceneController);
 				}
-				MainGUI.MainStage.setScene(scene);
-				GUIclient.setCurrentControllerListener(fxmlLoader.getController());
+				GUIclient.setCurrentControllerListener(sceneController.getValue());
+				MainGUI.MainStage.setScene(sceneController.getKey());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
