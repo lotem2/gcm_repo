@@ -192,9 +192,12 @@ public class MainGUIController implements ControllerListener {
 			pfPassword.setVisible(true);
 			btnLogin.setVisible(true);
 			btnRegister.setVisible(true);
-			lblWelcome.setVisible(false);
 			btnLogout.setVisible(false);
 			btnMyProfile.setVisible(false);
+			Platform.runLater(() -> {
+			lblWelcome.setText("Welcome");
+			});
+
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e.toString() + "The log out failed.", "Error",
 					JOptionPane.WARNING_MESSAGE);
@@ -247,7 +250,6 @@ public class MainGUIController implements ControllerListener {
 				}
 				Platform.runLater(() -> {
 					String name = ((User) currMsg.getData().get(1)).getUserName();
-					System.out.println("#@!$@#!@" + name);
 					lblWelcome.setText("Welcome " + name + "!");
 				});
 			} else {
@@ -257,6 +259,9 @@ public class MainGUIController implements ControllerListener {
 				tfUser.setText("");
 				pfPassword.setText("");
 			}
+			break;
+		case LOGOUT:
+		//	lblWelcome.setText("Welcome");
 			break;
 		case SEARCH:
 			// if((Integer)currMsg.getData().get(0) == 0) {
