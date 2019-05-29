@@ -1,16 +1,21 @@
 package gui;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.swing.JOptionPane;
 
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -22,34 +27,26 @@ import entity.Client;
 import entity.Employee;
 import entity.User;
 
-
 public class MainGUI extends Application {
 
 	enum SceneType {
-		MAIN_GUI,
-		REGISTER,
-		BUY,
-		ClientProfile,
-		ClientsManagement,
+		MAIN_GUI, REGISTER, BUY, ClientProfile, ClientsManagement,
 	}
-	
+
 	static final Map<SceneType, String> sceneFxmlLocationMapping = Map.ofEntries(
-	    Map.entry(SceneType.MAIN_GUI, "/MainGUIScene.fxml"),
-	    Map.entry(SceneType.REGISTER, "/RegisterScene.fxml"),
-	    Map.entry(SceneType.BUY, "/BuyScene.fxml"),
-	    Map.entry(SceneType.ClientProfile, "/ClientProfileScene.fxml"),
-	    Map.entry(SceneType.ClientsManagement, "/ClientManagementScene.fxml")
-	);
-	
+			Map.entry(SceneType.MAIN_GUI, "/MainGUIScene.fxml"), Map.entry(SceneType.REGISTER, "/RegisterScene.fxml"),
+			Map.entry(SceneType.BUY, "/BuyScene.fxml"), Map.entry(SceneType.ClientProfile, "/ClientProfileScene.fxml"),
+			Map.entry(SceneType.ClientsManagement, "/ClientManagementScene.fxml"));
+
 	static final Map<SceneType, Pair<Scene, ControllerListener>> sceneMapping = new HashMap<>();
-	
+
 	static Stage MainStage;
 	static GUIClient GUIclient;
-	
+
 	static Client currClient;
 	public static Employee currEmployee;
 	public static User currUser;
- 
+
 	@Override
 	public void start(Stage primaryStage) throws IOException {
 		MainGUI.MainStage = primaryStage;
@@ -59,27 +56,25 @@ public class MainGUI extends Application {
 		GUIclient.openConnection();
 		primaryStage.setTitle("Global City Map");
 		openScene(SceneType.MAIN_GUI);
-		
+
 		primaryStage.show();
 	}
-	
+
 	public static void openScene(SceneType sceneType) {
 		openScene(sceneType, false);
 	}
-	
+
 	public static void openScene(SceneType sceneType, boolean restorePreviousScene) {
 		Platform.runLater(() -> {
 			try {
 				Pair<Scene, ControllerListener> sceneController;
-				if ((restorePreviousScene || sceneType == SceneType.MAIN_GUI) &&
-						sceneMapping.get(sceneType) != null) {
+				if ((restorePreviousScene || sceneType == SceneType.MAIN_GUI) && sceneMapping.get(sceneType) != null) {
 					sceneController = sceneMapping.get(sceneType);
 				} else {
 					FXMLLoader fxmlLoader = new FXMLLoader(
 							MainGUI.class.getResource(sceneFxmlLocationMapping.get(sceneType)));
 					AnchorPane root = (AnchorPane) fxmlLoader.load();
-					sceneController = new Pair<Scene, ControllerListener>(
-							new Scene(root), fxmlLoader.getController());
+					sceneController = new Pair<Scene, ControllerListener>(new Scene(root), fxmlLoader.getController());
 					sceneMapping.put(sceneType, sceneController);
 				}
 				GUIclient.setCurrentControllerListener(sceneController.getValue());
@@ -90,10 +85,24 @@ public class MainGUI extends Application {
 		});
 	}
 
-    //final public static int DEFAULT_PORT = 5555;
+	public static void closeOnX() {
+		ArrayList<Object> data = new ArrayList<Object>();
+		String userName = MainGUI.currClient.getUserName();
+		data.add(userName);
+		Message myMessage = new Message(Action.DISCONNECT, data);
+		try {
+			MainGUI.GUIclient.sendToServer(myMessage);
+
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.toString() + "The log out failed.", "Error",
+					JOptionPane.WARNING_MESSAGE);
+		}
+	}
+
+	// final public static int DEFAULT_PORT = 5555;
 	public static void main(String[] args) {
 		launch(args);
-		
+
 	}
 
 }

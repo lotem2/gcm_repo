@@ -195,13 +195,18 @@ public class MainGUIController implements ControllerListener {
 			btnLogout.setVisible(false);
 			btnMyProfile.setVisible(false);
 			Platform.runLater(() -> {
-			lblWelcome.setText("Welcome");
+				lblWelcome.setText("Welcome");
 			});
 
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e.toString() + "The log out failed.", "Error",
 					JOptionPane.WARNING_MESSAGE);
 		}
+	}
+
+	@FXML
+	public void stopButtonAction(ActionEvent e) {
+		MainGUI.closeOnX();
 	}
 
 	@FXML
@@ -222,17 +227,17 @@ public class MainGUIController implements ControllerListener {
 	@Override
 	public void handleMessageFromServer(Object msg) {
 		try {
-		Message currMsg = (Message) msg;
-		switch (currMsg.getAction()) {
-		case LOGIN:
-			if ((Integer) currMsg.getData().get(0) == 0) {
-				tfUser.setVisible(false);
-				pfPassword.setVisible(false);
-				btnLogin.setVisible(false);
-				btnRegister.setVisible(false);
-				btnLogout.setVisible(true);
-				Permission permission = ((User) currMsg.getData().get(1)).getPermission();
-				switch (permission) {
+			Message currMsg = (Message) msg;
+			switch (currMsg.getAction()) {
+			case LOGIN:
+				if ((Integer) currMsg.getData().get(0) == 0) {
+					tfUser.setVisible(false);
+					pfPassword.setVisible(false);
+					btnLogin.setVisible(false);
+					btnRegister.setVisible(false);
+					btnLogout.setVisible(true);
+					Permission permission = ((User) currMsg.getData().get(1)).getPermission();
+					switch (permission) {
 					case CLIENT:
 						MainGUI.currClient = (Client) currMsg.getData().get(1);
 						btnMyProfile.setVisible(true);
@@ -247,46 +252,48 @@ public class MainGUIController implements ControllerListener {
 						MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
 						btnManage.setVisible(true);
 						break;
+					default:
+
+					}
+					Platform.runLater(() -> {
+						String name = ((User) currMsg.getData().get(1)).getUserName();
+						lblWelcome.setText("Welcome " + name + "!");
+					});
+				} else {
+					// System.out.println((currMsg.getData().get(1)).toString());
+					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
+							JOptionPane.INFORMATION_MESSAGE);
+					tfUser.setText("");
+					pfPassword.setText("");
 				}
-				Platform.runLater(() -> {
-					String name = ((User) currMsg.getData().get(1)).getUserName();
-					lblWelcome.setText("Welcome " + name + "!");
-				});
-			} else {
-				// System.out.println((currMsg.getData().get(1)).toString());
-				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
-						JOptionPane.INFORMATION_MESSAGE);
-				tfUser.setText("");
-				pfPassword.setText("");
-			}
-			break;
-		case LOGOUT:
-		//	lblWelcome.setText("Welcome");
-			break;
-		case SEARCH:
-			// if((Integer)currMsg.getData().get(0) == 0) {
-			System.out.println(((Map) currMsg.getData().get(0)).toString());
+				break;
+			case LOGOUT:
+
+				break;
+			case SEARCH:
+				// if((Integer)currMsg.getData().get(0) == 0) {
+				System.out.println(((Map) currMsg.getData().get(0)).toString());
 //	      	 else {
 //	      		 clientUI.display(currMsg.getData().get(1).toString() + "\n"
 //	      				 + "The message was not sent to the gui.Please retry\"");
 //	      	 }
-			break;
-		case ADD_PURCHASE:
-			if ((Integer) currMsg.getData().get(0) == 0) {
-				// clientUI.display("Purchase added successfully\n");
-			} else {
-				// clientUI.display(currMsg.getData().get(1).toString() + "\n");
+				break;
+			case ADD_PURCHASE:
+				if ((Integer) currMsg.getData().get(0) == 0) {
+					// clientUI.display("Purchase added successfully\n");
+				} else {
+					// clientUI.display(currMsg.getData().get(1).toString() + "\n");
+				}
+				break;
+			case SHOW_CLIENT_DETAILS:
+				if ((Integer) currMsg.getData().get(0) == 0) {
+					// clientUI.display(currMsg.getData().get(1).toString());
+				} else {
+					// clientUI.display(currMsg.getData().get(1).toString() + "\n");
+				}
+				break;
 			}
-			break;
-		case SHOW_CLIENT_DETAILS:
-			if ((Integer) currMsg.getData().get(0) == 0) {
-				// clientUI.display(currMsg.getData().get(1).toString());
-			} else {
-				// clientUI.display(currMsg.getData().get(1).toString() + "\n");
-			}
-			break;
-		}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -318,7 +325,7 @@ public class MainGUIController implements ControllerListener {
 		MainGUI.MainStage.setTitle("Global City Map - Clients Management");
 		MainGUI.openScene(SceneType.ClientsManagement);
 	}
-	
+
 	/*
 	 * public void windowClosing(WindowEvent e) {
 	 * 
