@@ -2,10 +2,6 @@ package gui;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-
-import javax.swing.JOptionPane;
-
-import common.Message;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -16,7 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
 
-public class BuyController implements ControllerListener {
+public class BuyController  implements ControllerListener {
 
     @FXML
     private ResourceBundle resources;
@@ -49,16 +45,25 @@ public class BuyController implements ControllerListener {
     private Label lblCityName;
 
     @FXML
+    private Label lblDiscount;
+
+    @FXML
     private Label lblPurchase;
 
     @FXML
     private Label lblSubsriptionChoice;
 
     @FXML
+    private Label lblTo;
+
+    @FXML
     private Label lblTotalPrice;
 
     @FXML
     private Label lblfrom;
+
+    @FXML
+    private Label lblprice;
 
     @FXML
     private RadioButton rbBuyOnce;
@@ -71,6 +76,12 @@ public class BuyController implements ControllerListener {
 
     @FXML
     private TextField tfCityName;
+
+    @FXML
+    private TextField tfFrom;
+
+    @FXML
+    private TextField tfTo;
 
 
     @FXML
@@ -103,17 +114,24 @@ public class BuyController implements ControllerListener {
         assert lblCityChoice != null : "fx:id=\"lblCityChoice\" was not injected: check your FXML file 'BuyScene.fxml'.";
         assert lblCityDescription != null : "fx:id=\"lblCityDescription\" was not injected: check your FXML file 'BuyScene.fxml'.";
         assert lblCityName != null : "fx:id=\"lblCityName\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert lblDiscount != null : "fx:id=\"lblDiscount\" was not injected: check your FXML file 'BuyScene.fxml'.";
         assert lblPurchase != null : "fx:id=\"lblPurchase\" was not injected: check your FXML file 'BuyScene.fxml'.";
         assert lblSubsriptionChoice != null : "fx:id=\"lblSubsriptionChoice\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert lblTo != null : "fx:id=\"lblTo\" was not injected: check your FXML file 'BuyScene.fxml'.";
         assert lblTotalPrice != null : "fx:id=\"lblTotalPrice\" was not injected: check your FXML file 'BuyScene.fxml'.";
         assert lblfrom != null : "fx:id=\"lblfrom\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert lblprice != null : "fx:id=\"lblprice\" was not injected: check your FXML file 'BuyScene.fxml'.";
         assert rbBuyOnce != null : "fx:id=\"rbBuyOnce\" was not injected: check your FXML file 'BuyScene.fxml'.";
         assert rbSubsrciption != null : "fx:id=\"rbSubsrciption\" was not injected: check your FXML file 'BuyScene.fxml'.";
         assert tfCityDescription != null : "fx:id=\"tfCityDescription\" was not injected: check your FXML file 'BuyScene.fxml'.";
         assert tfCityName != null : "fx:id=\"tfCityName\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert tfFrom != null : "fx:id=\"tfFrom\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert tfTo != null : "fx:id=\"tfTo\" was not injected: check your FXML file 'BuyScene.fxml'.";
 
 
     }
+
+
 
 	@Override
 	public void handleMessageFromServer(Object msg) {
