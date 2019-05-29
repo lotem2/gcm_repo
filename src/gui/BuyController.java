@@ -1,67 +1,115 @@
 package gui;
 
-import java.io.IOException;
-import java.io.Serializable;
 import java.net.URL;
-import java.util.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Locale;
 import java.util.ResourceBundle;
-import java.time.LocalDate;
-
-import javax.swing.JOptionPane;
-
-import com.google.protobuf.TextFormat.ParseException;
-
-import common.*;
-import entity.User;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.PasswordField;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
 
-public class BuyController implements ControllerListener {
 
-	@FXML
-	private Button btnBuy;
+public class BuyController {
 
-	@FXML
-	void Buy(ActionEvent event) {
-	}
+    @FXML
+    private ResourceBundle resources;
 
-	@FXML
-	void initialize() {
-	}
+    @FXML
+    private URL location;
 
-	@Override
-	public void handleMessageFromServer(Object msg) {
-		Message currMsg = (Message) msg;
-		switch (currMsg.getAction()) {
-		case REGISTER:
-			if ((Integer) currMsg.getData().get(0) == 0) {
-				JOptionPane.showMessageDialog(null, "Registration completed successfully", "",
-						JOptionPane.INFORMATION_MESSAGE);
-				MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
-			}
+    @FXML
+    private AnchorPane BuyWindow;
 
-			else {
-				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
-						JOptionPane.INFORMATION_MESSAGE);
-			}
-		}
-	}
+    @FXML
+    private ChoiceBox<?> CoiceBoxCities;
+
+    @FXML
+    private Button btnBackToMain;
+
+    @FXML
+    private Button btnBuy;
+
+    @FXML
+    private Button btnLogOut;
+
+    @FXML
+    private Label lblCityChoice;
+
+    @FXML
+    private Label lblCityDescription;
+
+    @FXML
+    private Label lblCityName;
+
+    @FXML
+    private Label lblPurchase;
+
+    @FXML
+    private Label lblSubsriptionChoice;
+
+    @FXML
+    private Label lblTotalPrice;
+
+    @FXML
+    private Label lblfrom;
+
+    @FXML
+    private RadioButton rbBuyOnce;
+
+    @FXML
+    private RadioButton rbSubsrciption;
+
+    @FXML
+    private TextField tfCityDescription;
+
+    @FXML
+    private TextField tfCityName;
+
+
+    @FXML
+    void Buy(ActionEvent event) {
+    }
+
+    @FXML
+    void LogOut(ActionEvent event) {
+    }
+
+    @FXML
+    void backToMainGUI(ActionEvent event) {
+    }
+
+    @FXML
+    void tfCityDescription(ActionEvent event) {
+    }
+
+    @FXML
+    void tfCityName(ActionEvent event) {
+    }
+
+    @FXML
+    void initialize() {
+        assert BuyWindow != null : "fx:id=\"BuyWindow\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert CoiceBoxCities != null : "fx:id=\"CoiceBoxCities\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert btnBackToMain != null : "fx:id=\"btnBackToMain\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert btnBuy != null : "fx:id=\"btnBuy\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert btnLogOut != null : "fx:id=\"btnLogOut\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert lblCityChoice != null : "fx:id=\"lblCityChoice\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert lblCityDescription != null : "fx:id=\"lblCityDescription\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert lblCityName != null : "fx:id=\"lblCityName\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert lblPurchase != null : "fx:id=\"lblPurchase\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert lblSubsriptionChoice != null : "fx:id=\"lblSubsriptionChoice\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert lblTotalPrice != null : "fx:id=\"lblTotalPrice\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert lblfrom != null : "fx:id=\"lblfrom\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert rbBuyOnce != null : "fx:id=\"rbBuyOnce\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert rbSubsrciption != null : "fx:id=\"rbSubsrciption\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert tfCityDescription != null : "fx:id=\"tfCityDescription\" was not injected: check your FXML file 'BuyScene.fxml'.";
+        assert tfCityName != null : "fx:id=\"tfCityName\" was not injected: check your FXML file 'BuyScene.fxml'.";
+
+
+    }
+
 
 }

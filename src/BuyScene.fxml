@@ -1,14 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import javafx.scene.paint.*?>
 <?import java.lang.*?>
+<?import javafx.collections.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.BuyController">
-   <children>
-      <Button fx:id="btnBuy" layoutX="-389.0" layoutY="-67.0" mnemonicParsing="false" onAction="#Buy" text="Buy" />
-   </children>
+<AnchorPane fx:id="BuyWindow" prefHeight="775.0" prefWidth="700.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="gui.BuyController">
+  <children>
+    <Button fx:id="btnBuy" layoutX="305.0" layoutY="691.0" mnemonicParsing="false" onAction="#Buy" prefHeight="27.0" prefWidth="80.0" text="Buy" />
+    <RadioButton id="rb" fx:id="rbBuyOnce" layoutX="331.0" layoutY="244.0" mnemonicParsing="false" onAction="#Buy" selected="true" text="One-time Subsription" />
+    <RadioButton fx:id="rbSubsrciption" layoutX="331.0" layoutY="318.0" mnemonicParsing="false" onAction="#Buy" text="Subscription" />
+    <Label fx:id="lblPurchase" layoutX="53.0" layoutY="34.0" text="Maps Purchase">
+      <font>
+        <Font size="60.0" />
+      </font>
+    </Label>
+    <Label id="lblWelcome" layoutX="515.0" layoutY="16.0" text="Welcome" />
+    <Button id="btnMain" fx:id="btnBackToMain" layoutX="513.0" layoutY="60.0" mnemonicParsing="false" onAction="#backToMainGUI" prefHeight="27.0" prefWidth="80.0" text="Catalog" />
+    <Button fx:id="btnLogOut" layoutX="600.0" layoutY="60.0" mnemonicParsing="false" onAction="#LogOut" prefHeight="27.0" prefWidth="80.0" text="Log Out" />
+    <TextField layoutX="380.0" layoutY="370.0" prefWidth="107.0" />
+    <TextField layoutX="539.0" layoutY="370.0" prefWidth="107.0" />
+    <Label fx:id="lblfrom" layoutX="331.0" layoutY="373.0" text="From:" />
+    <Label id="lblfrom" layoutX="511.0" layoutY="373.0" text="To:" />
+    <Label fx:id="lblTotalPrice" layoutX="111.0" layoutY="618.0" text="Total Price:">
+      <font>
+        <Font size="30.0" />
+      </font>
+    </Label>
+    <ChoiceBox fx:id="CoiceBoxCities" layoutX="34.0" layoutY="208.0" prefWidth="212.0">
+      <items>
+        <FXCollections fx:factory="observableArrayList">
+          <String fx:value="Item 1" />
+          <String fx:value="Item 2" />
+          <String fx:value="Item 3" />
+        </FXCollections>
+      </items>
+    </ChoiceBox>
+    <Label id="lblCityCohice" fx:id="lblCityChoice" layoutX="35.0" layoutY="181.0" text="Choose a city:">
+      <font>
+        <Font name="System Bold" size="15.0" fx:id="x1" />
+      </font>
+    </Label>
+    <Label fx:id="lblCityName" layoutX="35.0" layoutY="272.0" text="City Name:" />
+    <Label fx:id="lblCityDescription" layoutX="36.0" layoutY="360.0" text="City Description:" />
+    <TextField fx:id="tfCityName" editable="false" layoutX="35.0" layoutY="302.0" onAction="#tfCityName" prefWidth="212.0" promptText="City Name" text="" />
+    <TextField fx:id="tfCityDescription" alignment="TOP_LEFT" editable="false" layoutX="35.0" layoutY="393.0" onAction="#tfCityDescription" prefHeight="87.0" prefWidth="212.0" promptText="City Description" />
+    <Label fx:id="lblSubsriptionChoice" font="$x1" layoutX="331.0" layoutY="185.0" text="Choose the type of subscription:" />
+    <Separator layoutX="280.0" layoutY="137.0" orientation="VERTICAL" prefHeight="419.0" />
+  </children>
 </AnchorPane>
