@@ -318,7 +318,7 @@ public class MainGUIController implements ControllerListener {
 		MainGUI.MainStage.setTitle("Global City Map - Clients Management");
 		MainGUI.openScene(SceneType.ClientsManagement);
 	}
-
+	
 	/*
 	 * public void windowClosing(WindowEvent e) {
 	 * 

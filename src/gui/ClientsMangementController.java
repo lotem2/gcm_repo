@@ -57,8 +57,8 @@ GUIClient client;
     private Button btnLogOut;
     @FXML
     private Button btnMain;
-    @FXML
-    private Button btnShowDetails;
+//    @FXML
+////    private Button btnShowDetails;
     @FXML
     private Label lblWelcome;
 
@@ -83,10 +83,10 @@ GUIClient client;
 		MainGUI.openScene(SceneType.MAIN_GUI);
     }
 
-    @FXML
-    void ShowDetails(ActionEvent event) {
-		MainGUI.openScene(MainGUI.SceneType.ClientProfile);
-    }
+//    @FXML
+//    void ShowDetails(ActionEvent event) {
+//		MainGUI.openScene(MainGUI.SceneType.ClientProfile);
+//    }
 
     @FXML
     void initialize() {
