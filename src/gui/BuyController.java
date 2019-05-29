@@ -2,6 +2,10 @@ package gui;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import javax.swing.JOptionPane;
+
+import common.Message;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -12,7 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
 
-public class BuyController {
+public class BuyController implements ControllerListener {
 
     @FXML
     private ResourceBundle resources;
@@ -111,5 +115,9 @@ public class BuyController {
 
     }
 
+	@Override
+	public void handleMessageFromServer(Object msg) {
+	
+	}
 
 }
