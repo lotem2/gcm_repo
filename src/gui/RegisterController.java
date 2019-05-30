@@ -152,11 +152,6 @@ public class RegisterController implements ControllerListener {
 	void Cancel(ActionEvent event) {
 		MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
 	}
-
-	@FXML
-	public void stopButtonAction(ActionEvent e) {
-		MainGUI.closeOnX();
-	}
 	
 	@FXML
 	void initialize() {

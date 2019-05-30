@@ -186,27 +186,10 @@ public class MainGUIController implements ControllerListener {
 		Message myMessage = new Message(Action.LOGOUT, data);
 		try {
 			MainGUI.GUIclient.sendToServer(myMessage);
-			tfUser.setText("");
-			pfPassword.setText("");
-			tfUser.setVisible(true);
-			pfPassword.setVisible(true);
-			btnLogin.setVisible(true);
-			btnRegister.setVisible(true);
-			btnLogout.setVisible(false);
-			btnMyProfile.setVisible(false);
-			Platform.runLater(() -> {
-				lblWelcome.setText("Welcome");
-			});
-
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e.toString() + "The log out failed.", "Error",
+			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message", "Error",
 					JOptionPane.WARNING_MESSAGE);
 		}
-	}
-
-	@FXML
-	public void stopButtonAction(ActionEvent e) {
-		MainGUI.closeOnX();
 	}
 
 	@FXML
@@ -268,7 +251,24 @@ public class MainGUIController implements ControllerListener {
 				}
 				break;
 			case LOGOUT:
-
+				try {
+					tfUser.setText("");
+					pfPassword.setText("");
+					tfUser.setVisible(true);
+					pfPassword.setVisible(true);
+					btnLogin.setVisible(true);
+					btnRegister.setVisible(true);
+					btnLogout.setVisible(false);
+					btnMyProfile.setVisible(false);
+					Platform.runLater(() -> {
+						lblWelcome.setText("Welcome");
+					});
+					JOptionPane.showMessageDialog(null, "Disconnected successfully", "",
+							JOptionPane.DEFAULT_OPTION);
+				} catch (Exception e) {
+					JOptionPane.showMessageDialog(null, e.toString() + "The log out failed.", "Error",
+							JOptionPane.WARNING_MESSAGE);
+				}
 				break;
 			case SEARCH:
 				// if((Integer)currMsg.getData().get(0) == 0) {
@@ -292,6 +292,8 @@ public class MainGUIController implements ControllerListener {
 					// clientUI.display(currMsg.getData().get(1).toString() + "\n");
 				}
 				break;
+				default:
+					
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

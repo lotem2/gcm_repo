@@ -59,6 +59,13 @@ public class MainGUI extends Application {
 
 		primaryStage.show();
 	}
+	
+	@Override
+	public void stop(){
+		MainGUI.GUIclient.quit();
+
+	}
+
 
 	public static void openScene(SceneType sceneType) {
 		openScene(sceneType, false);
@@ -85,19 +92,6 @@ public class MainGUI extends Application {
 		});
 	}
 
-	public static void closeOnX() {
-		ArrayList<Object> data = new ArrayList<Object>();
-		String userName = MainGUI.currClient.getUserName();
-		data.add(userName);
-		Message myMessage = new Message(Action.DISCONNECT, data);
-		try {
-			MainGUI.GUIclient.sendToServer(myMessage);
-
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e.toString() + "The log out failed.", "Error",
-					JOptionPane.WARNING_MESSAGE);
-		}
-	}
 
 	// final public static int DEFAULT_PORT = 5555;
 	public static void main(String[] args) {
