@@ -9,7 +9,7 @@
 <AnchorPane id="btn" fx:id="ClientProfileWindow" prefHeight="775.0" prefWidth="700.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="gui.ClientProfileController">
   <!-- TODO Add Nodes -->
   <children>
-    <Label id="lblUpdateInformationForm" fx:id="lblMyProfile" layoutX="22.0" layoutY="32.0" text="My Profile">
+    <Label id="lblUpdateInformationForm" fx:id="lblMyProfile" layoutX="12.0" layoutY="49.0" text="My Profile">
       <font>
         <Font name="Arial" size="50.0" />
       </font>
@@ -80,9 +80,8 @@
         </Tab>
       </tabs>
     </TabPane>
-    <Label fx:id="lblWelcome" layoutX="512.0" layoutY="14.0" text="Welcome" />
-    <Button fx:id="btnMain" layoutX="510.0" layoutY="58.0" mnemonicParsing="false" onAction="#backToMainGUI" prefHeight="27.0" prefWidth="80.0" text="Catalog" />
-    <Button fx:id="btnLogOut" layoutX="597.0" layoutY="58.0" mnemonicParsing="false" onAction="#LogOut" prefHeight="27.0" prefWidth="80.0" text="Log Out" />
+    <Label fx:id="lblWelcome" layoutX="528.0" layoutY="14.0" text="Welcome" />
+    <Button fx:id="btnMain" layoutX="526.0" layoutY="58.0" mnemonicParsing="false" onAction="#backToMainGUI" prefHeight="27.0" prefWidth="80.0" text="Catalog" />
     <Button fx:id="btnSave" layoutX="597.0" layoutY="723.0" mnemonicParsing="false" onAction="#Save" prefHeight="27.0" prefWidth="80.0" text="Save" />
   </children>
 </AnchorPane>

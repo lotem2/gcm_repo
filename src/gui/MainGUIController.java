@@ -66,6 +66,10 @@ public class MainGUIController implements ControllerListener {
 	private TableColumn<Map, String> col_sitesNumber;
 	@FXML
 	private TableColumn<Map, String> col_version;
+    @FXML
+    private Button btnControl;
+    @FXML
+    private Button btnEditMaps;
 	@FXML
 	private Button btnDownload;
 	@FXML
@@ -327,7 +331,23 @@ public class MainGUIController implements ControllerListener {
 		MainGUI.MainStage.setTitle("Global City Map - Clients Management");
 		MainGUI.openScene(SceneType.ClientsManagement);
 	}
+//<<<<<<< HEAD
+    @FXML
+    void EditMaps(ActionEvent event) {
+		MainGUI.MainStage.setTitle("Global City Map - Edit Tool");
+		MainGUI.openScene(SceneType.Edit);
+    }
+    @FXML
+    void UserList(ActionEvent event) {
+		MainGUI.MainStage.setTitle("Global City Map - UserList");
+		MainGUI.openScene(SceneType.ClientsManagement);
+    }
+	
+	
+	
+//=======
 
+//>>>>>>> branch 'master' of https://github.com/lotem2/gcm_repo
 	/*
 	 * public void windowClosing(WindowEvent e) {
 	 * 

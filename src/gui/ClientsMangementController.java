@@ -54,29 +54,12 @@ GUIClient client;
     @FXML
     private TableColumn<Client, String> col_UserName;
     @FXML
-    private Button btnLogOut;
-    @FXML
     private Button btnMain;
 //    @FXML
 ////    private Button btnShowDetails;
     @FXML
     private Label lblWelcome;
 
-
-    @FXML
-    void LogOut(ActionEvent event) {
-		ArrayList<Object> data = new ArrayList<Object>();
-		String userName = MainGUI.currClient.getUserName();
-		data.add(userName);
-		Message myMessage = new Message(Action.LOGOUT,data);
-		try {
-			MainGUI.GUIclient.sendToServer(myMessage);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		MainGUI.openScene(SceneType.MAIN_GUI);
-    }
 
     @FXML
     void backToMainGUI(ActionEvent event) {
