@@ -1,5 +1,7 @@
 package server;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.ResultSet;
 
 import java.sql.SQLException;
@@ -191,15 +193,24 @@ public class UsersDB {
 	 */
 	public Message EditUser(ArrayList<Object> params) {
 		// Variables
-		ArrayList<Object> data = new ArrayList<Object>();
+		ArrayList<Object> data 	   = new ArrayList<Object>();
+		String 			  password = params.get(3).toString();
+		byte[] 			  salt 	   = params.get(4).toString().getBytes();
+		String 			  hash	   = "";
 
-		try {
+		try { 
+			hash = common.Jhash.Hash.createHash(password, salt);
+
+			//Add hashed password and user's unique salt to params.
+			params.set(3, hash);
+			params.set(4, salt);
+
 			// Connect to DB
 			SQLController.Connect();
 
 			// Prepare statement to insert new user
-			String sql = "UPDATE Clients SET firstname = ?, lastname = ?, username = ?, password = ?," +
-						" email = ?, permission = ?, telephone = ?, cardnumber = ?, id = ?, expirydate = ?" +
+			String sql = "UPDATE Clients SET firstname = ?, lastname = ?, username = ?, password = ?, salt = ?" +
+						" ,email = ?, permission = ?, telephone = ?, cardnumber = ?, id = ?, expirydate = ?" +
 						" WHERE username = ?";
 
 
@@ -218,6 +229,10 @@ public class UsersDB {
 		catch (SQLException e) {
 			data.add(new Integer(1));
 			data.add("There was a problem with the SQL service.");
+		}
+		catch(InvalidKeySpecException|NoSuchAlgorithmException e) { // JHash exception's handling
+			data.add(new Integer(1));
+			data.add("Producing hashed password encountered a problem.");
 		}
 		catch(Exception e) {
 			data.add(new Integer(1));
