@@ -6,7 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
+/**
+ * Represents a class which connects with MySQL server and is responsible for the execution of queries
+ */
 public class SQLController {
 	// Variables
 	static private final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
@@ -17,7 +19,10 @@ public class SQLController {
 	
 	static private Connection conn 			   = null;
 	static private PreparedStatement prep_stmt = null;
-	
+
+	/**
+	 * Synchronized method which is responsible of the SQL connection
+	 */
 	public static synchronized void Connect() {
 		// Connect to DB
 		try {
@@ -28,6 +33,10 @@ public class SQLController {
 		}
 	}
 
+	/**
+	 * Synchronized method which is responsible of the SQL disconnection
+	 * @param rs - ResultSet that needs to be closed
+	 */
 	public static synchronized void Disconnect(ResultSet rs) {
 		// Close connection to DB
 		try {
@@ -45,7 +54,13 @@ public class SQLController {
 			e.printStackTrace();
 		}
 	}
-	
+
+	/**
+	 * Synchronized method which is responsible of the SQL SELECT queries
+	 * @param sql - a SELECT sql query
+	 * @param input - {@link ArrayList} of type {@link Object} which are needed to complete the query
+	 * @return ResultSet - a result table for the requested query
+	 */
 	public static synchronized ResultSet ExecuteQuery(String sql, ArrayList<Object> input) {
 		try {
 			// Create statement from connection
@@ -66,7 +81,13 @@ public class SQLController {
 		// In case there was an exception returning null
 		return null;
 	}
-	
+
+	/**
+	 * Synchronized method which is responsible of the SQL UPDATE/INSERT/DELETE queries
+	 * @param sql - a UPDATE/INSERT/DELETE sql query
+	 * @param input - {@link ArrayList} of type {@link Object} which are needed to complete the query
+	 * @return int - a number which represents the affected rows by the query
+	 */
 	public static synchronized int ExecuteUpdate(String sql, ArrayList<Object> input) {
 		try {
 			// Create statement from connection
@@ -86,5 +107,45 @@ public class SQLController {
 		
 		// In case there was an exception returning 0
 		return 0;
+	}
+
+	/**
+	 * Synchronized method which is responsible to check if a record exists in the database
+	 * @param sql - a SELECT sql query
+	 * @param input - {@link ArrayList} of type {@link Object} which are needed to complete the query
+	 * @return boolean - true if the row exists, false otherwise
+	 */
+	public static synchronized boolean DoesRecordExists(Object...inputs) {
+		// Variables
+		boolean 		  RecordExists = false;
+		ArrayList<Object> params 	   = new ArrayList<Object>();
+
+		try {
+			Connect();	// Connected to database
+			
+			// Build array list for the ExecuteQuery method
+			for (Object input : inputs) {
+				params.add(input);
+			}
+
+			// Prepare SQL query
+			String sql = "SELECT 1 FROM " + params.get(0) + 
+						 " WHERE " + params.get(1) + " LIKE ?";
+
+			// Remove first and second arguments as they are not columns
+			params.removeIf(filter -> !((String)filter).contains("%"));
+
+			// Execute query using the ExecuteQuery method with the input and the above query
+			ResultSet rs = ExecuteQuery(sql, params);
+			
+			// Check if row exists - change boolean to true
+			if(rs.next()) RecordExists = true;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		// Return result
+		return RecordExists;
 	}
 }
