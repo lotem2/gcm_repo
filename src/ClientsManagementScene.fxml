@@ -16,7 +16,6 @@
     </Text>
     <Label fx:id="lblWelcome" layoutX="518.0" layoutY="14.0" text="Welcome" />
     <Button fx:id="btnMain" layoutX="518.0" layoutY="60.0" mnemonicParsing="false" onAction="#backToMainGUI" prefHeight="27.0" prefWidth="80.0" text="Catalog" />
-    <Button fx:id="btnLogOut" layoutX="606.0" layoutY="60.0" mnemonicParsing="false" onAction="#LogOut" text="Log Out" />
     <TableView fx:id="clientsTable" layoutX="34.0" layoutY="128.0" prefHeight="611.0" prefWidth="564.0">
       <columns>
         <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="92.0" text="User Name" fx:id="col_UserName" />

@@ -13,6 +13,8 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import javafx.geometry.Rectangle2D;
+import javafx.stage.Screen;
 
 import java.net.InetAddress;
 import java.awt.Label;
@@ -31,6 +33,7 @@ public class MainGUI extends Application {
 		BUY,
 		ClientProfile,
 		ClientsManagement,
+		Edit
 	}
 	
 	static final Map<SceneType, String> sceneFxmlLocationMapping = Map.ofEntries(
@@ -38,7 +41,8 @@ public class MainGUI extends Application {
 	    Map.entry(SceneType.REGISTER, "/RegisterScene.fxml"),
 	    Map.entry(SceneType.BUY, "/BuyScene.fxml"),
 	    Map.entry(SceneType.ClientProfile, "/ClientProfileScene.fxml"),
-	    Map.entry(SceneType.ClientsManagement, "/ClientManagementScene.fxml")
+	    Map.entry(SceneType.ClientsManagement, "/ClientManagementScene.fxml"),
+	    Map.entry(SceneType.Edit, "/EditScene.fxml")
 	);
 	
 	static final Map<SceneType, Pair<Scene, ControllerListener>> sceneMapping = new HashMap<>();
@@ -58,9 +62,14 @@ public class MainGUI extends Application {
 		GUIclient.setPort(5555);
 		GUIclient.openConnection();
 		primaryStage.setTitle("Global City Map");
+		primaryStage.setResizable(false);
+
 		openScene(SceneType.MAIN_GUI);
-		
-		primaryStage.show();
+//		Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+//        primaryStage.setX((screenBounds.getWidth() - primaryStage.getWidth()) / 2);
+//        primaryStage.setY((screenBounds.getHeight() - primaryStage.getHeight()) / 2);
+		primaryStage.show(); 
+
 	}
 	
 	public static void openScene(SceneType sceneType) {

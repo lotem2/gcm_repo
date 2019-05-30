@@ -53,8 +53,6 @@ GUIClient client;
     @FXML
     private Button btnMain;
     @FXML 
-    private Button btnLogOut;
-    @FXML 
     private Button btnSave;
     @FXML
     private Button btnSavePayment;
@@ -118,20 +116,6 @@ GUIClient client;
     private TableView<Map> purchasesTable;
 
 
-    @FXML
-    void LogOut(ActionEvent event) {
-		ArrayList<Object> data = new ArrayList<Object>();
-		String userName = MainGUI.currClient.getUserName();
-		data.add(userName);
-		Message myMessage = new Message(Action.LOGOUT, data);
-		try {
-			MainGUI.GUIclient.sendToServer(myMessage);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		MainGUI.openScene(SceneType.MAIN_GUI);
-    }
-
 	@FXML
 	void Save(ActionEvent event) {
 		try {
@@ -171,13 +155,13 @@ GUIClient client;
 				data.add(lastName);
 				data.add(userName);
 				data.add(password);
-				data.add(0);
 				data.add(email);
 				data.add(permission);
 				data.add(telephone);
 				data.add(cardNumber);
 				data.add(id);
 				data.add(expiryDate);
+				data.add(userName);
 				myMessage = new Message(Action.EDIT_USER_DETAILS, data);
 				client.sendToServer(myMessage);
 			} else {
