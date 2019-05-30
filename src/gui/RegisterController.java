@@ -154,6 +154,11 @@ public class RegisterController implements ControllerListener {
 	}
 
 	@FXML
+	public void stopButtonAction(ActionEvent e) {
+		MainGUI.closeOnX();
+	}
+	
+	@FXML
 	void initialize() {
 	}
 
@@ -174,5 +179,5 @@ public class RegisterController implements ControllerListener {
 			}
 		}
 	}
-
+	
 }

@@ -104,6 +104,11 @@ public class BuyController  implements ControllerListener {
     void tfCityName(ActionEvent event) {
     }
 
+	@FXML
+	public void stopButtonAction(ActionEvent e) {
+		MainGUI.closeOnX();
+	}
+    
     @FXML
     void initialize() {
         assert BuyWindow != null : "fx:id=\"BuyWindow\" was not injected: check your FXML file 'BuyScene.fxml'.";
