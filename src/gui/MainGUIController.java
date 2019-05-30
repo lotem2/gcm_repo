@@ -231,13 +231,19 @@ public class MainGUIController implements ControllerListener {
 						break;
 					case EDITOR:
 						MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
+						btnEditMaps.setVisible(true);
+						btnBuy.setVisible(false);
 						break;
 					case MANAGING_EDITOR:
 						MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
+						btnEditMaps.setVisible(true);
+						btnBuy.setVisible(false);
 						break;
 					case CEO:
 						MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
 						btnManage.setVisible(true);
+						btnEditMaps.setVisible(true);
+						btnBuy.setVisible(false);
 						break;
 					default:
 
@@ -289,14 +295,7 @@ public class MainGUIController implements ControllerListener {
 					// clientUI.display(currMsg.getData().get(1).toString() + "\n");
 				}
 				break;
-			case SHOW_CLIENT_DETAILS:
-				if ((Integer) currMsg.getData().get(0) == 0) {
-					// clientUI.display(currMsg.getData().get(1).toString());
-				} else {
-					// clientUI.display(currMsg.getData().get(1).toString() + "\n");
-				}
-				break;
-				default:
+     			default:
 					
 			}
 		} catch (Exception e) {

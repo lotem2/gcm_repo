@@ -19,6 +19,8 @@ import javafx.scene.layout.AnchorPane;
 
 public class EditWindowController implements ControllerListener {
 
+	GUIClient client;	
+	
     @FXML
     private ResourceBundle resources;
     @FXML
@@ -147,6 +149,7 @@ public class EditWindowController implements ControllerListener {
 
     @FXML
     void initialize() {
+		lblWelcome.setText("Welcome " + MainGUI.currClient.getUserName() + "!");
     }
     
 @Override

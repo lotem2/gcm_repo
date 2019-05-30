@@ -50,7 +50,7 @@ public class MainGUI extends Application {
 	    Map.entry(SceneType.REGISTER, "/RegisterScene.fxml"),
 	    Map.entry(SceneType.BUY, "/BuyScene.fxml"),
 	    Map.entry(SceneType.ClientProfile, "/ClientProfileScene.fxml"),
-	    Map.entry(SceneType.ClientsManagement, "/ClientManagementScene.fxml"),
+	    Map.entry(SceneType.ClientsManagement, "/ClientsManagementScene.fxml"),
 	    Map.entry(SceneType.Edit, "/EditScene.fxml")
 	);
 	

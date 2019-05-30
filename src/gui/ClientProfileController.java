@@ -209,6 +209,7 @@ GUIClient client;
 						btnSave.setVisible(false);
 						break;
 					}
+					default:
 				}
 }
 	
@@ -232,16 +233,7 @@ GUIClient client;
 				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
 						JOptionPane.WARNING_MESSAGE);
 			}
-		case LOGOUT:
-			if ((Integer) currMsg.getData().get(0) == 0) {
-				JOptionPane.showMessageDialog(null, "You are now logged out of the system.", "",
-						JOptionPane.INFORMATION_MESSAGE);
-			} 
-			else {
-				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
-						JOptionPane.WARNING_MESSAGE);
-			}
-		
+
 	}
 	}
 	
