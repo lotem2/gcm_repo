@@ -111,7 +111,6 @@ public class MainGUIController implements ControllerListener {
 	void Search(ActionEvent event) {
 		try {
 			Message myMessage;
-
 			String cityName, siteName, mapDescription;
 			ArrayList<Object> data = new ArrayList<Object>();
 			cityName = tfCitySearch.getText();
@@ -275,7 +274,7 @@ public class MainGUIController implements ControllerListener {
 					Platform.runLater(() -> {
 						lblWelcome.setText("Welcome");
 					});
-					JOptionPane.showMessageDialog(null, "Disconnected successfully", "",
+					JOptionPane.showMessageDialog(null, "Disconnected successfully", "Notification",
 							JOptionPane.DEFAULT_OPTION);
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, e.toString() + "The log out failed.", "Error",

@@ -84,11 +84,11 @@ GUIClient client;
 		switch (currMsg.getAction()) {
 		case SHOW_ALL_CLIENTS:
 			if ((Integer) currMsg.getData().get(0) == 0) {
-				JOptionPane.showMessageDialog(null, "Show the clients", "",
+				JOptionPane.showMessageDialog(null, "Show the clients", "Notification",
 						JOptionPane.INFORMATION_MESSAGE);
 			} 
 			else {
-				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
+				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
 						JOptionPane.WARNING_MESSAGE);
 			}
 			break;

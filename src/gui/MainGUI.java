@@ -14,6 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -76,6 +77,11 @@ public class MainGUI extends Application {
 		GUIclient.setHost(InetAddress.getLocalHost().getHostAddress().toString());
 		GUIclient.setPort(5555);
 		GUIclient.openConnection();
+		
+//	    //set icon of the application
+//        Image applicationIcon = new Image(getClass().getResourceAsStream(""));
+//        primaryStage.getIcons().add(applicationIcon);
+		
 		primaryStage.setTitle("Global City Map");
 		primaryStage.setResizable(false);
 
