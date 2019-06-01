@@ -52,8 +52,6 @@ public class SiteDB {
 					 " FROM Sites s, Maps m, Bridge b" +
 					 " WHERE m.mapID = b.mapID AND s.siteID AND m.description = ?";
 
-			params.remove(1);	// Remove Map identifier
-
 			// Execute sql query by calling private method getSites with the requested SELECT query
 			sites = getSites(sql, params);
 			data.add(new Integer(0)); // set query result as success
@@ -143,8 +141,6 @@ public class SiteDB {
 						 " FROM Cities c, Sites s, BridgeMSC b" +
 						 " WHERE r.mapID = b.mapID AND s.siteID AND c.description = ?";
 
-			params.remove(1);	// Remove City identifier
-
 			// Execute sql query by calling private method getSites with the requested SELECT query
 			sites = getSites(sql, params);
 
@@ -179,39 +175,47 @@ public class SiteDB {
 		ArrayList<Site>     sites     = new ArrayList<Site>();
 		ResultSet			rs		  = null;
 
-		// Connect to DB
-		SQLController.Connect();
+		try {
+			// Connect to DB
+			SQLController.Connect();
 
-		// Execute sql query, get results
-		rs = SQLController.ExecuteQuery(sql, params);
+			// Execute sql query, get results
+			rs = SQLController.ExecuteQuery(sql, params);
 
-		// check if query succeeded
-		if(!rs.next()) {
-			throw new Exception();
+			// check if query succeeded
+			if(!rs.next()) {
+				throw new Exception();
+			}
+
+			// Go through the result set and build the Purchase entity
+			while (rs.next())
+			{
+				// Reads location coordinates
+				String xLocation = rs.getString("location".split(",")[0]);
+				String yLocation = rs.getString("location".split(",")[1]);
+
+				Site currSite = new Site(
+						rs.getString("name"),
+						rs.getString("cityName"),
+						Classification.valueOf(rs.getString("classification").toUpperCase()),
+						rs.getString("description"),
+						rs.getBoolean("accessible"),
+						rs.getFloat("visitDuration"),
+						new Point(Integer.parseInt(xLocation), Integer.parseInt(yLocation)));
+
+				sites.add(currSite);
+			}
 		}
-
-		// Go through the result set and build the Purchase entity
-		while (rs.next())
-		{
-
-			// Reads location coordinates
-			String xLocation = rs.getString("location".split(",")[0]);
-			String yLocation = rs.getString("location".split(",")[1]);
-
-			Site currSite = new Site(
-					rs.getString("name"),
-					rs.getString("cityName"),
-					Classification.valueOf(rs.getString("classification").toUpperCase()),
-					rs.getString("description"),
-					rs.getBoolean("accessible"),
-					rs.getFloat("visitDuration"),
-					new Point(Integer.parseInt(xLocation), Integer.parseInt(yLocation)));
-
-			sites.add(currSite);
+		catch (SQLException e) {
+			throw e;
 		}
-
-		// Disconnect DB
-		SQLController.Disconnect(rs);
+		catch(Exception e) {
+			throw e;
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(rs);	
+		}
 
 		return sites;
 	}

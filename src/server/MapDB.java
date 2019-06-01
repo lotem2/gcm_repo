@@ -122,7 +122,7 @@ public class MapDB {
 
 		if (description_exist) {
 			// Check whether the search was by site or city description
-			if (SQLController.DoesRecordExists("Sites", "description", "%" + params.get(2).toString() + "%"))
+			if (SQLController.DoesRecordExist("Sites", "description =", "%" + params.get(2).toString() + "%"))
 				sql = "Site:" + "s.description LIKE ?";
 			else
 				sql = "City:" + "c.description LIKE ?";

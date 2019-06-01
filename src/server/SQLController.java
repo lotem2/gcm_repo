@@ -115,7 +115,7 @@ public class SQLController {
 	 * @param input - {@link ArrayList} of type {@link Object} which are needed to complete the query
 	 * @return boolean - true if the row exists, false otherwise
 	 */
-	public static synchronized boolean DoesRecordExists(Object...inputs) {
+	public static synchronized boolean DoesRecordExist(Object...inputs) {
 		// Variables
 		boolean 		  RecordExists = false;
 		ArrayList<Object> params 	   = new ArrayList<Object>();
@@ -130,10 +130,10 @@ public class SQLController {
 
 			// Prepare SQL query
 			String sql = "SELECT 1 FROM " + params.get(0) + 
-						 " WHERE " + params.get(1) + " LIKE ?";
+						 " WHERE " + params.get(1) + " ?";
 
 			// Remove first and second arguments as they are not columns
-			params.removeIf(filter -> !((String)filter).contains("%"));
+			params.remove(0); params.remove(0);
 
 			// Execute query using the ExecuteQuery method with the input and the above query
 			ResultSet rs = ExecuteQuery(sql, params);
