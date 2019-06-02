@@ -43,9 +43,9 @@
               <children>
                 <Text id="lblCreditCard" layoutX="23.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Card Numebr ends with:" />
                 <TextField fx:id="tfCurrLastNumbers" disable="true" layoutX="199.0" layoutY="40.0" prefWidth="87.0" />
-                <RadioButton id="rbtnPreviousCredirials" fx:id="rbtnPreviousCreditCard" layoutX="24.0" layoutY="89.0" mnemonicParsing="false" onAction="#Save" selected="true" text="Use the same payment method" />
-                <RadioButton fx:id="rbChangeCreditNumber" layoutX="25.0" layoutY="156.0" mnemonicParsing="false" onAction="#Save" selected="false" text="Change my credit card:" />
-                <Text id="lblCreditCard" fx:id="lblCardNumebr" layoutX="62.0" layoutY="216.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Card Numebr:" />
+                <RadioButton id="rbtnPreviousCredirials" fx:id="rbtnPreviousCreditCard" layoutX="24.0" layoutY="89.0" mnemonicParsing="false" onAction="#samePaymentMethod" selected="true" text="Use the same payment method" />
+                <RadioButton fx:id="rbChangeCreditNumber" layoutX="25.0" layoutY="156.0" mnemonicParsing="false" onAction="#changeCreditCard" selected="false" text="Change my credit card:" />
+                <Text id="lblCreditCard" fx:id="lblCardNumber" layoutX="62.0" layoutY="216.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Card Number:" />
                 <TextField fx:id="tfCreditCard1" disable="true" layoutX="161.0" layoutY="197.0" onAction="#Save" prefWidth="87.0" promptText="" />
                 <TextField fx:id="tfCreditCard2" disable="true" layoutX="260.0" layoutY="197.0" onAction="#Save" prefWidth="87.0" promptText="" />
                 <TextField fx:id="tfCreditCard3" disable="true" layoutX="360.0" layoutY="197.0" onAction="#Save" prefWidth="87.0" promptText="" />
