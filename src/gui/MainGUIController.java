@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
+import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -110,28 +111,27 @@ public class MainGUIController implements ControllerListener {
 	void Search(ActionEvent event) {
 		try {
 			Message myMessage;
-
 			String cityName, siteName, mapDescription;
 			ArrayList<Object> data = new ArrayList<Object>();
 			cityName = tfCitySearch.getText();
 			siteName = tfSiteSearch.getText();
 			mapDescription = tfDesSearch.getText();
-			if (!cityName.isEmpty()) {
+			if (!cityName.isEmpty())
 				data.add(cityName);
-			}
-			if (!siteName.isEmpty()) {
+			else
+			   data.add("null");
+			
+			if (!siteName.isEmpty()) 
 				data.add(siteName);
-			}
-			if (!mapDescription.isEmpty()) {
+			else
+			   data.add("null");
+			
+			if (!mapDescription.isEmpty())
 				data.add(mapDescription);
-			}
-			if ((cityName.isEmpty()) && (siteName.isEmpty()) && (mapDescription.isEmpty())) {
-				JOptionPane.showMessageDialog(null, "No paramaters were typed in.", "Error",
-						JOptionPane.WARNING_MESSAGE);
-			} else {
-				myMessage = new Message(Action.SEARCH, data);
-				MainGUI.GUIclient.sendToServer(myMessage);
-			}
+			else
+			   data.add("null");
+			myMessage = new Message(Action.SEARCH, data);
+			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
 					"Error", JOptionPane.WARNING_MESSAGE);
@@ -209,6 +209,7 @@ public class MainGUIController implements ControllerListener {
 
 	@FXML
 	void initialize() {
+		setPersonalInfoBooleanBinding();
 	}
 
 	@Override
@@ -231,13 +232,19 @@ public class MainGUIController implements ControllerListener {
 						break;
 					case EDITOR:
 						MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
+						btnEditMaps.setVisible(true);
+						btnBuy.setVisible(false);
 						break;
 					case MANAGING_EDITOR:
 						MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
+						btnEditMaps.setVisible(true);
+						btnBuy.setVisible(false);
 						break;
 					case CEO:
 						MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
 						btnManage.setVisible(true);
+						btnEditMaps.setVisible(true);
+						btnBuy.setVisible(false);
 						break;
 					default:
 
@@ -267,7 +274,7 @@ public class MainGUIController implements ControllerListener {
 					Platform.runLater(() -> {
 						lblWelcome.setText("Welcome");
 					});
-					JOptionPane.showMessageDialog(null, "Disconnected successfully", "",
+					JOptionPane.showMessageDialog(null, "Disconnected successfully", "Notification",
 							JOptionPane.DEFAULT_OPTION);
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, e.toString() + "The log out failed.", "Error",
@@ -275,8 +282,11 @@ public class MainGUIController implements ControllerListener {
 				}
 				break;
 			case SEARCH:
-				// if((Integer)currMsg.getData().get(0) == 0) {
-				System.out.println(((Map) currMsg.getData().get(0)).toString());
+			 if((Integer)currMsg.getData().get(0) == 0) {
+				//ArrayList<Map> maps = new ((Map) currMsg.getData().get(1));
+				//setTableViewForMapsSearchResult(maps);
+				//System.out.println(((Map) currMsg.getData().get(0)).toString());
+			 }
 //	      	 else {
 //	      		 clientUI.display(currMsg.getData().get(1).toString() + "\n"
 //	      				 + "The message was not sent to the gui.Please retry\"");
@@ -289,14 +299,7 @@ public class MainGUIController implements ControllerListener {
 					// clientUI.display(currMsg.getData().get(1).toString() + "\n");
 				}
 				break;
-			case SHOW_CLIENT_DETAILS:
-				if ((Integer) currMsg.getData().get(0) == 0) {
-					// clientUI.display(currMsg.getData().get(1).toString());
-				} else {
-					// clientUI.display(currMsg.getData().get(1).toString() + "\n");
-				}
-				break;
-				default:
+     			default:
 					
 			}
 		} catch (Exception e) {
@@ -311,13 +314,17 @@ public class MainGUIController implements ControllerListener {
 			@Override
 			public void run() {
 				ObservableList<Map> mapsList = FXCollections.observableArrayList();
-				col_map.setCellValueFactory(new PropertyValueFactory<Map, String>("Map"));
+//				while (!maps.isEmpty())
+//				{
+//					mapsList.add(new Map(maps));
+//				}
+				//col_map.setCellValueFactory(new PropertyValueFactory<Map, String>("Map"));
 				col_mapDescription.setCellValueFactory(new PropertyValueFactory<Map, String>("mapDescription"));
 				col_city.setCellValueFactory(new PropertyValueFactory<Map, String>("city"));
 				col_cityDescription.setCellValueFactory(new PropertyValueFactory<Map, String>("cityDescription"));
 				col_price.setCellValueFactory(new PropertyValueFactory<Map, String>("price"));
 				col_version.setCellValueFactory(new PropertyValueFactory<Map, String>("version"));
-				col_sitesNumber.setCellValueFactory(new PropertyValueFactory<Map, String>("typeOfAccount"));
+				col_sitesNumber.setCellValueFactory(new PropertyValueFactory<Map, String>("sitesNumber"));
 
 				SearchResultsTable.getColumns().addAll(col_map, col_mapDescription, col_city, col_cityDescription,
 						col_price, col_version, col_sitesNumber);
@@ -342,7 +349,12 @@ public class MainGUIController implements ControllerListener {
 		MainGUI.MainStage.setTitle("Global City Map - UserList");
 		MainGUI.openScene(SceneType.ClientsManagement);
     }
-	
+    
+	void setPersonalInfoBooleanBinding() {
+		BooleanBinding booleanBind;
+		booleanBind = (tfCitySearch.textProperty().isEmpty()).and(tfSiteSearch.textProperty().isEmpty()).and(tfDesSearch.textProperty().isEmpty());
+		btnSearch.disableProperty().bind(booleanBind);
+	}
 	
 	
 //=======

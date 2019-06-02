@@ -21,18 +21,18 @@
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="371.0" prefWidth="712.0">
               <children>
-                <TextField fx:id="tfUserName" disable="true" editable="true" layoutX="127.0" layoutY="46.0" onAction="#Save" prefWidth="200.0" promptText="User Name" />
-                <Text layoutX="28.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="User Name:" />
-                <TextField fx:id="tfFirstName" layoutX="128.0" layoutY="88.0" onAction="#Save" prefWidth="200.0" promptText="First Name" />
-                <TextField fx:id="tfLastName" layoutX="128.0" layoutY="131.0" onAction="#Save" prefWidth="200.0" promptText="Last Name" />
-                <TextField fx:id="tfEmail" layoutX="128.0" layoutY="173.0" onAction="#Save" prefWidth="200.0" promptText="E-mail" />
-                <TextField id="tfEmail" fx:id="tfphone" layoutX="128.0" layoutY="213.0" onAction="#Save" prefWidth="200.0" promptText="Telephone" />
-                <PasswordField fx:id="tfPassword" layoutX="128.0" layoutY="252.0" onAction="#Save" prefWidth="200.0" promptText="Password" />
-                <Text layoutX="29.0" layoutY="104.0" strokeType="OUTSIDE" strokeWidth="0.0" text="First Name:" />
-                <Text layoutX="29.0" layoutY="147.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Last Name:" />
-                <Text layoutX="29.0" layoutY="189.0" strokeType="OUTSIDE" strokeWidth="0.0" text="E-mail:" />
-                <Text layoutX="25.0" layoutY="271.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Password:" />
-                <Text layoutX="25.0" layoutY="232.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Telephone:" />
+                <TextField fx:id="tfUserName" disable="true" editable="true" layoutX="152.0" layoutY="46.0" onAction="#Save" prefWidth="200.0" promptText="User Name" />
+                <Text fx:id="lblUserName" layoutX="28.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="User Name:" />
+                <TextField fx:id="tfFirstName" layoutX="153.0" layoutY="88.0" onAction="#Save" prefWidth="200.0" promptText="First Name" />
+                <TextField fx:id="tfLastName" layoutX="153.0" layoutY="131.0" onAction="#Save" prefWidth="200.0" promptText="Last Name" />
+                <TextField fx:id="tfEmail" layoutX="153.0" layoutY="173.0" onAction="#Save" prefWidth="200.0" promptText="E-mail" />
+                <TextField id="tfEmail" fx:id="tfphone" layoutX="153.0" layoutY="213.0" onAction="#Save" prefWidth="200.0" promptText="Telephone" />
+                <PasswordField fx:id="tfPassword" layoutX="153.0" layoutY="252.0" onAction="#Save" prefWidth="200.0" promptText="Password" />
+                <Text fx:id="lblFirstName" layoutX="29.0" layoutY="104.0" strokeType="OUTSIDE" strokeWidth="0.0" text="First Name:" />
+                <Text fx:id="lblLastName" layoutX="29.0" layoutY="147.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Last Name:" />
+                <Text fx:id="lblEmail" layoutX="29.0" layoutY="189.0" strokeType="OUTSIDE" strokeWidth="0.0" text="E-mail:" />
+                <Text id="lblPassword" fx:id="lblOldPassword" layoutX="25.0" layoutY="271.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Password:" />
+                <Text fx:id="lblTelephone" layoutX="25.0" layoutY="232.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Telephone:" />
               </children>
             </AnchorPane>
           </content>
@@ -43,9 +43,9 @@
               <children>
                 <Text id="lblCreditCard" layoutX="23.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Card Numebr ends with:" />
                 <TextField fx:id="tfCurrLastNumbers" disable="true" layoutX="199.0" layoutY="40.0" prefWidth="87.0" />
-                <RadioButton id="rbtnPreviousCredirials" fx:id="rbtnPreviousCreditCard" layoutX="24.0" layoutY="89.0" mnemonicParsing="false" onAction="#Save" selected="true" text="Use the same payment method" />
-                <RadioButton fx:id="rbChangeCreditNumber" layoutX="25.0" layoutY="156.0" mnemonicParsing="false" onAction="#Save" selected="false" text="Change my credit card:" />
-                <Text id="lblCreditCard" fx:id="lblCardNumebr" layoutX="62.0" layoutY="216.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Card Numebr:" />
+                <RadioButton id="rbtnPreviousCredirials" fx:id="rbtnPreviousCreditCard" layoutX="24.0" layoutY="89.0" mnemonicParsing="false" onAction="#samePaymentMethod" selected="true" text="Use the same payment method" />
+                <RadioButton fx:id="rbChangeCreditNumber" layoutX="25.0" layoutY="156.0" mnemonicParsing="false" onAction="#changeCreditCard" selected="false" text="Change my credit card:" />
+                <Text id="lblCreditCard" fx:id="lblCardNumber" layoutX="62.0" layoutY="216.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Card Number:" />
                 <TextField fx:id="tfCreditCard1" disable="true" layoutX="161.0" layoutY="197.0" onAction="#Save" prefWidth="87.0" promptText="" />
                 <TextField fx:id="tfCreditCard2" disable="true" layoutX="260.0" layoutY="197.0" onAction="#Save" prefWidth="87.0" promptText="" />
                 <TextField fx:id="tfCreditCard3" disable="true" layoutX="360.0" layoutY="197.0" onAction="#Save" prefWidth="87.0" promptText="" />
@@ -53,7 +53,7 @@
                 <Text id="tfIDnumber" fx:id="lblIDnumber" layoutX="65.0" layoutY="261.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ID Number:" />
                 <TextField fx:id="tfIDNumber" disable="true" layoutX="161.0" layoutY="242.0" onAction="#Save" prefWidth="200.0" promptText="ID Number" />
                 <Text fx:id="lblExpiryDate" layoutX="370.0" layoutY="261.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Expiry Date:" />
-                <TextField fx:id="tfExpiryDate" layoutX="460.0" layoutY="242.0" onAction="#Save" prefWidth="87.0" promptText="Expiry Date" />
+                <TextField fx:id="tfExpiryDate" disable="true" layoutX="460.0" layoutY="242.0" onAction="#Save" prefWidth="87.0" promptText="Expiry Date" />
               </children>
             </AnchorPane>
           </content>

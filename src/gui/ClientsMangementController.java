@@ -74,7 +74,7 @@ GUIClient client;
     @FXML
     void initialize() {
     	//setTableViewForClients(clients);
-		lblWelcome.setText("Welcome " + MainGUI.currClient.getUserName() + "!");
+    	lblWelcome.setText("Welcome " + MainGUI.currClient.getUserName() + "!");
     }
 
 	@Override
@@ -82,28 +82,19 @@ GUIClient client;
 		// TODO Auto-generated method stub
 		Message currMsg = (Message) msg;
 		switch (currMsg.getAction()) {
-		case EDIT_USER_DETAILS:
+		case SHOW_ALL_CLIENTS:
 			if ((Integer) currMsg.getData().get(0) == 0) {
-				JOptionPane.showMessageDialog(null, "All the changes have been saved succesfully", "",
+				JOptionPane.showMessageDialog(null, "Show the clients", "Notification",
 						JOptionPane.INFORMATION_MESSAGE);
 			} 
 			else {
-				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
+				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
 						JOptionPane.WARNING_MESSAGE);
 			}
-		case LOGOUT:
-			if ((Integer) currMsg.getData().get(0) == 0) {
-				JOptionPane.showMessageDialog(null, "You are now logged out of the system.", "",
-						JOptionPane.INFORMATION_MESSAGE);
-			} 
-			else {
-				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
-						JOptionPane.WARNING_MESSAGE);
-			}
-		
-	}
-		
-		
+			break;
+		default:
+	
+		}	
 	}
      
 	public void setTableViewForClients(ArrayList<Client> clients) {

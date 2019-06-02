@@ -189,35 +189,44 @@ public class PurchaseDB {
 		ArrayList<Object>   data 	  = new ArrayList<Object>();
 		ResultSet			rs		  = null;
 
-		// Connect to DB
-		SQLController.Connect();
+		try {
+			// Connect to DB
+			SQLController.Connect();
 
-		// Execute sql query, get results
-		rs = SQLController.ExecuteQuery(sql, params);
+			// Execute sql query, get results
+			rs = SQLController.ExecuteQuery(sql, params);
 
-		// check if query succeeded
-		if(!rs.next()) {
-			throw new Exception();
+			// check if query succeeded
+			if(!rs.next()) {
+				throw new Exception();
+			}
+
+			// Go through the result set and build the Purchase entity
+			while (rs.next()) 
+			{
+				Purchase currPurchase = new Purchase(
+						rs.getString("cityName"), 
+						PurchaseType.valueOf(rs.getString("purchaseType").toUpperCase()), 
+						rs.getDate("purchaseDate").toLocalDate(),
+						rs.getDate("expiryDate").toLocalDate(),
+						rs.getInt("renew"), 
+						rs.getInt("views"), 
+						rs.getInt("downloads"), 
+						rs.getFloat("price"));
+
+				purchases.add(currPurchase);
+			}	
 		}
-
-		// Go through the result set and build the Purchase entity
-		while (rs.next()) 
-		{
-			Purchase currPurchase = new Purchase(
-					rs.getString("cityName"), 
-					PurchaseType.valueOf(rs.getString("purchaseType").toUpperCase()), 
-					rs.getDate("purchaseDate").toLocalDate(),
-					rs.getDate("expiryDate").toLocalDate(),
-					rs.getInt("renew"), 
-					rs.getInt("views"), 
-					rs.getInt("downloads"), 
-					rs.getFloat("price"));
-
-			purchases.add(currPurchase);
+		catch(SQLException e) {
+			throw e;
 		}
-
-		// Disconnect DB
-		SQLController.Disconnect(rs);
+		catch(Exception e){
+			throw e;
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(rs);	
+		}
 
 		return purchases;
 	}
