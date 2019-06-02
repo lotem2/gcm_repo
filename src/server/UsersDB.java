@@ -60,10 +60,9 @@ public class UsersDB {
 			SQLController.Connect();
 
 			// Prepare statement to insert new user
-			String sql = "INSERT INTO Clients (`firstname`, `lastname`, `username`, `password`, `salt`, `email`, " +
+			String sql = "INSERT INTO Users (`firstname`, `lastname`, `username`, `password`, `salt`, `email`, " +
 						"`permission`, `telephone`, `cardnumber`, `id`, `expirydate`)" +
 						" VALUES (?, ?, ?, ?, ? ,? ,?, ?, ?, ?, ?)";
-
 
 			// Execute sql query, get number of changed rows
 			int changedRows = SQLController.ExecuteUpdate(sql, params);
@@ -112,7 +111,7 @@ public class UsersDB {
 			SQLController.Connect();
 
 			// Prepare statement to get current client's details
-			String sql = "SELECT * FROM Clients WHERE username = ?";
+			String sql = "SELECT * FROM Users WHERE username = ?";
 
 			// Execute sql query, get results
 			rs = SQLController.ExecuteQuery(sql, params);
@@ -122,9 +121,9 @@ public class UsersDB {
 				throw new Exception("Username does not exist.");
 			}
 			else {
-				byte[] salt = rs.getBytes(5);
-				// Compare between password given by user to password hashed in the database.
-				if(!(common.Jhash.Hash.validatePassword(password, new String(rs.getBytes(4)), salt)))
+				boolean passMatch = verifyUsersPassword(password, rs.getBytes(4), rs.getBytes(5), rs.getString(7));
+
+				if(!passMatch)
 				{
 					data.add(new Integer(1));
 					data.add("Password does not match username.");
@@ -157,9 +156,7 @@ public class UsersDB {
 								rs.getString("firstname"),
 								rs.getString("lastname"),
 								rs.getString("password"),
-								rs.getBytes("salt"),
 								rs.getString("username"),
-								rs.getString("role"),
 								rs.getString("email"),
 								Permission.valueOf(rs.getString("permission").toUpperCase()),
 								rs.getInt("id"));
@@ -187,6 +184,34 @@ public class UsersDB {
 	}
 
 	/**
+	 * Verify the user's password
+	 * @param params -   given password, password from the db, client's salt from the db and user's permission.
+	 * @return Boolean - Indicates whether there was a match between given password and password from the db.
+	 */
+	public boolean verifyUsersPassword(String password, byte[] dbPassword, byte[] salt,String permission )//false;
+	{
+		if(permission.toUpperCase().equals("CLIENT"))
+		{
+			try
+			{
+				// Compare between password given by user to password hashed in the database.
+				return common.Jhash.Hash.validatePassword(password, new String(dbPassword), salt);
+			}
+			catch(Exception e)
+			{
+				System.out.println("ERROR - Could not validate password for this client!");
+			}
+		}
+		else
+		{
+			if (password.equals(new String(dbPassword)))
+				return true;
+		}
+		return false;
+	}
+
+
+	/**
 	 * Edit a specific user's details 
 	 * @param params - Contain {@link Action} type, user name of the requested user and the new details
 	 * @return {@link Message} - Indicating success/failure with corresponding message
@@ -209,7 +234,7 @@ public class UsersDB {
 			SQLController.Connect();
 
 			// Prepare statement to insert new user
-			String sql = "UPDATE Clients SET firstname = ?, lastname = ?, username = ?, password = ?, salt = ?" +
+			String sql = "UPDATE Users SET firstname = ?, lastname = ?, username = ?, password = ?, salt = ?" +
 						" ,email = ?, permission = ?, telephone = ?, cardnumber = ?, id = ?, expirydate = ?" +
 						" WHERE username = ?";
 
