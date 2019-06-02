@@ -25,10 +25,8 @@ public class Server extends AbstractServer {
 			switch (currMsg.getAction()) {
 			case LOGIN:
 				if (DoesUserExists(currMsg.getData().get(0).toString())) {
-					params = new ArrayList<Object>();
-					params.add(new Integer(1));
-					params.add(new String("Client already connected."));
-					replyMsg = new Message(Action.LOGIN, params);
+					replyMsg = new Message(Action.LOGIN, new Integer(1), 
+							new String("Client already connected."));
 				} else {
 					replyMsg = UsersDB.getInstance().getUser(currMsg.getData());
 					if (((Integer) replyMsg.getData().get(0)) == 0)
@@ -39,9 +37,7 @@ public class Server extends AbstractServer {
 			case LOGOUT:
 				// Set thread name to empty and return success message to client
 				client.setName("");
-				params = new ArrayList<Object>();
-				params.add(new Integer(0));
-				replyMsg = new Message(Action.LOGOUT, params);
+				replyMsg = new Message(Action.LOGOUT, new Integer(0));
 				break;
 			case REGISTER:
 				replyMsg = UsersDB.getInstance().AddUser(currMsg.getData());
@@ -51,8 +47,10 @@ public class Server extends AbstractServer {
 				break;
 			case SEARCH:
 				replyMsg = MapDB.getInstance().Search(currMsg.getData());
-				replyMsg.setAction(Action.SEARCH);
 				break;
+			case GET_CITY_PRICE:
+				replyMsg = CityDB.getInstance().getCitiesList();
+				replyMsg.setAction(Action.GET_CITY_PRICE);
 			/*
 			 * case ADD_PURCHASE: params = new ArrayList<Object>();
 			 * params.add(((Client)client.getInfo("UserInfo")).getUsername());

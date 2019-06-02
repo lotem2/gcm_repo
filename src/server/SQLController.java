@@ -65,10 +65,12 @@ public class SQLController {
 		try {
 			// Create statement from connection
 			prep_stmt = conn.prepareStatement(sql);
-			
-			// Set parameters to the statement
-			for (int i = 0; i < input.size(); i++) {
-				prep_stmt.setObject(i + 1, input.get(i));
+
+			if (input != null) {
+				// Set parameters to the statement
+				for (int i = 0; i < input.size(); i++) {
+					prep_stmt.setObject(i + 1, input.get(i));
+				}	
 			}
 		
 			// Execute query, return result
@@ -93,11 +95,13 @@ public class SQLController {
 			// Create statement from connection
 			prep_stmt = conn.prepareStatement(sql);
 			
-			// Set parameters to the statement
-			for (int i = 0; i < input.size(); i++) {
-				prep_stmt.setObject(i + 1, input.get(i));
+			if(input != null) {
+				// Set parameters to the statement
+				for (int i = 0; i < input.size(); i++) {
+					prep_stmt.setObject(i + 1, input.get(i));
+				}	
 			}
-		
+
 			// Execute query, return number of rows changed
 			return prep_stmt.executeUpdate();
 			
@@ -117,23 +121,32 @@ public class SQLController {
 	 */
 	public static synchronized boolean DoesRecordExist(Object...inputs) {
 		// Variables
+		int 			  index;
+		ArrayList<Object> params;
 		boolean 		  RecordExists = false;
-		ArrayList<Object> params 	   = new ArrayList<Object>();
+		ArrayList<Object> data 	   	   = new ArrayList<Object>();
 
 		try {
 			Connect();	// Connected to database
-			
+
 			// Build array list for the ExecuteQuery method
-			for (Object input : inputs) {
-				params.add(input);
+			for (Object object : inputs) {
+				data.add(object);
 			}
 
-			// Prepare SQL query
-			String sql = "SELECT 1 FROM " + params.get(0) + 
-						 " WHERE " + params.get(1) + " ?";
+			// Get list of parameters from inputs given
+			params = new ArrayList<Object>((data.subList(((data.size()/2) + 1), data.size())));
 
-			// Remove first and second arguments as they are not columns
-			params.remove(0); params.remove(0);
+			String sql = "SELECT 1 FROM " + data.get(0) + " WHERE ";	// Prepare SQL query
+			
+			for (int i = 1; i <= data.size()/2; i++) {
+				if (data.get(i).equals("description"))
+					sql += data.get(i) + " LIKE ?,";
+				else	
+					sql += data.get(i) + " = ?,";
+			}
+			
+			sql = sql.substring(0, sql.length() - 1);
 
 			// Execute query using the ExecuteQuery method with the input and the above query
 			ResultSet rs = ExecuteQuery(sql, params);
