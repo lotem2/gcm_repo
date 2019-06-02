@@ -9,10 +9,10 @@ import entity.*;
 public class Server extends AbstractServer {
 	// Variables
 	final public static int DEFAULT_PORT = 5555;
-
+	static private HashMap<String, ConnectionToClient> clients;
 	public Server(int port) {
 		super(port);
-		// TODO Auto-generated constructor stub
+		clients = new HashMap<String, ConnectionToClient>();
 	}
 
 	public void handleMessageFromClient(Object msg, ConnectionToClient client) {
@@ -24,20 +24,32 @@ public class Server extends AbstractServer {
 		try {
 			switch (currMsg.getAction()) {
 			case LOGIN:
+				// Check if user already connected
 				if (DoesUserExists(currMsg.getData().get(0).toString())) {
-					replyMsg = new Message(Action.LOGIN, new Integer(1), 
-							new String("Client already connected."));
+					// Sending a login failure to client
+					ArrayList<Object> input = new ArrayList<Object>();
+					input.add(new Integer(1));
+					input.add(new String("Client already connected."));
+					replyMsg = new Message(Action.LOGIN, input);
 				} else {
+					// Get User's details
 					replyMsg = UsersDB.getInstance().getUser(currMsg.getData());
-					if (((Integer) replyMsg.getData().get(0)) == 0)
+					if (((Integer) replyMsg.getData().get(0)) == 0) {
+						// Adding the current user to the list of clients connected
+						clients.put(currMsg.getData().get(0).toString(), client);
 						client.setName(currMsg.getData().get(0).toString());
+					}
+
 					replyMsg.setAction(Action.LOGIN);
 				}
 				break;
 			case LOGOUT:
-				// Set thread name to empty and return success message to client
+				// remove client from list of clients and send success message
 				client.setName("");
-				replyMsg = new Message(Action.LOGOUT, new Integer(0));
+				clients.remove(currMsg.getData().get(0).toString());
+				ArrayList<Object> input = new ArrayList<Object>();
+				input.add(new Integer(0));
+				replyMsg = new Message(Action.LOGOUT, input);
 				break;
 			case REGISTER:
 				replyMsg = UsersDB.getInstance().AddUser(currMsg.getData());
@@ -51,6 +63,7 @@ public class Server extends AbstractServer {
 			case GET_CITY_PRICE:
 				replyMsg = CityDB.getInstance().getCitiesList();
 				replyMsg.setAction(Action.GET_CITY_PRICE);
+				break;
 			/*
 			 * case ADD_PURCHASE: params = new ArrayList<Object>();
 			 * params.add(((Client)client.getInfo("UserInfo")).getUsername());
@@ -77,15 +90,11 @@ public class Server extends AbstractServer {
 		// display on server and clients that the client has connected.
 		String msg = "A Client has connected";
 		System.out.println(msg);
-		// client.sen(msg);
 	}
 
 	protected void clientDisconnected(ConnectionToClient client) {
-		// display on server and clients that the client has connected.
-		// String msg = ((Client)client.getInfo("UserInfo")).getUsername() + " has
-		// disconnected";
-		// System.out.println(msg);
-		// client.sen(msg);
+		// Remove client from list of clients
+		clients.remove(client.getName());
 	}
 
 	/** Hoot method to handle client's disconnection **/
@@ -97,6 +106,8 @@ public class Server extends AbstractServer {
 		} else {
 			msg = "A client has disconnected.";
 		}
+		
+		clients.remove(client.getName());
 		System.out.println(msg);
 	}
 
@@ -105,14 +116,14 @@ public class Server extends AbstractServer {
 	 * value: {@value} true if user exists, else false
 	 **/
 	private boolean DoesUserExists(String username) {
-		Thread[] clients = getClientConnections();
-
-		for (Thread client : clients) {
-			if (client.getName() == username) {
-				return true;
-			}
-		}
-
+//		Thread[] clients = getClientConnections();
+//
+//		for (Thread client : clients) {
+//			if (client.getName() == username) {
+//				return true;
+//			}
+//		}
+		if(clients.containsKey(username)) return true;
 		return false;
 	}
 
