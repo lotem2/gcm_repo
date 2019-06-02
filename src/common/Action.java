@@ -16,5 +16,6 @@ public enum Action {
 	ADD_CITY,
 	ADD_ROUTE,
 	ADD_PURCHASE,
-	DISCONNECT
+	GET_CITY_PRICE, 
+	BUY
 }

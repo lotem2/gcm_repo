@@ -314,6 +314,10 @@ public class MainGUIController implements ControllerListener {
 			@Override
 			public void run() {
 				ObservableList<Map> mapsList = FXCollections.observableArrayList();
+//				while (!maps.isEmpty())
+//				{
+//					mapsList.add(new Map(maps));
+//				}
 				//col_map.setCellValueFactory(new PropertyValueFactory<Map, String>("Map"));
 				col_mapDescription.setCellValueFactory(new PropertyValueFactory<Map, String>("mapDescription"));
 				col_city.setCellValueFactory(new PropertyValueFactory<Map, String>("city"));

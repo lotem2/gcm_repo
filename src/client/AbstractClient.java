@@ -210,7 +210,7 @@ public AbstractClient() {
    * Sets the server host for the next connection.
    * The change in host only takes effect at the time of the
    * next call to openConnection().
-   *
+   * 
    * @param host the host name.
    */
   final public void setHost(String host)
@@ -329,7 +329,6 @@ public AbstractClient() {
       //Close the socket
       if (clientSocket != null)
         clientSocket.close();
-
       //Close the output stream
       if (output != null)
         output.close();

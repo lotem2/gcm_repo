@@ -100,8 +100,12 @@ public class MainGUI extends Application {
 	
 	@Override
 	public void stop(){
-		MainGUI.GUIclient.quit();
-
+		try {
+			MainGUI.GUIclient.closeConnection();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 
