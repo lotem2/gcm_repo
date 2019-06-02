@@ -9,5 +9,6 @@ public enum Action {
 	SEARCH,
 	EDIT_SITE,
 	ADD_PURCHASE,
-	DISCONNECT
+	GET_CITY_PRICE, 
+	BUY
 }

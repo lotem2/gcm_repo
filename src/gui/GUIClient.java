@@ -42,7 +42,11 @@ public class GUIClient extends AbstractClient {
 		try {
 			closeConnection();
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		System.exit(0);
+	}
+	
+	protected void connectionClosed() {
 	}
 }
