@@ -3,7 +3,7 @@ package gui;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 import javax.swing.ButtonGroup;
@@ -13,6 +13,8 @@ import common.Action;
 import common.Message;
 import entity.Purchase;
 import entity.Purchase.PurchaseType;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -28,6 +30,10 @@ import javafx.scene.layout.AnchorPane;
 
 public class BuyController implements ControllerListener {
 
+	static HashMap<String, Float> citiesAndPrices;
+	static ArrayList<String> citiesList;
+	static ArrayList<String> terms;
+
 	@FXML
 	private ResourceBundle resources;
 
@@ -39,7 +45,7 @@ public class BuyController implements ControllerListener {
 
 	@FXML
 	private ChoiceBox<String> ChoiceBoxCities;
-	
+
 	@FXML
 	private ChoiceBox<String> ChoiceBoxTerms;
 
@@ -78,7 +84,7 @@ public class BuyController implements ControllerListener {
 
 	@FXML
 	private Label lblprice;
-	
+
 	@FXML
 	private Label lblTerm;
 
@@ -90,7 +96,7 @@ public class BuyController implements ControllerListener {
 
 	@FXML
 	private CheckBox checkBoxDownload;
-	
+
 	@FXML
 	private TextField tfCityDescription;
 
@@ -103,22 +109,43 @@ public class BuyController implements ControllerListener {
 	@FXML
 	private TextField tfTo;
 
-	@FXML
-	void Subscription(ActionEvent event) {
-		checkBoxDownload.setVisible(false);
-		ChoiceBoxTerms.setDisable(false);
-	}
-	
+//	@FXML
+//	void ShowPrice(ActionEvent event) {
+//		setPrice(rbSubscription.isSelected());
+//
+//	}
+
 	@FXML
 	void OneTimeTerm(ActionEvent event) {
+		lblTotalPrice.setText("Total Price: ");
 		checkBoxDownload.setVisible(true);
 		ChoiceBoxTerms.setDisable(true);
+		checkBoxDownload.setDisable(false);
+		setPrice(rbSubscription.isSelected(), "", "");
+
 	}
-	
+
+	@FXML
+	void Subscription(ActionEvent event) {
+		lblTotalPrice.setText("Total Price: ");
+		checkBoxDownload.setVisible(true);
+		ChoiceBoxTerms.setDisable(false);
+		// add a listener
+		ChoiceBoxTerms.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+
+			// if the item of the list is changed
+			public void changed(ObservableValue ov, Number value, Number new_value) {
+				String currTerm = ChoiceBoxTerms.getValue();
+				setPrice(rbSubscription.isSelected(), "", terms.get(new_value.intValue()));
+			}
+		});
+
+	}
+
 	@FXML
 	void Download(ActionEvent event) {
 	}
-	
+
 	@FXML
 	void Buy(ActionEvent event) {
 		try {
@@ -164,7 +191,7 @@ public class BuyController implements ControllerListener {
 				data.add(m_price);
 
 				myMessage = new Message(Action.BUY, data);
-				//MainGUI.GUIclient.sendToServer(myMessage);
+				MainGUI.GUIclient.sendToServer(myMessage);
 			} else {
 				JOptionPane.showMessageDialog(null, "One or more fields are either incorrect or empty", "",
 						JOptionPane.INFORMATION_MESSAGE);
@@ -182,27 +209,32 @@ public class BuyController implements ControllerListener {
 		MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
 	}
 
-
 	@Override
 	public void handleMessageFromServer(Object msg) {
 		Message currMsg = (Message) msg;
 		switch (currMsg.getAction()) {
 		case GET_CITY_PRICE:
 			try {
-				
-		       
-		        //assert(currMsg.getData().get(1) instanceof ArrayList<?>);
-		       // ObservableList<String> list = FXCollections.observableArrayList(
-		        //		(ArrayList<String>)currMsg.getData().get(1));
-		        //ChoiceBoxCities.setItems(list);
-			} catch(Exception e) {
+				citiesAndPrices = (HashMap<String, Float>) currMsg.getData().get(1);
+				ArrayList<String> list = null;
+				if (citiesAndPrices != null) {
+					citiesList = new ArrayList<String>(citiesAndPrices.keySet());
+				}
+				ObservableList<String> currCitiesList = FXCollections.observableArrayList(citiesList);
+				ChoiceBoxCities.setItems(currCitiesList);
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			break;
 		case BUY:
+			if(checkBoxDownload.isPressed()) {
+				Message myMessage;
+				ArrayList<Object> data = new ArrayList<Object>();
+				data.add(ChoiceBoxCities.getValue());
+				myMessage = new Message(Action.DOWNLOAD_PURCHASE, data);
+			}
 			if ((Integer) currMsg.getData().get(0) == 0) {
-				JOptionPane.showMessageDialog(null, "Order Complete!", "",
-						JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Order Complete!", "", JOptionPane.INFORMATION_MESSAGE);
 				MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
 			}
 
@@ -211,60 +243,74 @@ public class BuyController implements ControllerListener {
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 			break;
+		case DOWNLOAD_PURCHASE:
+			
+			break;
 		default:
 		}
 	}
 
+	public String setPrice(boolean isSubscription, String city, String term) {
+		float price;
+		if (city.isBlank()) {
+			city = ChoiceBoxCities.getValue();
+		}
+		price = citiesAndPrices.get(city);
+		if (isSubscription) {
+			if (term.isBlank()) {
+				term = ChoiceBoxTerms.getValue();
+			}
+			switch (term) {
+			case "1 Month":
+				price *= 1.8;
+				break;
+			case "3 Months":
+				price *= 2.8;
+				break;
+			case "6 Months":
+				price *= 5.7;
+				break;
+			default:
+			}
+		}
+		String totalPrice = Float.toString(price);
+		lblTotalPrice.setText("Totla Price: " + totalPrice);
+		return totalPrice;
+	}
+
 	@FXML
 	void initialize() {
-		 ArrayList<String> cities = new ArrayList<String>();
-	        cities.add("Nahariya");
-	        cities.add("Haifa");
-	        cities.add("Tel aviv");
-	        ObservableList<String> list = FXCollections.observableArrayList(cities);
-	        ChoiceBoxCities.setItems(list);
-	        
-			 ArrayList<String> terms = new ArrayList<String>();
-			 terms.add("1 Month");
-			 terms.add("3 Months");
-			 terms.add("6 Months");
-		       list = FXCollections.observableArrayList(terms);
+		ChoiceBoxCities.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 
-		        ChoiceBoxTerms.setItems(list);
-		        
-		        ToggleGroup group = new ToggleGroup();
-		        rbBuyOnce.setToggleGroup(group);
-		        rbSubscription.setToggleGroup(group);
-//		ArrayList<Object> data = new ArrayList<Object>();
-//		data.add(0);
-//		Message myMessage = new Message(Action.GET_CITIES, data);
-//		try {
-//			MainGUI.GUIclient.sendToServer(myMessage);
-//		} catch (Exception e) {
-//			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message", "Error",
-//					JOptionPane.WARNING_MESSAGE);
-//		}
-////        assert BuyWindow != null : "fx:id=\"BuyWindow\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert CoiceBoxCities != null : "fx:id=\"CoiceBoxCities\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert btnBackToMain != null : "fx:id=\"btnBackToMain\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert btnBuy != null : "fx:id=\"btnBuy\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert btnLogOut != null : "fx:id=\"btnLogOut\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert lblCityChoice != null : "fx:id=\"lblCityChoice\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert lblCityDescription != null : "fx:id=\"lblCityDescription\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert lblCityName != null : "fx:id=\"lblCityName\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert lblDiscount != null : "fx:id=\"lblDiscount\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert lblPurchase != null : "fx:id=\"lblPurchase\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert lblSubsriptionChoice != null : "fx:id=\"lblSubsriptionChoice\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert lblTo != null : "fx:id=\"lblTo\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert lblTotalPrice != null : "fx:id=\"lblTotalPrice\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert lblfrom != null : "fx:id=\"lblfrom\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert lblprice != null : "fx:id=\"lblprice\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert rbBuyOnce != null : "fx:id=\"rbBuyOnce\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert rbSubsrciption != null : "fx:id=\"rbSubsrciption\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert tfCityDescription != null : "fx:id=\"tfCityDescription\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert tfCityName != null : "fx:id=\"tfCityName\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert tfFrom != null : "fx:id=\"tfFrom\" was not injected: check your FXML file 'BuyScene.fxml'.";
-////        assert tfTo != null : "fx:id=\"tfTo\" was not injected: check your FXML file 'BuyScene.fxml'.";
-//
+			public void changed(ObservableValue ov, Number value, Number new_value) {
+
+				rbBuyOnce.setDisable(false);
+				rbSubscription.setDisable(false);
+				setPrice(rbSubscription.isSelected(), citiesList.get(new_value.intValue()), "");
+
+			}
+		});
+
+		terms = new ArrayList<String>();
+		terms.add("1 Month");
+		terms.add("3 Months");
+		terms.add("6 Months");
+		ObservableList<String> list = FXCollections.observableArrayList(terms);
+		ChoiceBoxTerms.setItems(list);
+
+		ToggleGroup group = new ToggleGroup();
+		rbBuyOnce.setToggleGroup(group);
+		rbSubscription.setToggleGroup(group);
+
+		ArrayList<Object> data = new ArrayList<Object>();
+		data.add(0);
+		Message myMessage = new Message(Action.GET_CITY_PRICE, data);
+		try {
+			MainGUI.GUIclient.sendToServer(myMessage);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message", "Error",
+					JOptionPane.WARNING_MESSAGE);
+		}
+
 	}
 }

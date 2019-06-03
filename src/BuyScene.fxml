@@ -11,11 +11,11 @@
 <AnchorPane fx:id="BuyWindow" prefHeight="775.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.BuyController">
   <children>
     <Button fx:id="btnBuy" layoutX="305.0" layoutY="691.0" mnemonicParsing="false" onAction="#Buy" prefHeight="27.0" prefWidth="80.0" text="Buy" />
-    <RadioButton id="rb" fx:id="rbBuyOnce" layoutX="331.0" layoutY="244.0" mnemonicParsing="false" onAction="#OneTimeTerm" selected="true" text="One-time Subsription">
+    <RadioButton id="rb" fx:id="rbBuyOnce" disable="true" layoutX="331.0" layoutY="244.0" mnemonicParsing="false" onAction="#OneTimeTerm" selected="true" text="One-time Subsription">
          <font>
             <Font size="13.0" />
          </font></RadioButton>
-    <RadioButton fx:id="rbSubscription" layoutX="331.0" layoutY="337.0" mnemonicParsing="false" onAction="#Subscription" text="Subscription">
+    <RadioButton fx:id="rbSubscription" disable="true" layoutX="331.0" layoutY="337.0" mnemonicParsing="false" onAction="#Subscription" text="Subscription">
          <font>
             <Font size="13.0" />
          </font></RadioButton>
@@ -57,6 +57,6 @@
             </FXCollections>
          </items>
       </ChoiceBox>
-      <CheckBox fx:id="checkBoxDownload" layoutX="352.0" layoutY="289.0" mnemonicParsing="false" onAction="#Download" text="Download maps" />
+      <CheckBox fx:id="checkBoxDownload" disable="true" layoutX="352.0" layoutY="289.0" mnemonicParsing="false" onAction="#Download" text="Download maps" />
   </children>
 </AnchorPane>
