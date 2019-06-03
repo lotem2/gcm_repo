@@ -23,16 +23,12 @@ import entity.Map;
 import entity.Site;
 import entity.User;
 import javafx.beans.binding.BooleanBinding;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
@@ -51,7 +47,12 @@ import javafx.stage.FileChooser;
 public class EditWindowController implements ControllerListener {
 
 	GUIClient client;
-	URL URLImage;
+	Boolean addCity=false;
+	Boolean addMap=false;
+	Map myMap;
+	City myCity;
+	Site mySite;
+	//Route myRoute;
 	
     @FXML
     private ResourceBundle resources;
@@ -64,9 +65,13 @@ public class EditWindowController implements ControllerListener {
     @FXML
     private TitledPane accPaneMap;
     @FXML
-    private ChoiceBox<String> accessibilityChoser;
+    private SplitMenuButton accessibiltyChoser;
     @FXML
-    private Button btnAddSiteToRoute;
+    private MenuItem accessibleNo;
+    @FXML
+    private MenuItem accessibleYes;
+    @FXML
+    private Button addSiteToRoute;
     @FXML
     private Button btnBackToMain;
     @FXML
@@ -80,11 +85,7 @@ public class EditWindowController implements ControllerListener {
     @FXML
     private Button btnSaveSite;
     @FXML
-    private ChoiceBox<String> categoryChoser;
-    @FXML
-    private CheckBox checkBoxShowOnMap;
-    @FXML
-    private ChoiceBox<String> cityChoser;
+    private SplitMenuButton cityChoser;
     @FXML
     private TableColumn<Site, String> col_estTime;
     @FXML
@@ -99,8 +100,6 @@ public class EditWindowController implements ControllerListener {
     private Label lbLocation;
     @FXML
     private Label lblAccessibilty;
-    @FXML
-    private Label lblCategory;
     @FXML
     private Label lblCity;
     @FXML
@@ -130,19 +129,29 @@ public class EditWindowController implements ControllerListener {
     @FXML
     private Label lblWelcome;
     @FXML
-    private ChoiceBox<String> mapChoser;
+    private MenuItem mapName1;
     @FXML
     private ImageView mapView;
+    @FXML
+    private SplitMenuButton mapsChoser;
+    @FXML
+    private MenuItem newCity;
+    @FXML
+    private MenuItem newMap;
     @FXML
     private AnchorPane paneCities;
     @FXML
     private AnchorPane paneMap;
     @FXML
-    private ChoiceBox<String> routesChoser;
+    private SplitMenuButton routesChoser;
     @FXML
-    private ChoiceBox<String> siteChoser;
+    private SplitMenuButton siteChoser;
     @FXML
-    private ChoiceBox<String> sitesChoserForRoutes;
+    private SplitMenuButton sitesChoserForRoutes;
+    @FXML
+    private SplitMenuButton categoriesChoser;
+    @FXML
+    private MenuItem Historic;
     @FXML
     private TableView<Site> tableRouteDeatils;
     @FXML
@@ -167,39 +176,31 @@ public class EditWindowController implements ControllerListener {
     private TextField tfY;
     @FXML
     private TextField tfrouteDescription;
-
-//    void SaveCity(ActionEvent event) {
-//		try {
-//			String selection = cityChoser.getSelectionModel().getSelectedItem();
-//			Message myMessage;
-//			String cityName = tfCityName.getText();
-//			String cityDescription = tfCityDescription.getText();
-//			if (selection.equals("Add New City"))
-//				myMessage = new Message(Action.ADD_CITY,cityName,cityDescription);
-//			else
-//				myMessage = new Message(Action.EDIT_CITY,cityName,cityDescription);
-//			MainGUI.GUIclient.sendToServer(myMessage);
-//		} catch (IOException e) {
-//			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
-//					"Error", JOptionPane.WARNING_MESSAGE);
-//			MainGUI.GUIclient.quit();
-//		}
-//    }
+    
     @FXML
     void SaveCity(ActionEvent event) {
+		try {
+			Message myMessage;
+			String cityName = tfCityName.getText();
+			String cityDescription = tfCityDescription.getText();
+			myMessage = new Message(Action.ADD_CITY,cityName,cityDescription);
+			//myMessage = new Message(Action.EDIT_CITY,cityName,cityDescription);
+			MainGUI.GUIclient.sendToServer(myMessage);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
+					"Error", JOptionPane.WARNING_MESSAGE);
+			MainGUI.GUIclient.quit();
+		}
     }
     
     @FXML
     void SaveMap(ActionEvent event) {
 		try {
 			Message myMessage;
-			String selection = mapChoser.getSelectionModel().getSelectedItem();
 			//String mapName = tfMapName.getText();
 			String mapDescription = tfMapDescription.getText();
-			if (selection.equals("Add New Map"))
-				myMessage = new Message(Action.ADD_MAP,/*mapName,*/mapDescription,URLImage);
-			else
-				myMessage = new Message(Action.EDIT_MAP,/*mapName,*/mapDescription,URLImage);
+			myMessage = new Message(Action.ADD_MAP,/*mapName,*/mapDescription);
+			//myMessage = new Message(Action.EDIT_MAP,/*mapName,*/cityDescription);
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
@@ -212,15 +213,12 @@ public class EditWindowController implements ControllerListener {
     void SaveSite(ActionEvent event) {
 		try {
 			Message myMessage;
-			String selection = siteChoser.getSelectionModel().getSelectedItem();
 			String siteName = tfSiteName.getText();
 			String siteDescription = tfSiteDescription.getText();
 			String x = tfX.getText();
 			String y = tfY.getText();
-			if (selection.equals("Add New Site"))
-				myMessage = new Message(Action.ADD_SITE,siteName,siteDescription,x,y);
-			else
-				myMessage = new Message(Action.EDIT_SITE,siteName,siteDescription,x,y);
+			myMessage = new Message(Action.ADD_SITE,siteName,siteDescription);
+			//myMessage = new Message(Action.EDIT_SITE,siteName,cityDescription);
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
@@ -233,13 +231,10 @@ public class EditWindowController implements ControllerListener {
     void SaveRoute(ActionEvent event) {
 		try {
 			Message myMessage;
-			String selection = routesChoser.getSelectionModel().getSelectedItem();
 			//String routeName = tfRouteName.getText();
 			String routeDescription = tfCityDescription.getText();
-			if (selection.equals("Add New Route"))
-				myMessage = new Message(Action.ADD_ROUTE,/*routeName,*/routeDescription);
-			else
-				myMessage = new Message(Action.EDIT_ROUTE,/*routeName,*/routeDescription);
+			myMessage = new Message(Action.ADD_ROUTE,/*routeName,*/routeDescription);
+			//myMessage = new Message(Action.EDIT_ROUTE,/*routeName,*/RouteDescription);
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
@@ -263,27 +258,6 @@ public class EditWindowController implements ControllerListener {
         setSaveSiteBooleanBinding();
         setSaveRouteBooleanBinding();
         setAddSiteBooleanBinding();
-        setCategoriesList();
-        setAccessibleList();
-		Permission permission = MainGUI.currClient.getPermission();
-		switch (permission) {
-		case CLIENT:
-			lblEditorTool.setText("Map Viewer");
-			setShowWindow();
-			break;
-		case EDITOR:
-			tfPrice.setDisable(true);
-			tfVersion.setDisable(true);
-			break;
-		case MANAGING_EDITOR:
-
-			break;
-		case CEO:
-
-			break;
-		default:
-
-		}
     }
     
     @FXML
@@ -318,32 +292,6 @@ public class EditWindowController implements ControllerListener {
     	tfX.clear();
     	tfY.clear();
     }
-    
-	void setShowWindow() 
-	{		
-		btnAddSiteToRoute.setVisible(false);
-		btnBrowse.setVisible(false);
-		btnSaveCity.setVisible(false);
-		btnSaveMap.setVisible(false);
-		btnSaveRoute.setVisible(false);
-		btnSaveSite.setVisible(false);
-		sitesChoserForRoutes.setVisible(false);
-		categoryChoser.setDisable(true);
-		accessibilityChoser.setDisable(true);
-		tfPrice.setDisable(true);
-		tfVersion.setDisable(true);
-		tfX.setVisible(false);
-		tfY.setVisible(false);
-		lbLocation.setVisible(false);
-		tfCityDescription.setDisable(true);
-		tfCityName.setDisable(true);
-		tfMapDescription.setDisable(true);
-		tfMapName.setDisable(true);
-		tfSiteDescription.setDisable(true);
-		tfSiteName.setDisable(true);
-		tfrouteDescription.setDisable(true);
-	}
-	
 	void setSaveCityBooleanBinding() 
 	{
 		BooleanBinding booleanBind;
@@ -370,48 +318,10 @@ public class EditWindowController implements ControllerListener {
 	}
     void setAddSiteBooleanBinding()	{
 		BooleanBinding booleanBind;
-		booleanBind = (tfrouteDescription.textProperty().isEmpty().or(tfCityName.textProperty().isEmpty()).or(tfCityDescription.textProperty().isEmpty()));
+		booleanBind = (tfrouteDescription.textProperty().isEmpty());
 		btnSaveRoute.disableProperty().bind(booleanBind);
 	}
-      
-    void setCategoriesList()
-    {
-	 ArrayList<String> categories = new ArrayList<String>();
-	 categories.add("Add New Category");
-	 categories.add("Cinema");
-	 categories.add("Historic Place");
-	 categories.add("Hotel");
-	 categories.add("Mall");
-	 categories.add("Museum");
-	 categories.add("Public Institution");
-	 categories.add("Restaurant");
-	 categories.add("Shop");
-	 categories.add("University");
-     ObservableList<String> list = FXCollections.observableArrayList(categories);
-     categoryChoser.setItems(list);
-    }
-    
-    void setAccessibleList()
-    {
-	 ArrayList<String> accessible = new ArrayList<String>();
-	 accessible.add("Yes");
-	 accessible.add("No");
-     ObservableList<String> list = FXCollections.observableArrayList(accessible);
-     accessibilityChoser.setItems(list);
-    }
-    
-//    void setObjectList(ArrayList<String> objects, ChoiceBox myChoiceBox)
-//    {
-//	 ArrayList<String> objectsList = new ArrayList<String>();
-//	 while ((objects).hasNext()){
-//     MenuItem item = new MenuItem(objectsList.next());
-//     item.setOnAction(a->{ 
-//     });
-//     objectsList.getItems().add(item);
-//     ObservableList<String> list = FXCollections.observableArrayList(objectsList);
-//     myChoiceBox.setItems(list);
-//    }
-    
+	
     
 	@Override
 	public void handleMessageFromServer(Object msg) 
@@ -447,7 +357,6 @@ public class EditWindowController implements ControllerListener {
             try {
                 BufferedImage bufferedImage = ImageIO.read(file);
                 Image image = SwingFXUtils.toFXImage(bufferedImage, null);
-                URLImage = file.toURI().toURL();
                 mapView.setImage(image);
             } catch (IOException ex) {
                 Logger.getLogger(EditWindowController.class.getName()).log(Level.SEVERE, null, ex);
@@ -455,13 +364,26 @@ public class EditWindowController implements ControllerListener {
         }
     };
     
-  
-    
-    
-    
-//    @FXML
-//    void addSite(ActionEvent event) {
+//    void loadSplitMenu(HashMap<>objects) {
+//    	 while (objects.hasNext()){
+//    	     MenuItem item = new MenuItem(objects.next());
+//    	     item.setOnAction(a->{ 
+//    	     });
+//    	     cityChoser.getItems().add(item);
+//    	 }
 //    }
+    
+//      String getChoice(ComboBox myMenu) {
+//    	  String myChoice = (String) myMenu.getValue();
+//    	  return myChoice;
+//      }
+    
+    
+    
+    
+    @FXML
+    void addSite(ActionEvent event) {
+    }
 
 
     @FXML
