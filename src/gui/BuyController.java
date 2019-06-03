@@ -232,6 +232,7 @@ public class BuyController implements ControllerListener {
 				ArrayList<Object> data = new ArrayList<Object>();
 				data.add(ChoiceBoxCities.getValue());
 				myMessage = new Message(Action.DOWNLOAD_PURCHASE, data);
+				//MainGUI.GUIclient.sendToServer(myMessage);
 			}
 			if ((Integer) currMsg.getData().get(0) == 0) {
 				JOptionPane.showMessageDialog(null, "Order Complete!", "", JOptionPane.INFORMATION_MESSAGE);
