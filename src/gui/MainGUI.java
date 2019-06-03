@@ -75,6 +75,7 @@ public class MainGUI extends Application {
 		MainGUI.MainStage = primaryStage;
 		GUIclient = new GUIClient();
 		GUIclient.setHost(InetAddress.getLocalHost().getHostAddress().toString());
+		//GUIclient.setHost("132.74.210.35");
 		GUIclient.setPort(5555);
 		GUIclient.openConnection();
 		

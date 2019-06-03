@@ -55,8 +55,10 @@ public class CityDB {
 				throw new Exception("No cities where found.");
 			}
 			
+			rs.beforeFirst();
+			
 			// Read data
-			while(!rs.next()) {
+			while(rs.next()) {
 				cities.put(rs.getString("name"), rs.getFloat("price"));
 			}
 
