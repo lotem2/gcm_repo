@@ -74,7 +74,8 @@ GUIClient client;
     @FXML
     void initialize() {
     	//setTableViewForClients(clients);
-    	lblWelcome.setText("Welcome " + MainGUI.currClient.getUserName() + "!");
+    	
+    	lblWelcome.setText("Welcome " + MainGUI.currUser.getUserName() + "!");
     }
 
 	@Override
