@@ -153,13 +153,13 @@ public final class Services extends TimerTask {
 	@Override
 	public void run() {
 		// Daily functions - reminder to clients which expiry date of their purchases is 3 days from today
-		PurchaseDB.getInstance().sendReminders(LocalDate.now().minusDays(3)); 
+		PurchaseDB.getInstance().sendReminders(LocalDate.now().plusDays(3)); 
 	}
 	
 	/**
 	 * Private method to set the timer variables to run at the start of every day - 12am
 	 */
-	public void setTimer() {
+	public static void setTimer() {
 		Calendar current_time = Calendar.getInstance();
 		
 		// Set current time to 12am
