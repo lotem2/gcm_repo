@@ -163,7 +163,6 @@ public class MainGUIController implements ControllerListener {
 			JOptionPane.showMessageDialog(null,
 					e.toString() + " Could not send message to server.  Terminating client.", "Error",
 					JOptionPane.WARNING_MESSAGE);
-			// quit();
 		}
 	}
 
@@ -224,6 +223,7 @@ public class MainGUIController implements ControllerListener {
 					btnLogin.setVisible(false);
 					btnRegister.setVisible(false);
 					btnLogout.setVisible(true);
+					MainGUI.currUser = (User) currMsg.getData().get(1);
 					Permission permission = ((User) currMsg.getData().get(1)).getPermission();
 					switch (permission) {
 					case CLIENT:
@@ -338,8 +338,8 @@ public class MainGUIController implements ControllerListener {
 		MainGUI.MainStage.setTitle("Global City Map - Clients Management");
 		MainGUI.openScene(SceneType.ClientsManagement);
 	}
-//<<<<<<< HEAD
-    @FXML
+
+	@FXML
     void EditMaps(ActionEvent event) {
 		MainGUI.MainStage.setTitle("Global City Map - Edit Tool");
 		MainGUI.openScene(SceneType.Edit);
@@ -355,36 +355,4 @@ public class MainGUIController implements ControllerListener {
 		booleanBind = (tfCitySearch.textProperty().isEmpty()).and(tfSiteSearch.textProperty().isEmpty()).and(tfDesSearch.textProperty().isEmpty());
 		btnSearch.disableProperty().bind(booleanBind);
 	}
-	
-	
-//=======
-
-//>>>>>>> branch 'master' of https://github.com/lotem2/gcm_repo
-	/*
-	 * public void windowClosing(WindowEvent e) {
-	 * 
-	 * // if my Server exist
-	 * 
-	 * if(server != null) {
-	 * 
-	 * try {
-	 * 
-	 * server.stop(); // ask the server to close the conection
-	 * 
-	 * }
-	 * 
-	 * catch(Exception eClose) {
-	 * 
-	 * }
-	 * 
-	 * server = null;
-	 * 
-	 * }
-	 * 
-	 * // dispose the frame
-	 * 
-	 * dispose();
-	 * 
-	 * System.exit(0); }
-	 */
 }
