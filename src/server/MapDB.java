@@ -112,8 +112,59 @@ public class MapDB {
 	}
 
 	/**
+	 * Add new map to database
+	 * @param params - Contain new map's details
+	 * @return {@link Message} - Indicating success/failure with corresponding message 
+	 */
+	public Message AddNewMap(ArrayList<Object> params){
+		// Variables
+		ArrayList<Object> data = new ArrayList<Object>();
+		int changedRows = 0;
+
+		try {
+			// Connect to DB
+			SQLController.Connect();
+
+			// Check if the map to add is already in the database
+			if(SQLController.DoesRecordExist("Maps", "mapname", "cityname", "description", 
+					params.get(0), params.get(1), params.get(2)))
+				throw new Exception("Map already exists.");
+
+			// Prepare statement to insert new map
+			String sql = "INSERT INTO Maps (`mapname`, `cityname`, `description`, `url`)" +
+						 " VALUES (?, ?, ?, ?)";
+
+			// Add the conversion of the map's image url to byte array to params object
+			params.add(setImage(params.get(3).toString()));
+
+			// Execute sql query, get number of changed rows
+			changedRows = SQLController.ExecuteUpdate(sql, params);
+
+			// Check if update was successful - result should be greater than zero
+			if (changedRows == 0) {
+				 throw new Exception("Map was not added successfully.");
+			}
+			
+			// Create data to match the success pattern
+			data.add(new Integer(0)); data.add(new String("Map was added successfully."));
+		}
+		catch (SQLException e) {
+			data.add(new Integer(1)); data.add(new String("There was a problem with the SQL service."));
+		}
+		catch(Exception e) {
+			data.add(new Integer(1)); data.add(e.getMessage());
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(null);
+		}
+
+		return new Message(null, data);
+	}
+	
+	/**
 	 * Add a new site to the requested map
-	 * @param params - Contain new site's details and map and city id
+	 * @param params - Contain new site's details and map and city name
 	 * @return {@link Message} - Indicating success/failure with corresponding message
 	 */
 	public Message AddSiteToMap(ArrayList<Object> params){
@@ -124,7 +175,8 @@ public class MapDB {
 
 		try {
 			// Check if a new map version is currently under management approval
-			if(SQLController.DoesRecordExist("Inbox","content", "status", "Approve new version", "New"))
+			if(SQLController.DoesRecordExist("Inbox","content", "status", 
+					"Approve " + params.get(0).toString() + " new version", "New"))
 				throw new Exception("New version is under approval, cannot save new changes.");
 
 			// Check if number of parameters is higher than 3 - indicating a new site is been added
@@ -136,20 +188,16 @@ public class MapDB {
 				
 				// Throwing exception in case the site's addition to Sites table was unsuccessful
 				if (SiteDB.getInstance().AddSite(sitedetails) == 0) throw new Exception("Unable to add the site.");
-
-				// Prepare insert statement
-				sql = "INSERT INTO BridgeMSC (`mapID`, `siteID`, `cityID`) VALUES (?, ?, (SELECT id FROM Sites WHERE name = ?))";
-				
-				// Get the correct parameters for the map-site relation query
-				params = (ArrayList<Object>)params.subList(0, 2);
 			}
-			else {
-				// Prepare statement to insert new map-site relation
-				sql = "INSERT INTO BridgeMSC (`mapID`, `siteID`, `cityID`) VALUES (?, ?, ?)";
 
-				// Get the correct parameters for the map-site relation query
-				params = (ArrayList<Object>)params.subList(0, 3);
-			}
+			// Prepare insert statement
+			sql = "INSERT INTO BridgeMSC (`mapID`, `siteID`, `cityID`) "
+					+ "VALUES ((SELECT id FROM Maps WHERE mapname = ?), "
+					+ 		  "(SELECT id FROM Cities WHERE name = ?), "
+					+ 		  "(SELECT id FROM Sites WHERE name = ?))";
+
+			// Get the correct parameters for the map-site relation query
+			params = (ArrayList<Object>)params.subList(0, 3);
 
 			// Connect to DB
 			SQLController.Connect();
@@ -181,9 +229,10 @@ public class MapDB {
 	}
 	
 	/**
-	 * Add a new site to the requested map
-	 * @param params - Contain new site's details and map and city id
-	 * @return {@link Message} - Indicating success/failure with corresponding message
+	 * Get maps list according to the requested city
+	 * @param params - Contain city name
+	 * @return {@link Message} - Contain {@link ArrayList} of type {@link Map} if retrieval succeeded, 
+	 * else failure message
 	 */
 	public Message getMapsByCity(ArrayList<Object> params){
 		// Variables
