@@ -1,5 +1,8 @@
 package server;
 
+import java.awt.Point;
+import java.io.File;
+import java.nio.file.Files;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -109,6 +112,256 @@ public class MapDB {
 	}
 
 	/**
+	 * Add a new site to the requested map
+	 * @param params - Contain new site's details and map and city id
+	 * @return {@link Message} - Indicating success/failure with corresponding message
+	 */
+	public Message AddSiteToMap(ArrayList<Object> params){
+		// Variables
+		ArrayList<Object> data 		  = new ArrayList<Object>();
+		int 			  changedRows = 0;
+		String 			  sql 		  = "";
+
+		try {
+			// Check if a new map version is currently under management approval
+			if(SQLController.DoesRecordExist("Inbox","content", "status", "Approve new version", "New"))
+				throw new Exception("New version is under approval, cannot save new changes.");
+
+			// Check if number of parameters is higher than 3 - indicating a new site is been added
+			if (params.size() > 3) {
+				ArrayList<Object> sitedetails = new ArrayList<Object>(params.subList(3, params.size()));
+
+				// Adding name, location and is_active to the parameters for the WHERE clause
+				sitedetails.add(params.get(3)); sitedetails.add(params.get(8));
+				
+				// Throwing exception in case the site's addition to Sites table was unsuccessful
+				if (SiteDB.getInstance().AddSite(sitedetails) == 0) throw new Exception("Unable to add the site.");
+
+				// Prepare insert statement
+				sql = "INSERT INTO BridgeMSC (`mapID`, `siteID`, `cityID`) VALUES (?, ?, (SELECT id FROM Sites WHERE name = ?))";
+				
+				// Get the correct parameters for the map-site relation query
+				params = (ArrayList<Object>)params.subList(0, 2);
+			}
+			else {
+				// Prepare statement to insert new map-site relation
+				sql = "INSERT INTO BridgeMSC (`mapID`, `siteID`, `cityID`) VALUES (?, ?, ?)";
+
+				// Get the correct parameters for the map-site relation query
+				params = (ArrayList<Object>)params.subList(0, 3);
+			}
+
+			// Connect to DB
+			SQLController.Connect();
+
+			// Execute sql query, get number of changed rows
+			changedRows = SQLController.ExecuteUpdate(sql, params);
+
+			// Check if update was successful - result should be greater than zero
+			if (changedRows == 0)
+				 throw new Exception("Site was not added successfully.");
+
+			data.add(new Integer(0));	// Add 0 to indicate success
+			
+			}
+		catch (SQLException e) {
+			data.add(new Integer(1));
+			data.add("There was a problem with the SQL service.");
+		}
+		catch(Exception e) {
+			data.add(new Integer(1));
+			data.add(e.getMessage());
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(null);
+		}
+
+		return new Message(null, data);
+	}
+	
+	/**
+	 * Add a new site to the requested map
+	 * @param params - Contain new site's details and map and city id
+	 * @return {@link Message} - Indicating success/failure with corresponding message
+	 */
+	public Message getMapsByCity(ArrayList<Object> params){
+		// Variables
+		ArrayList<Map>  maps 	 = new ArrayList<Map>();
+		ArrayList<Site> sites;
+		Message 		replyMsg = null;
+		ResultSet 		rs 		 = null;
+
+		try {
+			// Connect to DB
+			SQLController.Connect();
+
+			String sql = "SELECT * FROM Maps WHERE cityname = ?"; // Prepare SELECT query
+			
+			// Execute sql query, get results
+			rs = SQLController.ExecuteQuery(sql, params);
+
+			// check if query succeeded
+			if(!rs.next()) {
+				throw new Exception("No map was found.");
+			}
+
+			rs.beforeFirst(); // Return cursor to the start of the first row
+			
+			// Reads data
+			while (rs.next())
+			{
+				int id = rs.getInt("mapID");
+				String mapname = rs.getString("mapname");
+				String description = rs.getString("description");
+				String cityname = rs.getString("cityname");
+				byte[] image = rs.getBytes("url");
+
+				// Clear lists of parameters for the next queries and add the desired parameter
+				params.clear(); params.add(id);
+
+				// Get map's list of sites
+				Object mapSites = SiteDB.getInstance().getSitesbyMap(params);
+
+				// Set the list of sites as null in case of a prbolem with the database/no sites for this map
+				sites = ((Message)mapSites).getData().get(1) instanceof String ? null : 
+					(ArrayList<Site>)((Message)mapSites).getData().get(1);
+
+				// Add current instance of Map to the array list
+				maps.add(new Map(id, mapname, description, cityname, sites, image));
+			}
+
+			replyMsg = new Message(null, maps);	// Add content of the array list to the message
+		}
+		catch (SQLException e) {
+			replyMsg = new Message(null, new Integer(1), e.getMessage());
+		}
+		catch(Exception e) {
+			replyMsg = new Message(null, new Integer(1), e.getMessage());
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(rs);	
+		}
+
+		return replyMsg;
+	}
+	
+	/**
+	 * Update details in database of the current map's new version, set current version as active
+	 * @param params - Contain the id of the map to be updated
+	 * @return {@link Message} - Indicating success/failure with corresponding message
+	 */
+	public Message PublishNewVersion(ArrayList<Object> params){
+		// Variables
+		ArrayList<Map>  maps 	 = new ArrayList<Map>();
+		ArrayList<Site> sites;
+		Message 		replyMsg = null;
+		ResultSet 		rs 		 = null;
+
+		try {
+			// Connect to DB
+			SQLController.Connect();
+
+			// Prepare DELETE 
+			String sql = "DELETE FROM BridgeMSC " +
+						 "WHERE mapID = ? AND is_active = ? AND to_delete = ?";
+			
+			// Execute sql query, get results
+			rs = SQLController.ExecuteQuery(sql, params);
+
+			// check if query succeeded
+			if(!rs.next()) {
+				throw new Exception("No map was found.");
+			}
+
+			rs.beforeFirst(); // Return cursor to the start of the first row
+			
+			// Reads data
+			while (rs.next())
+			{
+				int id = rs.getInt("mapID");
+				String mapname = rs.getString("mapname");
+				String description = rs.getString("description");
+				String cityname = rs.getString("cityname");
+				byte[] image = rs.getBytes("url");
+
+				// Clear lists of parameters for the next queries and add the desired parameter
+				params.clear(); params.add(id);
+
+				// Get map's list of sites
+				Object mapSites = SiteDB.getInstance().getSitesbyMap(params);
+
+				// Set the list of sites as null in case of a prbolem with the database/no sites for this map
+				sites = ((Message)mapSites).getData().get(1) instanceof String ? null : 
+					(ArrayList<Site>)((Message)mapSites).getData().get(1);
+
+				// Add current instance of Map to the array list
+				maps.add(new Map(id, mapname, description, cityname, sites, image));
+			}
+
+			replyMsg = new Message(null, maps);	// Add content of the array list to the message
+		}
+		catch (SQLException e) {
+			replyMsg = new Message(null, new Integer(1), e.getMessage());
+		}
+		catch(Exception e) {
+			replyMsg = new Message(null, new Integer(1), e.getMessage());
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(rs);	
+		}
+
+		return replyMsg;
+	}
+
+	/**
+	 * Delete sites from map
+	 * @param params - Contain map's id where the sites should be deleted
+	 * @return int - Indicating number of rows affected
+	 * @throws Exception 
+	 */
+	public int RemoveSitesFromMap(ArrayList<Object> params) throws Exception{
+		// Variables
+		ArrayList<Object> data = new ArrayList<Object>();
+		int changedRows = 0;
+
+		try {
+			// Connect to DB
+			SQLController.Connect();
+			
+			// Prepare DELETE query to delete the sites from the map after map's publishing
+			String sql = "DELETE FROM BridgeMSC " +
+						 "WHERE mapID = ? AND is_active = ? AND to_delete = ?";
+
+			// Add parameters to complete the query
+			params.add(true); params.add(true);
+
+			// Execute sql query, get number of changed rows
+			changedRows = SQLController.ExecuteUpdate(sql, params);
+
+			// Check if update was successful - result should be greater than zero
+			if (changedRows == 0) {
+				 throw new Exception("Site was not added successfully.");
+			}
+			
+			}
+		catch (SQLException e) {
+			throw e;
+		}
+		catch(Exception e) {
+			throw e;
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(null);
+		}
+
+		return changedRows;
+	}
+
+	/**
 	 * Providing the sql search query according to the search criteria
 	 * @param params - {@link ArrayList} of the search parameters
 	 * @return String - the sql query with indicate if search was by site/city
@@ -176,5 +429,27 @@ public class MapDB {
 								"AND " + sql.split(":")[1];
 
 		return sql;
+	}
+	
+	/**
+	 * Private method to turn image to byte array to be saved in database
+	 * @param path - image's path
+	 * @return byte array representing image
+	 */
+	private byte[] setImage(String path) {
+		if (path == null)
+			return null;
+		else {
+			// Get real path of image
+			path = path.substring(path.indexOf("file:/") + 6, path.length());
+			File file = new File(path); // try to open the file in path
+			try {
+					return Files.readAllBytes(file.toPath()); // reads content of image as byte
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+		return null;
 	}
 }
