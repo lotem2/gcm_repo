@@ -8,7 +8,11 @@ import java.util.ArrayList;
 /**
  * Entity that represents a Map object in the GCM system
  */
-public class Map {
+public class Map implements java.io.Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int id;
 	private String description;
 	private String cityname;
@@ -27,7 +31,7 @@ public class Map {
 	 */
 	public Map(int id, String mapname, String description, String cityname, ArrayList<Site> sites, byte[] image) {
 		this.id = id;
-		this.mapname = mapname;
+		this.setName(mapname);
 		this.description = description;
 		this.cityname = cityname;
 		this.sites = sites;
@@ -40,6 +44,22 @@ public class Map {
 	 */
 	public int getID() {
 		return id;
+	}
+
+	/**
+	 * Get map's idname
+	 * @return String
+	 */
+	public String getName() {
+		return mapname;
+	}
+
+	/**
+	 * Set map's name
+	 * @param name
+	 */
+	public void setName(String mapname) {
+		this.mapname = mapname;
 	}
 
 	/**
