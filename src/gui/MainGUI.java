@@ -33,20 +33,15 @@ import entity.User;
 public class MainGUI extends Application {
 
 	enum SceneType {
-///<<<<<<< HEAD
 		MAIN_GUI,
 		REGISTER,
 		BUY,
 		ClientProfile,
 		ClientsManagement,
 		Edit
-//=======
-		//MAIN_GUI, REGISTER, BUY, ClientProfile, ClientsManagement,
-//>>>>>>> branch 'master' of https://github.com/lotem2/gcm_repo
 	}
 
 	static final Map<SceneType, String> sceneFxmlLocationMapping = Map.ofEntries(
-//<<<<<<< HEAD
 	    Map.entry(SceneType.MAIN_GUI, "/MainGUIScene.fxml"),
 	    Map.entry(SceneType.REGISTER, "/RegisterScene.fxml"),
 	    Map.entry(SceneType.BUY, "/BuyScene.fxml"),
@@ -55,12 +50,6 @@ public class MainGUI extends Application {
 	    Map.entry(SceneType.Edit, "/EditScene.fxml")
 	);
 	
-//=======
-			//Map.entry(SceneType.MAIN_GUI, "/MainGUIScene.fxml"), Map.entry(SceneType.REGISTER, "/RegisterScene.fxml"),
-			//Map.entry(SceneType.BUY, "/BuyScene.fxml"), Map.entry(SceneType.ClientProfile, "/ClientProfileScene.fxml"),
-			//Map.entry(SceneType.ClientsManagement, "/ClientManagementScene.fxml"));
-
-//>>>>>>> branch 'master' of https://github.com/lotem2/gcm_repo
 	static final Map<SceneType, Pair<Scene, ControllerListener>> sceneMapping = new HashMap<>();
 
 	static Stage MainStage;
@@ -79,24 +68,15 @@ public class MainGUI extends Application {
 		GUIclient.setPort(5555);
 		GUIclient.openConnection();
 		
-//	    //set icon of the application
-//        Image applicationIcon = new Image(getClass().getResourceAsStream(""));
-//        primaryStage.getIcons().add(applicationIcon);
+		// set icon of the application
+		// Image applicationIcon = new Image(getClass().getResourceAsStream(""));
+        // primaryStage.getIcons().add(applicationIcon);
 		
 		primaryStage.setTitle("Global City Map");
 		primaryStage.setResizable(false);
 
 		openScene(SceneType.MAIN_GUI);
-//<<<<<<< HEAD
-//		Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-//        primaryStage.setX((screenBounds.getWidth() - primaryStage.getWidth()) / 2);
-//        primaryStage.setY((screenBounds.getHeight() - primaryStage.getHeight()) / 2);
-		primaryStage.show(); 
-
-//=======
-
 		primaryStage.show();
-//>>>>>>> branch 'master' of https://github.com/lotem2/gcm_repo
 	}
 	
 	@Override
@@ -134,7 +114,6 @@ public class MainGUI extends Application {
 			}
 		});
 	}
-
 
 	// final public static int DEFAULT_PORT = 5555;
 	public static void main(String[] args) {

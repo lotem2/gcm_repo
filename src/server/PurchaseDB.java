@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import server.SQLController;
 import common.*;
 import entity.*;
@@ -205,6 +207,7 @@ public class PurchaseDB {
 			while (rs.next()) 
 			{
 				Purchase currPurchase = new Purchase(
+						rs.getString("username"),
 						rs.getString("cityName"), 
 						PurchaseType.valueOf(rs.getString("purchaseType").toUpperCase()), 
 						rs.getDate("purchaseDate").toLocalDate(),
@@ -229,5 +232,52 @@ public class PurchaseDB {
 		}
 
 		return purchases;
+	}
+
+	/**
+	 * Method that runs every start of a new day, sends reminders to clients that their purchase is 
+	 * about to expire in 3 days from today
+	 * @param expireDate - the expire date of 3 days three days prior to today 
+	 * @return {@link ArrayList} - an {@link ArrayList} of type {@link Purchase} which satisfies the conditions
+	 */
+	public void sendReminders(LocalDate expireDate){
+		// Variables
+		ArrayList<Purchase> 	  purchases = new ArrayList<Purchase>();
+		ArrayList<Object> 	  	  data 		= new ArrayList<Object>();
+		HashMap<Purchase, String> users 	= new HashMap<Purchase, String>();
+		ResultSet				  rs		= null;
+
+		try {
+			// Get the list of purchases with expire date equals to the expireDate parameter
+			data.add(expireDate);
+			Message msg = getPurchasesByExpiryDate(data);
+
+			// If there are no purchases with this expiry date or there was a sql error stop the function
+			if(msg.getData().get(1) instanceof String) return;
+
+			purchases = (ArrayList<Purchase>)msg.getData().get(1);
+			
+			// Clear data array list for the next query and adds the parameters for it
+			data.clear();
+			for (Purchase purchase : purchases) {
+				data.add(purchase.getUserName());
+			}
+
+			// Get the first name and email of the clients using getUsersDetails from UserD
+			HashMap<String, String> details = UsersDB.getInstance().getUsersDetails(data);
+			
+			if(details == null) return; // Check for null object
+
+			// Build HashMap object for the mail reminder method
+			for (int i = 0; i < details.size(); i++) {
+				users.put(purchases.get(i), details.get(purchases.get(i).getUserName()));
+			}
+
+			// Send the clients a reminder via mail using Services' sendReminderMail
+			Services.sendReminderMail(users);			
+		}
+		catch(Exception e) {
+			e.printStackTrace();;
+		}
 	}
 }

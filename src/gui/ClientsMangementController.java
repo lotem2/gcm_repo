@@ -78,6 +78,8 @@ GUIClient client;
 	 */
     @FXML
     void initialize() {
+    void initialize() 
+    {
     	//setTableViewForClients(clients);
     	lblWelcome.setText("Welcome " + MainGUI.currClient.getUserName() + "!");
 		Message myMessage = new Message(Action.SHOW_ALL_CLIENTS);					
