@@ -79,6 +79,14 @@ public class Server extends AbstractServer {
 				replyMsg = CityDB.getInstance().getCity(currMsg.getData());
 				replyMsg.setAction(Action.GET_CITY);
 				break;
+			case DAILY_REPORT:
+				replyMsg = ReportsDB.getInstance().produceDailyReport();
+				replyMsg.setAction(Action.DAILY_REPORT);
+				break;
+			case ACTIVITY_REPORT:
+				replyMsg = ReportsDB.getInstance().produceActivityReport((currMsg.getData()));
+				replyMsg.setAction(Action.ACTIVITY_REPORT);
+				break;
 			default:
 				break;
 			}
