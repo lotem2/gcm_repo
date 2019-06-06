@@ -8,6 +8,7 @@ public enum Action {
     SHOW_ALL_CLIENTS,
     GET_CITIES_LIST,
     GET_CITY,
+    GET_ALL_SITES_LIST,
 	SEARCH,
 	EDIT_SITE,
 	EDIT_MAP,
@@ -19,6 +20,7 @@ public enum Action {
 	ADD_ROUTE,
 	ADD_PURCHASE,
 	GET_CITY_PRICE, 
+	GET_USER_PURCHASES,
 	BUY,
 	DOWNLOAD_PURCHASE
 }

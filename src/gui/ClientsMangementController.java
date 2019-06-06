@@ -47,29 +47,31 @@ GUIClient client;
     private TableColumn<Client, String> col_FirstName;
     @FXML
     private TableColumn<Client, String> col_LastName;
-    @FXML
-    private TableColumn<Client, String> col_Purchases;
+//    @FXML
+//    private TableColumn<Client, String> col_Purchases;
     @FXML
     private TableColumn<Client, String> col_Telephone;
     @FXML
     private TableColumn<Client, String> col_UserName;
     @FXML
     private Button btnMain;
-//    @FXML
-////    private Button btnShowDetails;
+    @FXML
+    private Button btnShowDetails;
     @FXML
     private Label lblWelcome;
 
 
     @FXML
     void backToMainGUI(ActionEvent event) {
+		MainGUI.MainStage.setTitle("Global City Map");
 		MainGUI.openScene(SceneType.MAIN_GUI);
     }
 
-//    @FXML
-//    void ShowDetails(ActionEvent event) {
-//		MainGUI.openScene(MainGUI.SceneType.ClientProfile);
-//    }
+    @FXML
+    void ShowDetails(ActionEvent event) {
+		MainGUI.MainStage.setTitle("Global City Map - User's Profile");
+		MainGUI.openScene(MainGUI.SceneType.ClientProfile);
+    }
 	/**
 	 *
 	 *	initializing the scene, sending the request of getting the clients list from the server.
@@ -80,7 +82,7 @@ GUIClient client;
     void initialize() 
     {
     	//setTableViewForClients(clients);
-    	lblWelcome.setText("Welcome " + MainGUI.currClient.getUserName() + "!");
+    	lblWelcome.setText("Welcome " + MainGUI.currUser.getUserName() + "!");
 		Message myMessage = new Message(Action.SHOW_ALL_CLIENTS);					
 		try {
 			MainGUI.GUIclient.sendToServer(myMessage);
@@ -133,9 +135,9 @@ GUIClient client;
 				col_LastName.setCellValueFactory(new PropertyValueFactory<Client, String>("LastName"));
 				col_Telephone.setCellValueFactory(new PropertyValueFactory<Client, String>("Telephone"));
 				col_Email.setCellValueFactory(new PropertyValueFactory<Client, String>("Email"));
-				col_Purchases.setCellValueFactory(new PropertyValueFactory<Client, String>("Purchases"));
+				//col_Purchases.setCellValueFactory(new PropertyValueFactory<Client, String>("Purchases"));
 
-				clientsTable.getColumns().addAll(col_UserName, col_FirstName, col_LastName,col_Telephone,col_Email,col_Purchases);
+				clientsTable.getColumns().addAll(col_UserName, col_FirstName, col_LastName,col_Telephone,col_Email/*,col_Purchases*/);
 				clientsTable.setItems(clientsList);
 			}
 		});

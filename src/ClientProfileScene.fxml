@@ -64,13 +64,11 @@
               <children>
                 <TableView fx:id="purchasesTable" layoutX="5.0" layoutY="14.0" prefHeight="391.0" prefWidth="669.0">
                   <columns>
-                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="69.0" text="Map" fx:id="col_map" />
-                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="140.0" text="Map description" fx:id="col_mapDescription" />
-                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="59.0" text="City" fx:id="col_city" />
-                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="130.0" text="City description" fx:id="col_cityDescription" />
-                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="123.0" text="Type of Account" fx:id="col_typeOfAccount" />
-                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="62.0" text="Price" fx:id="col_price" />
-                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="84.0" text="Version" fx:id="col_version" />
+                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="92.0" text="City" fx:id="col_cityName" />
+                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="140.0" text="Purchase Type" fx:id="col_purchaseType" />
+                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="181.0" text="Purchase Date" fx:id="col_purchaseDate" />
+                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="144.0" text="Expiry Date" fx:id="col_expiryDate" />
+                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="120.0" text="Price" fx:id="col_price" />
                   </columns>
                 </TableView>
                 <Button fx:id="btnWatchMap" layoutX="564.0" layoutY="440.0" mnemonicParsing="false" onAction="#Watch" text="Watch Map" />

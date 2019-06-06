@@ -18,6 +18,7 @@ import entity.Client;
 import entity.User;
 import gui.MainGUI.SceneType;
 import entity.Map;
+import entity.Purchase;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.application.Platform;
@@ -122,21 +123,17 @@ GUIClient client;
     @FXML
     private Button btnWatchMap;
     @FXML
-    private TableColumn<Map,String> col_city;
+    private TableColumn<Purchase, String> col_cityName;
     @FXML
-    private TableColumn<Map,String> col_cityDescription;
+    private TableColumn<Purchase, String>col_expiryDate;
     @FXML
-    private TableColumn<Map,String> col_map;
+    private TableColumn<Purchase, String> col_price;
     @FXML
-    private TableColumn<Map,String> col_mapDescription;
+    private TableColumn<Purchase, String> col_purchaseDate;
     @FXML
-    private TableColumn<Map,String> col_price;
+    private TableColumn<Purchase, String> col_purchaseType;
     @FXML
-    private TableColumn<Map,String> col_typeOfAccount;
-    @FXML
-    private TableColumn<Map,String> col_version;
-    @FXML
-    private TableView<Map> purchasesTable;
+    private TableView<Purchase> purchasesTable;
     @FXML
     private RadioButton rbChangeCreditNumber;
     @FXML
@@ -273,6 +270,7 @@ GUIClient client;
 		lblWelcome.setText("Welcome " + MainGUI.currClient.getUserName() + "!");
 		//setRadioButtonGroup();
 		setPersonalInfoBooleanBinding();
+		sendRequestToServer();
 		String telephoneAsString = String.valueOf(MainGUI.currClient.getTelephone());
 		long lastFourDigitsLong=Math.abs(MainGUI.currClient.getCardNumber())%10000;
 		int lastFourDigits=Math.toIntExact(lastFourDigitsLong);
@@ -305,6 +303,16 @@ GUIClient client;
 				}
 	}
 	
+	void sendRequestToServer() {
+		Message myMessage = new Message(Action.GET_USER_PURCHASES);
+		try {
+			MainGUI.GUIclient.sendToServer(myMessage);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message", "Error",
+					JOptionPane.WARNING_MESSAGE);
+		}
+	}
+	
 	void setRadioButtonGroup() {
 		final ToggleGroup radioButtonGroup = new ToggleGroup();
 		rbtnPreviousCreditCard.setToggleGroup(radioButtonGroup);
@@ -331,6 +339,7 @@ GUIClient client;
 	 */
     @FXML
     void backToMainGUI(ActionEvent event) {
+		MainGUI.MainStage.setTitle("Global City Map");
     	MainGUI.openScene(SceneType.MAIN_GUI);
     }
 	/**
@@ -351,6 +360,18 @@ GUIClient client;
 			else 
 				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
 						JOptionPane.WARNING_MESSAGE);
+		break;
+		case GET_USER_PURCHASES:
+			if ((Integer) currMsg.getData().get(0) == 0) 
+			{
+		    	ArrayList<Purchase> purchases = (ArrayList<Purchase>) currMsg.getData().get(1);
+				ObservableList<Purchase> currPurchasesList = FXCollections.observableArrayList(purchases);
+				setTableViewForPurchases(currPurchasesList);
+			}
+			else 
+				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
+						JOptionPane.WARNING_MESSAGE);
+		break;
 		default:
 		}
 	}
@@ -359,22 +380,20 @@ GUIClient client;
 	 *sets the table for maps that the user purchased
 	 *
      */
-	public void setTableViewForMaps(ArrayList<Map> maps) {
+	
+	public void setTableViewForPurchases(ObservableList<Purchase> currPurchasesList) {
 		Platform.runLater(new Runnable() {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void run() {
-				ObservableList<Map> mapsList = FXCollections.observableArrayList();
-				col_map.setCellValueFactory(new PropertyValueFactory<Map,String>("Map"));
-				col_mapDescription.setCellValueFactory(new PropertyValueFactory<Map,String>("mapDescription"));
-				col_city.setCellValueFactory(new PropertyValueFactory<Map,String>("city"));
-				col_cityDescription.setCellValueFactory(new PropertyValueFactory<Map,String>("cityDescription"));
-				col_price.setCellValueFactory(new PropertyValueFactory<Map,String>("price"));
-				col_version.setCellValueFactory(new PropertyValueFactory<Map,String>("version"));
-				col_typeOfAccount.setCellValueFactory(new PropertyValueFactory<Map,String>("typeOfAccount"));
+				col_cityName.setCellValueFactory(new PropertyValueFactory<Purchase,String>("City"));
+				col_purchaseType.setCellValueFactory(new PropertyValueFactory<Purchase,String>("Purchase Type"));
+				col_purchaseDate.setCellValueFactory(new PropertyValueFactory<Purchase,String>("Purchase Date"));
+				col_expiryDate.setCellValueFactory(new PropertyValueFactory<Purchase,String>("Expiry Date"));
+				col_price.setCellValueFactory(new PropertyValueFactory<Purchase,String>("Price"));
 
-				purchasesTable.getColumns().addAll(col_map, col_mapDescription, col_city,col_cityDescription,col_price,col_version,col_typeOfAccount);
-				purchasesTable.setItems(mapsList);
+				purchasesTable.getColumns().addAll(col_cityName, col_purchaseType, col_purchaseDate,col_expiryDate,col_price);
+				purchasesTable.setItems(currPurchasesList);
 			}
 		});
 	}

@@ -301,7 +301,6 @@ public class MainGUIController implements ControllerListener {
 				 HashMap<Integer, String> maps = new HashMap<>();
 					maps = (HashMap<Integer, String>) currMsg.getData().get(1);
 				 setTableViewForMapsSearchResult(maps);
-				//System.out.println(((Map) currMsg.getData().get(0)).toString());
 			 }
 //	      	 else {
 //	      		 clientUI.display(currMsg.getData().get(1).toString() + "\n"
@@ -357,11 +356,6 @@ public class MainGUIController implements ControllerListener {
     void EditMaps(ActionEvent event) {
 		MainGUI.MainStage.setTitle("Global City Map - Edit Tool");
 		MainGUI.openScene(SceneType.Edit);
-    }
-    @FXML
-    void UserList(ActionEvent event) {
-		MainGUI.MainStage.setTitle("Global City Map - UserList");
-		MainGUI.openScene(SceneType.ClientsManagement);
     }
     
 	void setSearchInfoBooleanBinding() {
