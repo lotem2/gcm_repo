@@ -1,11 +1,13 @@
 package gui;
 
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,9 +22,12 @@ import entity.City;
 import entity.Client;
 import entity.Employee;
 import entity.Map;
+import entity.Route;
 import entity.Site;
 import entity.User;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -45,6 +50,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 
 
@@ -168,25 +174,24 @@ public class EditWindowController implements ControllerListener {
     @FXML
     private TextField tfrouteDescription;
 
-//    void SaveCity(ActionEvent event) {
-//		try {
-//			String selection = cityChoser.getSelectionModel().getSelectedItem();
-//			Message myMessage;
-//			String cityName = tfCityName.getText();
-//			String cityDescription = tfCityDescription.getText();
-//			if (selection.equals("Add New City"))
-//				myMessage = new Message(Action.ADD_CITY,cityName,cityDescription);
-//			else
-//				myMessage = new Message(Action.EDIT_CITY,cityName,cityDescription);
-//			MainGUI.GUIclient.sendToServer(myMessage);
-//		} catch (IOException e) {
-//			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
-//					"Error", JOptionPane.WARNING_MESSAGE);
-//			MainGUI.GUIclient.quit();
-//		}
-//    }
+    
     @FXML
     void SaveCity(ActionEvent event) {
+		try {
+		String selection = cityChoser.getSelectionModel().getSelectedItem();
+		Message myMessage;
+		String cityName = tfCityName.getText();
+		String cityDescription = tfCityDescription.getText();
+		if (selection.equals("Add New City"))
+			myMessage = new Message(Action.ADD_CITY,cityName,cityDescription);
+		else
+			myMessage = new Message(Action.EDIT_CITY,cityName,cityDescription);
+		MainGUI.GUIclient.sendToServer(myMessage);
+	} catch (IOException e) {
+		JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
+				"Error", JOptionPane.WARNING_MESSAGE);
+		MainGUI.GUIclient.quit();
+	}
     }
     
     @FXML
@@ -265,6 +270,13 @@ public class EditWindowController implements ControllerListener {
         setAddSiteBooleanBinding();
         setCategoriesList();
         setAccessibleList();
+		Message myMessage = new Message(Action.GET_CITIES_LIST);
+		try {
+			MainGUI.GUIclient.sendToServer(myMessage);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message", "Error",
+					JOptionPane.WARNING_MESSAGE);
+		}
 		Permission permission = MainGUI.currClient.getPermission();
 		switch (permission) {
 		case CLIENT:
@@ -287,7 +299,7 @@ public class EditWindowController implements ControllerListener {
     }
     
     @FXML
-    void addNewCity(ActionEvent event) {
+    void addNewCity() {
     	tfCityName.clear();
     	tfCityDescription.clear();
     	tfrouteDescription.clear();
@@ -295,7 +307,7 @@ public class EditWindowController implements ControllerListener {
     }
 
     @FXML
-    void addNewMap(ActionEvent event) {
+    void addNewMap() {
     	tfMapName.clear();
     	tfMapDescription.clear();
     	tfVersion.clear();
@@ -306,13 +318,13 @@ public class EditWindowController implements ControllerListener {
     }
 
     @FXML
-    void addNewRoute(ActionEvent event) {
+    void addNewRoute() {
     	tfrouteDescription.clear();
     	tableRouteDeatils.getItems().clear();
     }
     
     @FXML
-    void addNewSite(ActionEvent event) {
+    void addNewSite() {
     	tfSiteName.clear();
     	tfSiteDescription.clear();
     	tfX.clear();
@@ -399,32 +411,135 @@ public class EditWindowController implements ControllerListener {
      ObservableList<String> list = FXCollections.observableArrayList(accessible);
      accessibilityChoser.setItems(list);
     }
-    
-//    void setObjectList(ArrayList<String> objects, ChoiceBox myChoiceBox)
-//    {
-//	 ArrayList<String> objectsList = new ArrayList<String>();
-//	 while ((objects).hasNext()){
-//     MenuItem item = new MenuItem(objectsList.next());
-//     item.setOnAction(a->{ 
-//     });
-//     objectsList.getItems().add(item);
-//     ObservableList<String> list = FXCollections.observableArrayList(objectsList);
-//     myChoiceBox.setItems(list);
-//    }
-    
-    
+   
 	@Override
 	public void handleMessageFromServer(Object msg) 
 	{
-	Message currMsg = (Message) msg;
-	if ((Integer) currMsg.getData().get(0) == 0) 
-		JOptionPane.showMessageDialog(null, "All the changes have been saved succesfully", "Notification",
-				JOptionPane.INFORMATION_MESSAGE);
-	else 
-		JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
-				JOptionPane.WARNING_MESSAGE);
+		Message currMsg = (Message) msg;
+		switch (currMsg.getAction()) 
+		{
+			case GET_CITIES_LIST:
+			{
+			    	ArrayList<String> cities = (ArrayList<String>) currMsg.getData().get(1);
+			    	cities.add(0, "Add New City");
+					ObservableList<String> currCitiesList = FXCollections.observableArrayList(cities);
+					cityChoser.setItems(currCitiesList);
+			}
+			break;
+			case GET_CITY:
+			{
+			    	City currCity = (City) currMsg.getData().get(1);
+			    	setMapsChoiceBox(currCity);
+			    	setRoutesChoiceBox(currCity);
+			}
+			break;
+			default:
+			{
+				if ((Integer) currMsg.getData().get(0) == 0) 
+					JOptionPane.showMessageDialog(null, "All the changes have been saved succesfully", "Notification",
+							JOptionPane.INFORMATION_MESSAGE);
+				else 
+					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
+							JOptionPane.WARNING_MESSAGE);
+			}
+		}
 	}
-
+	
+	void setAllChoiceBoxes(ArrayList<String> cities) 
+	{
+		cityChoser.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() 
+		{
+			// if the item of the list is changed
+			public void changed(ObservableValue ov,Number number1, Number number2) 
+			{
+				String currCityName = cityChoser.getValue();
+				if (currCityName=="Add New City")
+					addNewCity();
+				else
+				{
+					Message myMessage = new Message(Action.GET_CITY,currCityName);					
+					try {
+						MainGUI.GUIclient.sendToServer(myMessage);
+					}
+					catch (Exception e) 
+					{
+						JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message to the Server", "Error",
+								JOptionPane.WARNING_MESSAGE);
+					}
+					
+				}
+			
+			}
+		});
+	}
+	
+	void setMapsChoiceBox(City currCity) 
+	{
+    	ArrayList<Map> maps = currCity.getMaps();
+    	ArrayList<String> mapsList = new ArrayList<String>();
+		if (maps != null) {
+		      Iterator<Map> itr = maps.iterator();
+		      mapsList.add("Add New Map");
+		      while(itr.hasNext()) {
+		    	  mapsList.add(maps.get(0).getDescription());
+		      }
+		}
+		ObservableList<String> currMapsList = FXCollections.observableArrayList(mapsList);
+		mapChoser.setItems(currMapsList);
+	
+	}
+	
+	void setRoutesChoiceBox(City currCity) 
+	{
+    	ArrayList<Route> routes = currCity.getRoutes();
+    	ArrayList<String> routesList = new ArrayList<String>();
+		if (routes != null) {
+		      Iterator<Route> itr = routes.iterator();
+		      routesList.add("Add New Route");
+		      while(itr.hasNext()) {
+		    	  routesList.add(routes.get(0).getDescription());
+		      }
+		}
+		ObservableList<String> currRoutesList = FXCollections.observableArrayList(routesList);
+		routesChoser.setItems(currRoutesList);
+	}
+	
+	void setSitesChoiceBox(Map currMap) 
+	{
+    	ArrayList<Site> sites = currMap.getSites();
+    	ArrayList<String> sitesList = new ArrayList<String>();
+		if (sites != null) {
+		      Iterator<Site> itr = sites.iterator();
+		      sitesList.add("Add New Site");
+		      while(itr.hasNext()) {
+		    	  sitesList.add(sites.get(0).getName());
+		      }
+		}
+		ObservableList<String> currSitesList = FXCollections.observableArrayList(sitesList);
+		siteChoser.setItems(currSitesList);
+	}
+	
+	void setSitesOnRouteChoiceBox(Route currRoute) 
+	{
+    	ArrayList<Site> sites = currRoute.getSites();
+    	ArrayList<String> sitesList = new ArrayList<String>();
+		if (sites != null) {
+		      Iterator<Site> itr = sites.iterator();
+		      while(itr.hasNext()) {
+		    	  sitesList.add(sites.get(0).getName());
+		      }
+		}
+		ObservableList<String> currSitesList = FXCollections.observableArrayList(sitesList);
+		sitesChoserForRoutes.setItems(currSitesList);
+	}
+	
+	
+	
+	/**
+	 *
+	 *Button handler to choose an image for a map
+	 *
+	 */
     EventHandler<ActionEvent> btnLoadEventListener
     = new EventHandler<ActionEvent>(){
   
@@ -447,29 +562,30 @@ public class EditWindowController implements ControllerListener {
             try {
                 BufferedImage bufferedImage = ImageIO.read(file);
                 Image image = SwingFXUtils.toFXImage(bufferedImage, null);
-                URLImage = file.toURI().toURL();
+                URLImage = file.toURI().toURL();//saving the URL for using later
                 mapView.setImage(image);
             } catch (IOException ex) {
                 Logger.getLogger(EditWindowController.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     };
-    
-  
-    
-    
-    
-//    @FXML
-//    void addSite(ActionEvent event) {
-//    }
 
-
+	/**
+	 *
+	 *Button handler to choose an image for a map
+	 *
+	 */    
     @FXML
-    void addSiteToRoute(ActionEvent event) {
+    void paint(MouseEvent event) {
+    	mapView.setOnMouseClicked(e -> 
+	    {
+	        //System.out.println("["+e.getX()+", "+e.getY()+"]")
+	        Circle c = new Circle(e.getX(), e.getY(), 5, javafx.scene.paint.Color.RED);
+	        paneMap.getChildren().add(c);
+	        mapView.setOnMouseClicked(null);
+	    });
     }
-	
-	
-	
+    
 }
 
 

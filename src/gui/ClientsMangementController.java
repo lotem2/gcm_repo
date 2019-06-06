@@ -77,7 +77,6 @@ GUIClient client;
 	 * @param textField - textField.
 	 */
     @FXML
-    void initialize() {
     void initialize() 
     {
     	//setTableViewForClients(clients);
