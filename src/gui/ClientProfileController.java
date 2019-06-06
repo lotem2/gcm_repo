@@ -142,7 +142,12 @@ GUIClient client;
     @FXML
     private RadioButton rbtnPreviousCreditCard;
 
-
+	/**
+	 *
+	 *	Sets listener to specific TextField - Enable write on textField only digits Input.
+	 *
+	 * @param textField - textField.
+	 */
 	@FXML
 	void Save(ActionEvent event) 
 	{
@@ -167,22 +172,22 @@ GUIClient client;
 			if (password == null)
 				password = MainGUI.currClient.getPassword();
 			email = tfEmail.getText();
-			telephone = (tfphone.getText().isBlank() || tfphone.getText().length() <= 10) ?
+			telephone = (tfphone.getText().length() <= 10) ?
 					Long.parseLong(tfphone.getText()) : 0L;
 			if (!isValid(email)) 
 			{
-				JOptionPane.showMessageDialog(null, "The email address is invalid", "",
+				JOptionPane.showMessageDialog(null, "The email address is invalid", "Error",
 				JOptionPane.INFORMATION_MESSAGE);
 			}
 			if(rbChangeCreditNumber.isSelected())
 			{
 				//setCreditCardBooleanBinding();
 				setInputVerification();
-				id = (tfIDNumber.getText().isBlank() || tfIDNumber.getText().length() <= 9) ?
+				id = (tfIDNumber.getText().length() <= 9) ?
 						Long.parseLong(tfIDNumber.getText()) : 0L;
 				fullCardString = tfCreditCard1.getText() + tfCreditCard2.getText() + tfCreditCard3.getText()
 				+ tfCreditCard4.getText();						
-				cardNumber = (fullCardString.equals("") || fullCardString.length() >= 17) 
+				cardNumber = (fullCardString.length() >= 17) 
 						? 0L : Long.parseLong(fullCardString);	
 			}
 				//cardNumber =  Long.parseLong(fullCardString);
@@ -209,7 +214,11 @@ GUIClient client;
 			client.quit();
 		}
 	}
-	
+	/**
+	 *
+	 *method to disable the option to change the credit card details
+	 *
+	 */
     @FXML
     void samePaymentMethod(ActionEvent event) {
     	rbChangeCreditNumber.setSelected(false);
@@ -222,7 +231,11 @@ GUIClient client;
     	tfCreditCard3.setDisable(true);
     	tfCreditCard4.setDisable(true);
     }
-    
+	/**
+	 *
+	 *method to enable the option to change the credit card details
+	 * 
+	 */
     @FXML
     void changeCreditCard(ActionEvent event) {
     	rbtnPreviousCreditCard.setSelected(false);
@@ -238,16 +251,25 @@ GUIClient client;
     	//booleanBind = (tfIDNumber.disabledProperty()).and(tfExpiryDate.disabledProperty()).and(tfCreditCard1.disabledProperty()).and(tfCreditCard2.disabledProperty()).and(tfCreditCard3.disabledProperty()).and(tfCreditCard4.disabledProperty());
     	//rbChangeCreditNumber.selectedProperty().bind(booleanBind);
     }
-	
+	/**
+	 *
+	 *method to check the validation of the email address
+	 *
+	 *
+	 */
 
 	static boolean isValid(String email) {
 		   String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
 		   return email.matches(regex);
 	}
-
+	/**
+	 *set the initial details of the user in the fields
+	 *
+	 *
+	 *
+	 */
 	@FXML
 	void initialize() {
-		//set the initial details of the user in the fields
 		lblWelcome.setText("Welcome " + MainGUI.currClient.getUserName() + "!");
 		//setRadioButtonGroup();
 		setPersonalInfoBooleanBinding();
@@ -301,12 +323,22 @@ GUIClient client;
 //		}
 //	}}
 
-
+	/**
+	 *Loading the Main GUI
+	 *	
+	 *
+	 * 
+	 */
     @FXML
     void backToMainGUI(ActionEvent event) {
     	MainGUI.openScene(SceneType.MAIN_GUI);
     }
-
+	/**
+	 *handling the messages from the server
+	 *	
+	 *
+	 *
+	 */
 	@Override
 	public void handleMessageFromServer(Object msg) {
 		Message currMsg = (Message) msg;
@@ -322,7 +354,11 @@ GUIClient client;
 		default:
 		}
 	}
-	
+	/**
+	 *
+	 *sets the table for maps that the user purchased
+	 *
+     */
 	public void setTableViewForMaps(ArrayList<Map> maps) {
 		Platform.runLater(new Runnable() {
 			@SuppressWarnings("unchecked")
@@ -348,7 +384,14 @@ GUIClient client;
     }
 	
 
-    
+	/**
+	 *
+	 *If the user wants to change his details.
+	 *
+	 *Sets boolean binding on the New Credit Card details for the empty property
+	 *
+	 *
+	 */
 	void setCreditCardBooleanBinding() {
 		BooleanBinding booleanBind;
 		booleanBind = (tfIDNumber.textProperty().isEmpty()).or(tfExpiryDate.textProperty().isEmpty()).or(tfCreditCard1.textProperty().isEmpty()).or(tfCreditCard2.textProperty().isEmpty()).or(tfCreditCard3.textProperty().isEmpty()).or(tfCreditCard4.textProperty().isEmpty());
@@ -356,7 +399,12 @@ GUIClient client;
 		if(rbtnPreviousCreditCard.isSelected())
 			btnSave.disableProperty().unbind();
 	}
-	
+	/**
+	 *
+	 *Sets boolean binding to the Personal Info of the Client.
+	 *
+	 * @param Button Save - Button.
+	 */
 	void setPersonalInfoBooleanBinding() {
 		BooleanBinding booleanBind;
 		booleanBind = (tfFirstName.textProperty().isEmpty()).or(tfLastName.textProperty().isEmpty()).or(tfEmail.textProperty().isEmpty()).or(tfphone.textProperty().isEmpty());
