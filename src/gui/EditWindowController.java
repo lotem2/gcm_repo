@@ -261,7 +261,7 @@ public class EditWindowController implements ControllerListener {
 
     @FXML
     void initialize() {
-		lblWelcome.setText("Welcome " + MainGUI.currClient.getUserName() + "!");
+		lblWelcome.setText("Welcome " + MainGUI.currUser.getUserName() + "!");
         btnBrowse.setOnAction(btnLoadEventListener);
         setSaveCityBooleanBinding();
         setSaveMapBooleanBinding();
