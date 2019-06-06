@@ -1,6 +1,10 @@
 package server;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import common.*;
@@ -8,6 +12,7 @@ import entity.*;
 
 public class Server extends AbstractServer {
 	// Variables
+	private static final DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	final public static int DEFAULT_PORT = 5555;
 	static private HashMap<String, ConnectionToClient> clients;
 	public Server(int port) {
@@ -41,6 +46,8 @@ public class Server extends AbstractServer {
 					}
 
 					replyMsg.setAction(Action.LOGIN);
+					System.out.println("[" + sdf.format(Calendar.getInstance().getTime()) +  "] " + 
+							currMsg.getData().get(0).toString() + " has connected.");
 				}
 				break;
 			case LOGOUT:
@@ -64,17 +71,14 @@ public class Server extends AbstractServer {
 				replyMsg = CityDB.getInstance().getCitiesList();
 				replyMsg.setAction(Action.GET_CITY_PRICE);
 				break;
-			/*
-			 * case ADD_PURCHASE: params = new ArrayList<Object>();
-			 * params.add(((Client)client.getInfo("UserInfo")).getUsername());
-			 * client.sendToClient(PurchaseDB.getInstance().AddPurchase(params)); break;
-			 * case SHOW_CLIENT_DETAILS: params = new ArrayList<Object>();
-			 * params.add(((Client)client.getInfo("UserInfo")).getUsername());
-			 * 
-			 * replyMsg = UsersDB.getInstance().getUser(params);
-			 * if(((Integer)replyMsg.getData().get(0)) == 0) client.setInfo("UserInfo",
-			 * replyMsg.getData().get(1)); client.sendToClient(replyMsg); break;
-			 */
+			case SHOW_ALL_CLIENTS:
+				replyMsg = UsersDB.getInstance().getAllUsers();
+				replyMsg.setAction(Action.SHOW_ALL_CLIENTS);
+				break;	
+			case GET_CITY:
+				replyMsg = CityDB.getInstance().getCity(currMsg.getData());
+				replyMsg.setAction(Action.GET_CITY);
+				break;
 			default:
 				break;
 			}
@@ -88,7 +92,7 @@ public class Server extends AbstractServer {
 	/** Hook method to handle client's connection **/
 	protected void clientConnected(ConnectionToClient client) {
 		// display on server and clients that the client has connected.
-		String msg = "A Client has connected";
+		String msg = "[" + sdf.format(Calendar.getInstance().getTime()) +  "] A Client has connected";
 		System.out.println(msg);
 	}
 
@@ -102,9 +106,9 @@ public class Server extends AbstractServer {
 		String msg;
 
 		if (!client.getName().startsWith("Thread")) {
-			msg = client.getName() + " has disconnected.";
+			msg = "[" + sdf.format(Calendar.getInstance().getTime()) +  "] " + client.getName() + " has disconnected.";
 		} else {
-			msg = "A client has disconnected.";
+			msg = "[" + sdf.format(Calendar.getInstance().getTime()) +  "] A Client has disconnected";
 		}
 		
 		clients.remove(client.getName());
