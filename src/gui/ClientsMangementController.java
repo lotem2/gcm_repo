@@ -70,13 +70,33 @@ GUIClient client;
 //    void ShowDetails(ActionEvent event) {
 //		MainGUI.openScene(MainGUI.SceneType.ClientProfile);
 //    }
-
+	/**
+	 *
+	 *	initializing the scene, sending the request of getting the clients list from the server.
+	 *
+	 * @param textField - textField.
+	 */
     @FXML
     void initialize() {
     	//setTableViewForClients(clients);
     	lblWelcome.setText("Welcome " + MainGUI.currClient.getUserName() + "!");
+		Message myMessage = new Message(Action.SHOW_ALL_CLIENTS);					
+		try {
+			MainGUI.GUIclient.sendToServer(myMessage);
+		}
+		catch (Exception e) 
+		{
+			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message to the Server", "Error",
+					JOptionPane.WARNING_MESSAGE);
+		}
+    	
     }
-
+	/**
+	 *handling message from server, by getting all the clients details.
+	 *	
+	 *
+	 * 
+	 */
 	@Override
 	public void handleMessageFromServer(Object msg) {
 		// TODO Auto-generated method stub
@@ -84,8 +104,7 @@ GUIClient client;
 		switch (currMsg.getAction()) {
 		case SHOW_ALL_CLIENTS:
 			if ((Integer) currMsg.getData().get(0) == 0) {
-				JOptionPane.showMessageDialog(null, "Show the clients", "Notification",
-						JOptionPane.INFORMATION_MESSAGE);
+				setTableViewForClients((ArrayList<Client>)currMsg.getData().get(1));
 			} 
 			else {
 				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
@@ -96,7 +115,12 @@ GUIClient client;
 	
 		}	
 	}
-     
+	/**
+	 *
+	 *Setting the table for the client list
+	 *
+	 * @param textField - textField.
+	 */
 	public void setTableViewForClients(ArrayList<Client> clients) {
 		Platform.runLater(new Runnable() {
 			@SuppressWarnings("unchecked")
