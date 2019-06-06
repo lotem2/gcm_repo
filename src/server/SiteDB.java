@@ -162,7 +162,6 @@ public class SiteDB {
 		return new Message(null, data);
 	}
 
-
 	/**
 	 * Generic function for SELECT queries
 	 * @param sql - the SELECT query
@@ -187,7 +186,9 @@ public class SiteDB {
 				throw new Exception();
 			}
 
-			// Go through the result set and build the Purchase entity
+			rs.beforeFirst(); // Return cursor to the start of the first row
+			
+			// Go through the result set and build the site entity
 			while (rs.next())
 			{
 				// Reads location coordinates
@@ -227,19 +228,35 @@ public class SiteDB {
 	 */
 	public Message EditSite(ArrayList<Object> params) {
 		// Variables
-		ArrayList<Object> data = new ArrayList<Object>();
+		ArrayList<Object> data 		  = new ArrayList<Object>();
+		String 			  sql  		  = "";
+		int 			  changedRows = 0;
 
 		try {
-			// Connect to DB
-			SQLController.Connect();
+			// Check if a new map version is currently under management approval
+			if(SQLController.DoesRecordExist("Inbox","content", "status", "Approve new version", "New"))
+				throw new Exception("New version is under approval, cannot save new changes.");
 
-			// Prepare statement to insert new user
-			String sql = "UPDATE Sites SET name = ?, classification = ?, description = ?, accessible = ?, " +
-						 "visitDuration = ?, location = ? " +
-						 "WHERE name = ?";
+			// Adding parameters for the WHERE clause
+			params.add(params.get(0)); params.add(params.get(5));
 
-			// Execute sql query, get number of changed rows
-			int changedRows = SQLController.ExecuteUpdate(sql, params);
+			// Check if a change to the requested site was already made
+			if(SQLController.DoesRecordExist("Sites","name", "location","is_active", 
+					params.get(0), params.get(1), false)) {
+				// Prepare statement to insert new user
+				sql = "UPDATE Sites SET name = ?, classification = ?, description = ?, accessible = ?, " +
+							 "visitDuration = ?, location = ? " +
+							 "WHERE name = ?, location = ?, is_active = ?";	
+				
+				// Connect to DB
+				SQLController.Connect();
+
+				// Execute sql query, get number of changed rows
+				changedRows = SQLController.ExecuteUpdate(sql, params);
+			}
+			else {
+				changedRows = AddSite(params);	// Call the AddSite method to insert the new update to Sites table
+			}
 
 			// Check if update was successful - result should be greater than zero
 			if (changedRows == 0) {
@@ -267,48 +284,90 @@ public class SiteDB {
 	}
 
 	/**
-	 * Add a new site to database
-	 * @param params - Contain {@link Action} new site's details
-	 * @return {@link Message} - Indicating success/failure with corresponding message
+	 * Generic add site method
+	 * @param params - Contain new site's details and the ADD query
+	 * @return int - Indicating number of rows affected
+	 * @throws Exception 
 	 */
-	public Message AddSite(ArrayList<Object> params) {
+	public int AddSite(ArrayList<Object> params) throws Exception {
 		// Variables
 		ArrayList<Object> data = new ArrayList<Object>();
+		int changedRows = 0;
 
 		try {
 			// Connect to DB
 			SQLController.Connect();
-
-			// Prepare statement to insert new user
-			String sql = "INSERT INTO Sites (`name`, `cityname`, `classification`, `description`, `accessible`, " +
-						 "`visitDuration`, `location`) VALUES (?, ?, ?, ?, ?, ?, ?)" +
-						 "WHERE name = ?";
+			
+			// Prepare statement to insert new site
+			String sql = "INSERT INTO Sites (`name`, `classification`, `description`, `accessible`, " +
+						 "`visitDuration`, `location`, `is_active`)" +
+						 "VALUES (?, ?, ?, ?, ?, ?, ?) " +
+						 "WHERE name = ?, location = ?;";
 
 			// Execute sql query, get number of changed rows
-			int changedRows = SQLController.ExecuteUpdate(sql, params);
+			changedRows = SQLController.ExecuteUpdate(sql, params);
 
 			// Check if update was successful - result should be greater than zero
 			if (changedRows == 0) {
 				 throw new Exception("Site was not added successfully.");
 			}
-
-			// Add 0 to indicate success
-			data.add(new Integer(0));
-
+			
 			}
 		catch (SQLException e) {
-			data.add(new Integer(1));
-			data.add("There was a problem with the SQL service.");
+			throw e;
 		}
 		catch(Exception e) {
-			data.add(new Integer(1));
-			data.add(e.getMessage());
+			throw e;
 		}
 		finally {
 			// Disconnect DB
 			SQLController.Disconnect(null);
 		}
 
-		return (new Message(Action.EDIT_SITE, data));
+		return changedRows;
+	}
+	
+	/**
+	 * Generic add site method
+	 * @param params - Contain new site's details and the ADD query
+	 * @return int - Indicating number of rows affected
+	 * @throws Exception 
+	 */
+	public int ApproveSites(ArrayList<Object> params) throws Exception {
+		// Variables
+		ArrayList<Object> data = new ArrayList<Object>();
+		int changedRows = 0;
+
+		try {
+			// Connect to DB
+			SQLController.Connect();
+			
+			// Prepare statement to insert new site
+			String sql = "INSERT INTO Sites (`name`, `classification`, `description`, `accessible`, " +
+						 "`visitDuration`, `location`, `is_active`)" +
+						 "VALUES (?, ?, ?, ?, ?, ?, ?) " +
+						 "WHERE name = ?, location = ?;";
+
+			// Execute sql query, get number of changed rows
+			changedRows = SQLController.ExecuteUpdate(sql, params);
+
+			// Check if update was successful - result should be greater than zero
+			if (changedRows == 0) {
+				 throw new Exception("Site was not added successfully.");
+			}
+			
+			}
+		catch (SQLException e) {
+			throw e;
+		}
+		catch(Exception e) {
+			throw e;
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(null);
+		}
+
+		return changedRows;
 	}
 }

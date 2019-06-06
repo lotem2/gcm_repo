@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import common.*;
 import entity.*;
@@ -269,5 +270,57 @@ public class UsersDB {
 		}
 
 		return (new Message(Action.EDIT_USER_DETAILS, data));
+	}
+	
+	/**
+	 * Get first name and email of users for the email reminder
+	 * @param params - {@link ArrayList} of type {@link Object} containing list of user's username
+	 * @return {@link HashMap} - pairs of <first name-email> 
+	 */
+	public HashMap<String, String> getUsersDetails(ArrayList<Object> params){
+		// Variables
+		HashMap<String, String> details   = null;
+		ResultSet 		  		rs 		  = null;
+		ArrayList<Object> 		usernames = new ArrayList<Object>();
+
+		try { 
+			// Connect to DB
+			SQLController.Connect();
+
+			// Get every user name into an array list of objects for the query execution
+			for (String username : (ArrayList<String>)params.get(0)) {
+				usernames.add(username);
+			}
+
+			// Prepare statement to insert new user
+			String sql = "SELECT username, firstname, email FROM Users WHERE username IN (";
+
+			// Append '?,' as the number of users needed
+			for (int i = 0; i < usernames.size(); i++)
+				sql += "?,";
+
+			// Execute sql query, get number of changed rows
+			rs = SQLController.ExecuteQuery(sql.substring(0, sql.length()-1) + ")", usernames);
+
+			// If query was not successful returning null
+			if(!rs.next())
+				throw new Exception();
+
+			rs.beforeFirst();
+
+			// Read data
+			while (rs.next()) {
+				// Concatenate first name and email of the current user
+				details.put(rs.getString("username"), rs.getString("firstname") + "," + rs.getString("email"));
+			}
+		}
+		catch(Exception e) {
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(null);
+		}
+
+		return details;		
 	}
 }
