@@ -185,6 +185,72 @@ public class UsersDB {
 	}
 
 	/**
+	 * Get {@link ArrayList} of type {@link User} for management 
+	 * @return {@link Message} - Include details of all user in {@link ArrayList} or failure message
+	 */
+	public Message getAllUsers() {
+		// Variables
+		ArrayList<Client> clients = new ArrayList<Client>();
+		ArrayList<Object> data 	  = new ArrayList<Object>();
+		ResultSet         rs   	  = null;
+
+		try {
+			// Connect to DB
+			SQLController.Connect();
+
+			// Prepare statement to get current client's details
+			String sql = "SELECT * FROM Users WHERE permission = ?";
+
+			// Create parameters for query
+			ArrayList<Object> params = new ArrayList<Object>();
+			params.add("Client");
+
+			// Execute sql query, get results
+			rs = SQLController.ExecuteQuery(sql, params);
+
+			// check if query succeeded
+			if(!rs.next())
+				throw new Exception("Could not find any clients.");
+
+			rs.beforeFirst();
+			
+			// Reads data
+			while (rs.next()) {
+				Client currClient = new Client(
+								rs.getString("firstname"),
+								rs.getString("lastname"),
+								rs.getString("password"),
+								rs.getBytes("salt"),
+								rs.getString("username"),
+								rs.getString("email"),
+								Permission.valueOf(rs.getString("permission").toUpperCase()),
+								rs.getLong("telephone"),
+								rs.getLong("cardnumber"),
+								rs.getLong("id"),
+								rs.getDate("expirydate").toLocalDate());
+
+					clients.add(currClient);
+			}
+
+			data.add(new Integer(0)); data.add(clients); // Prepare data for success message
+		} 
+		catch (SQLException e) {
+			data.add(new Integer(1));
+			data.add("There was a problem with the SQL service.");
+		}
+		catch(Exception e) {
+			data.add(new Integer(1));
+			data.add(e.getMessage());
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(rs);
+		}
+
+		return new Message(null, data);
+	}
+	
+	/**
 	 * Verify the user's password
 	 * @param params -   given password, password from the db, client's salt from the db and user's permission.
 	 * @return Boolean - Indicates whether there was a match between given password and password from the db.
