@@ -190,6 +190,15 @@ public class BuyController implements ControllerListener {
 				data.add(m_Downloads);
 				data.add(m_price);
 
+				if(checkBoxDownload.isPressed()) {
+					Message myTempMessage;
+					ArrayList<Object> tempData = new ArrayList<Object>();
+					tempData.add(ChoiceBoxCities.getValue());
+					tempData.add(Purchase.PurchaseType.SHORT_TERM_PURCHASE);
+					myTempMessage = new Message(Action.DOWNLOAD_PURCHASE, tempData);
+					MainGUI.GUIclient.sendToServer(myTempMessage);
+				}
+				
 				myMessage = new Message(Action.BUY, data);
 				MainGUI.GUIclient.sendToServer(myMessage);
 			} else {
@@ -227,13 +236,6 @@ public class BuyController implements ControllerListener {
 			}
 			break;
 		case BUY:
-			if(checkBoxDownload.isPressed()) {
-				Message myMessage;
-				ArrayList<Object> data = new ArrayList<Object>();
-				data.add(ChoiceBoxCities.getValue());
-				myMessage = new Message(Action.DOWNLOAD_PURCHASE, data);
-				//MainGUI.GUIclient.sendToServer(myMessage);
-			}
 			if ((Integer) currMsg.getData().get(0) == 0) {
 				JOptionPane.showMessageDialog(null, "Order Complete!", "", JOptionPane.INFORMATION_MESSAGE);
 				MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);

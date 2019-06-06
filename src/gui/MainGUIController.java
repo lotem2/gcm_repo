@@ -184,7 +184,7 @@ public class MainGUIController implements ControllerListener {
 	@FXML
 	void Logout(ActionEvent event) {
 		ArrayList<Object> data = new ArrayList<Object>();
-		String userName = MainGUI.currClient.getUserName();
+		String userName = MainGUI.currUser.getUserName();
 		data.add(userName);
 		Message myMessage = new Message(Action.LOGOUT, data);
 		try {

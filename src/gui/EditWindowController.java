@@ -256,7 +256,7 @@ public class EditWindowController implements ControllerListener {
 
     @FXML
     void initialize() {
-		lblWelcome.setText("Welcome " + MainGUI.currClient.getUserName() + "!");
+		lblWelcome.setText("Welcome " + MainGUI.currUser.getUserName() + "!");
         btnBrowse.setOnAction(btnLoadEventListener);
         setSaveCityBooleanBinding();
         setSaveMapBooleanBinding();
@@ -265,7 +265,7 @@ public class EditWindowController implements ControllerListener {
         setAddSiteBooleanBinding();
         setCategoriesList();
         setAccessibleList();
-		Permission permission = MainGUI.currClient.getPermission();
+		Permission permission = MainGUI.currUser.getPermission();
 		switch (permission) {
 		case CLIENT:
 			lblEditorTool.setText("Map Viewer");
