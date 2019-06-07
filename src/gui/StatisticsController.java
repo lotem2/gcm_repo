@@ -183,21 +183,20 @@ public class StatisticsController implements ControllerListener {
 	@FXML
 	void ShowStatisticsAll(ActionEvent event) {
 		try {
-			String city = choiceBoxCity.getSelectionModel().getSelectedItem();
-			LocalDate fromDate = dpFrom.getValue();
-			LocalDate toDate = dpTo.getValue();
+			LocalDate fromDate = dpFromAll.getValue();
+			LocalDate toDate = dpToAll.getValue();
 			DateTimeFormatter dTF = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 			Message myMessage;
 
 			ArrayList<Object> data = new ArrayList<Object>();
-			myMessage = new Message(Action.CITY_ACTIVITY_REPORT, data);
+			myMessage = new Message(Action.ACTIVITY_REPORT, data);
 			data.add(dTF.format(fromDate));
 			data.add(dTF.format(toDate));
-			data.add(city);
 			MainGUI.GUIclient.sendToServer(myMessage);
-		} catch (Exception e) {
+		} catch (Exception e) { 
+			e.printStackTrace();
 			JOptionPane.showMessageDialog(null,
-					e.toString() + " Could not send message to server.  Terminating client.", "Error",
+					"Could not send message to server.  Terminating client.", "Error",
 					JOptionPane.WARNING_MESSAGE);
 		}
 	}
@@ -279,8 +278,7 @@ public class StatisticsController implements ControllerListener {
 			MainGUI.GUIclient.sendToServer(myMessage);
 			myMessage = new Message(Action.GET_CITY_PRICE, data);
 			MainGUI.GUIclient.sendToServer(myMessage);
-			myMessage = new Message(Action.ACTIVITY_REPORT, data);
-			MainGUI.GUIclient.sendToServer(myMessage);
+		
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message", "Error",
 					JOptionPane.WARNING_MESSAGE);
