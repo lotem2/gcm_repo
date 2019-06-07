@@ -1,3 +1,8 @@
 .classpath
 bin/
 target/
+.settings/org.eclipse.ltk.core.refactoring.prefs
+.settings/org.eclipse.jdt.core.prefs
+.settings/org.eclipse.jdt.core.prefs
+src/gui/EditWindowController.java
+src/EditScene.fxml

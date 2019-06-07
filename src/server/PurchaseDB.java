@@ -78,7 +78,158 @@ public class PurchaseDB {
 
 		return (new Message(Action.ADD_PURCHASE, data));
 	}
+	
+	/**
+	 * Edit renew column of specific purchase when user renews his purchase
+	 * @param params - the purchase date (the renew date) and the expiry date, user name and city name
+	 * @return {@link Message} - Contain result of action - success/failure and failure message in case of failure
+	 */
+	public Message renewPurchase(ArrayList<Object> params) {
+		// Variables
+		ArrayList<Object> data = new ArrayList<Object>();
+		
+		try {
+			// Get current active purchase
+			Purchase current = ((ArrayList<Purchase>)((Message)getActivePurchase(params)).getData().get(1)).get(0);
 
+			// Prepare statement to get current client's purchase
+			String sql = "UPDATE Purchases SET purchaseDate = ?, expiryDate = ?, renew = renew + 1" +
+					 	 "WHERE username = ? AND cityName = ? purchaseDate = ? AND expiryDate = ?";
+
+			// Add parameters to match the UPDATE query
+			params.add(current.getPurchaseDate()); params.add(current.getExpirationDate());
+
+			// Execute sql query by calling private method editPurchase with the requested UPDATE query
+			editPurchase(sql, params);
+
+			data.add(new Integer(0)); // set query result as success
+			data.add("Renew purchase was successful");	// write a success message
+		}
+		catch (SQLException e) {
+			data.add(new Integer(1));
+			data.add("There was a problem with the SQL service.");
+		}
+		catch(Exception e) {
+			data.add(new Integer(1));
+			data.add("Renew purchase encountered a problem.");
+		}
+
+		return new Message(null, data);
+	}
+	
+	/**
+	 * Edit downloads column of specific purchase when user downloads city's collection of maps
+	 * @param params - user name and city name
+	 * @return {@link Message} - Contain result of action - success/failure and failure message in case of failure
+	 */
+	public Message downloadPurchase(ArrayList<Object> params) {
+		// Variables
+		ArrayList<Object> data = new ArrayList<Object>();
+		
+		try {
+			// Get current active purchase
+			Purchase current = ((ArrayList<Purchase>)((Message)getActivePurchase(params)).getData().get(1)).get(0);
+			
+			// Prepare statement to get current client's purchase
+			String sql = "UPDATE Purchases SET downloads = downloads + 1" +
+				 	 "WHERE username = ? AND cityName = ? purchaseDate = ? AND expiryDate = ?";
+
+			// Add parameters to match the UPDATE query
+			params.add(current.getPurchaseDate()); params.add(current.getExpirationDate());
+
+			// Execute sql query by calling private method editPurchase with the requested UPDATE query
+			editPurchase(sql, params);
+
+			data.add(new Integer(0)); // set query result as success
+
+		}
+		catch (SQLException e) {
+			data.add(new Integer(1));
+			data.add("There was a problem with the SQL service.");
+		}
+		catch(Exception e) {
+			data.add(new Integer(1));
+			data.add("Could not update purchase.");
+		}
+
+		return new Message(null, data);
+	}
+
+	/**
+	 * Edit views column of specific purchase when user views map from the city he bought
+	 * @param params - user name and city name
+	 * @return {@link Message} - Contain result of action - success/failure and failure message in case of failure
+	 */
+	public Message viewPurchase(ArrayList<Object> params) {
+		// Variables
+		ArrayList<Object> data = new ArrayList<Object>();
+		
+		try {
+			// Get current active purchase
+			Purchase current = ((ArrayList<Purchase>)((Message)getActivePurchase(params)).getData().get(1)).get(0);
+			
+			// Prepare statement to get current client's purchase
+			String sql = "UPDATE Purchases SET views = views + 1" +
+				 	 "WHERE username = ? AND cityName = ? purchaseDate = ? AND expiryDate = ?";
+
+			// Add parameters to match the UPDATE query
+			params.add(current.getPurchaseDate()); params.add(current.getExpirationDate());
+
+			// Execute sql query by calling private method editPurchase with the requested UPDATE query
+			editPurchase(sql, params);
+
+			data.add(new Integer(0)); // set query result as success
+
+		}
+		catch (SQLException e) {
+			data.add(new Integer(1));
+			data.add("There was a problem with the SQL service.");
+		}
+		catch(Exception e) {
+			data.add(new Integer(1));
+			data.add("Could not update purchase.");
+		}
+
+		return new Message(null, data);
+	}
+	
+	/**
+	 * Get user's active purchase according to a city 
+	 * @param params - the requested user's name, city name
+	 * @return {@link Message} - Contain result of action - success/failure and 
+	 * {@link Purchase} - the user's active purchase or failure message
+	 */
+	public Message getActivePurchase(ArrayList<Object> params) {
+		// Variables
+		ArrayList<Purchase> purchases;
+		ArrayList<Object> data = new ArrayList<Object>();
+
+		try {
+			// Prepare statement to get current client's purchase
+			String sql = "SELECT * FROM Purchases WHERE username = ? AND cityname = ? AND "
+					+ "expiryDate > ? AND purchaseType = ? LIMIT 1";
+
+			// Add today's date and purchase type to match the query parameter
+			params.add(LocalDate.now()); params.add(PurchaseType.LONG_TERM_PURCHASE.toString());
+			
+			// Execute sql query by calling private method getPurchases with the requested SELECT query
+			purchases = getPurchases(sql, params);
+
+			data.add(new Integer(0)); // set query result as success
+			data.add(purchases);	// adding the purchases' array list
+		}
+		catch (SQLException e) {
+			data.add(new Integer(1));
+			data.add("There was a problem with the SQL service.");
+		}
+		catch(Exception e) {
+			data.add(new Integer(1));
+			data.add("Active purchases for the current user where not found.");
+		}
+
+		return new Message(null, data);
+	}
+	
 	/**
 	 * Get user's purchases according to the user's name provided by the client
 	 * @param params - the requested user's name
@@ -177,62 +328,6 @@ public class PurchaseDB {
 		
 		return new Message(null, data);
 	}
-	
-	/**
-	 * Generic function for SELECT queries
-	 * @param sql - the SELECT query
-	 * @params params - {@link ArrayList} of parameters to complete the requested SELECT query 
-	 * @return {@link ArrayList} - an {@link ArrayList} of type {@link Purchase} which satisfies the conditions
-	 * @throws SQLException, Exception 
-	 */
-	private ArrayList<Purchase> getPurchases(String sql, ArrayList<Object> params) throws SQLException, Exception {
-		// Variables
-		ArrayList<Purchase> purchases = new ArrayList<Purchase>();
-		ArrayList<Object>   data 	  = new ArrayList<Object>();
-		ResultSet			rs		  = null;
-
-		try {
-			// Connect to DB
-			SQLController.Connect();
-
-			// Execute sql query, get results
-			rs = SQLController.ExecuteQuery(sql, params);
-
-			// check if query succeeded
-			if(!rs.next()) {
-				throw new Exception();
-			}
-
-			// Go through the result set and build the Purchase entity
-			while (rs.next()) 
-			{
-				Purchase currPurchase = new Purchase(
-						rs.getString("username"),
-						rs.getString("cityName"), 
-						PurchaseType.valueOf(rs.getString("purchaseType").toUpperCase()), 
-						rs.getDate("purchaseDate").toLocalDate(),
-						rs.getDate("expiryDate").toLocalDate(),
-						rs.getInt("renew"), 
-						rs.getInt("views"), 
-						rs.getInt("downloads"), 
-						rs.getFloat("price"));
-
-				purchases.add(currPurchase);
-			}	
-		}
-		catch(SQLException e) {
-			throw e;
-		}
-		catch(Exception e){
-			throw e;
-		}
-		finally {
-			// Disconnect DB
-			SQLController.Disconnect(rs);	
-		}
-
-		return purchases;
-	}
 
 	/**
 	 * Method that runs every start of a new day, sends reminders to clients that their purchase is 
@@ -278,6 +373,92 @@ public class PurchaseDB {
 		}
 		catch(Exception e) {
 			e.printStackTrace();;
+		}
+	}
+
+	/**
+	 * Generic function for SELECT queries
+	 * @param sql - the SELECT query
+	 * @param params - {@link ArrayList} of parameters to complete the requested SELECT query 
+	 * @return {@link ArrayList} - an {@link ArrayList} of type {@link Purchase} which satisfies the conditions
+	 * @throws SQLException, Exception 
+	 */
+	private ArrayList<Purchase> getPurchases(String sql, ArrayList<Object> params) throws SQLException, Exception {
+		// Variables
+		ArrayList<Purchase> purchases = new ArrayList<Purchase>();
+		ResultSet			rs		  = null;
+
+		try {
+			// Connect to DB
+			SQLController.Connect();
+
+			// Execute sql query, get results
+			rs = SQLController.ExecuteQuery(sql, params);
+
+			// check if query succeeded
+			if(!rs.next()) {
+				throw new Exception();
+			}
+
+			// Go through the result set and build the Purchase entity
+			while (rs.next()) 
+			{
+				Purchase currPurchase = new Purchase(
+						rs.getString("username"),
+						rs.getString("cityName"), 
+						PurchaseType.valueOf(rs.getString("purchaseType").toUpperCase()), 
+						rs.getDate("purchaseDate").toLocalDate(),
+						rs.getDate("expiryDate").toLocalDate(),
+						rs.getInt("renew"), 
+						rs.getInt("views"), 
+						rs.getInt("downloads"), 
+						rs.getFloat("price"));
+
+				purchases.add(currPurchase);
+			}	
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		catch(Exception e){
+			throw e;
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(rs);	
+		}
+
+		return purchases;
+	}
+	
+	/**
+	 * Generic function for UPDATE queries
+	 * @param sql - the UPDATE query
+	 * @param params - {@link ArrayList} of parameters to complete the requested UPDATE query 
+	 * @throws SQLException, Exception 
+	 */
+	private void editPurchase(String sql, ArrayList<Object> params) throws SQLException, Exception {
+		try {
+			// Connect to DB
+			SQLController.Connect();
+
+			// Execute sql query, get results
+			int changedRows = SQLController.ExecuteUpdate(sql, params);
+
+			// check if query succeeded
+			if(changedRows == 0) {
+				throw new Exception();
+			}	
+		}
+		catch(SQLException e) {
+			throw e;
+		}
+		catch(Exception e){
+			throw e;
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(null);	
 		}
 	}
 }

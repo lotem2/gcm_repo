@@ -29,33 +29,34 @@
                     <Font name="System Bold" size="15.0" fx:id="x1" />
                   </font>
                 </Label>
+                <!--                 <ImageView id="mapViewer" fx:id="mapView" fitHeight="297.9998783770137" fitWidth="397.33319091796875" layoutX="11.0" layoutY="93.0" onMouseClicked="#paint" pickOnBounds="true" preserveRatio="true" /> -->
                 <ImageView id="mapViewer" fx:id="mapView" fitHeight="297.9998783770137" fitWidth="397.33319091796875" layoutX="11.0" layoutY="93.0" pickOnBounds="true" preserveRatio="true" />
                 <Label id="lblMapName" fx:id="lblMapView" font="$x1" layoutX="14.0" layoutY="63.0" text="Map View:" />
-                <Label fx:id="lblMapName" layoutX="423.0" layoutY="11.0" text="Map Name:" />
-                <TextField id="tf" fx:id="tfMapName" layoutX="422.0" layoutY="41.0" onAction="#SaveMap" prefWidth="200.0" promptText="Map Name" />
-                <Label id="lblMapName" fx:id="lblMapDescription" layoutX="424.0" layoutY="80.0" text="Map Description:" />
-                <TextField id="tf" fx:id="tfMapDescription" alignment="TOP_LEFT" layoutX="424.0" layoutY="100.0" onAction="#SaveMap" prefHeight="51.0" prefWidth="200.0" promptText="Map Description" />
-                <Label id="lblMapName" fx:id="lblSiteChoose" font="$x1" layoutX="426.0" layoutY="163.0" text="Choose a site:" />
-                <Label id="lblMapName" fx:id="lblSiteName" layoutX="426.0" layoutY="222.0" text="Site Name:" />
-                <TextField id="tf" fx:id="tfSiteName" layoutX="424.0" layoutY="246.0" onAction="#SaveSite" prefWidth="200.0" promptText="Site Name" />
-                <Label id="lblMapName" fx:id="lblSiteDescription" layoutX="426.0" layoutY="281.0" text="Site Description:" />
-                <TextField fx:id="tfSiteDescription" alignment="TOP_LEFT" layoutX="425.0" layoutY="302.0" onAction="#SaveSite" prefHeight="51.0" prefWidth="200.0" promptText="Site Description" />
-                <Label fx:id="lblAccessibilty" layoutX="424.0" layoutY="423.0" text="Accessibility:" />
+                <Label fx:id="lblMapName" layoutX="426.0" layoutY="7.0" text="Map Name:" />
+                <TextField id="tf" fx:id="tfMapName" layoutX="423.0" layoutY="28.0" onAction="#SaveMap" prefWidth="200.0" promptText="Map Name" />
+                <Label id="lblMapName" fx:id="lblMapDescription" layoutX="426.0" layoutY="57.0" text="Map Description:" />
+                <TextField id="tf" fx:id="tfMapDescription" alignment="TOP_LEFT" layoutX="423.0" layoutY="79.0" onAction="#SaveMap" prefHeight="51.0" prefWidth="200.0" promptText="Map Description" />
+                <Label id="lblMapName" fx:id="lblSiteChoose" font="$x1" layoutX="427.0" layoutY="142.0" text="Choose a site:" />
+                <Label id="lblMapName" fx:id="lblSiteName" layoutX="427.0" layoutY="198.0" text="Site Name:" />
+                <TextField id="tf" fx:id="tfSiteName" layoutX="425.0" layoutY="221.0" onAction="#SaveSite" prefWidth="200.0" promptText="Site Name" />
+                <Label id="lblMapName" fx:id="lblSiteDescription" layoutX="427.0" layoutY="255.0" text="Site Description:" />
+                <TextField fx:id="tfSiteDescription" alignment="TOP_LEFT" layoutX="426.0" layoutY="278.0" onAction="#SaveSite" prefHeight="51.0" prefWidth="200.0" promptText="Site Description" />
+                <Label fx:id="lblAccessibilty" layoutX="425.0" layoutY="386.0" text="Accessibility:" />
                 <Button fx:id="btnBrowse" layoutX="327.0" layoutY="413.0" mnemonicParsing="false" text="Browse" />
                 <Label layoutX="16.0" layoutY="484.0" text="Price:" />
                 <Label layoutX="16.0" layoutY="524.0" text="Version:" />
                 <TextField id="tf" fx:id="tfPrice" layoutX="82.0" layoutY="484.0" onAction="#SaveMap" prefWidth="200.0" promptText="Price" />
                 <TextField id="tf" fx:id="tfVersion" layoutX="82.0" layoutY="518.0" onAction="#SaveMap" prefWidth="200.0" promptText="Version" />
-                <Label fx:id="lbLocation" layoutX="425.0" layoutY="510.0" text="Location:" />
-                <TextField id="tf" fx:id="tfX" alignment="CENTER_LEFT" layoutX="425.0" layoutY="530.0" onAction="#SaveSite" prefWidth="97.0" promptText="X" text="" />
-                <TextField id="tf" fx:id="tfY" layoutX="532.0" layoutY="530.0" onAction="#SaveSite" prefWidth="84.0" promptText="Y" />
-                <CheckBox fx:id="checkBoxShowOnMap" layoutX="426.0" layoutY="484.0" mnemonicParsing="false" onAction="#SaveSite" text="Show on map" />
-                <Separator layoutX="413.0" layoutY="159.0" prefWidth="259.0" />
+                <Label fx:id="lbLocation" layoutX="426.0" layoutY="513.0" text="Location:" />
+                <TextField id="tf" fx:id="tfX" alignment="CENTER_LEFT" layoutX="426.0" layoutY="533.0" onAction="#SaveSite" prefWidth="97.0" promptText="X" text="" />
+                <TextField id="tf" fx:id="tfY" layoutX="533.0" layoutY="533.0" onAction="#SaveSite" prefWidth="84.0" promptText="Y" />
+                <CheckBox fx:id="checkBoxShowOnMap" layoutX="427.0" layoutY="492.0" mnemonicParsing="false" onAction="#SaveSite" text="Show on map" />
+                <Separator layoutX="413.0" layoutY="138.0" prefWidth="259.0" />
                 <Separator layoutX="409.0" layoutY="4.0" orientation="VERTICAL" prefHeight="558.0" />
                 <Separator layoutX="-1.0" layoutY="451.0" prefWidth="409.33319091796875" />
                 <Button id="btnSave" fx:id="btnSaveMap" layoutX="156.0" layoutY="567.0" mnemonicParsing="false" onAction="#SaveMap" prefHeight="27.0" prefWidth="97.0" text="Save Map" />
-                <Button fx:id="btnSaveSite" layoutX="498.0" layoutY="567.0" mnemonicParsing="false" onAction="#SaveSite" text="Save Site" />
-                <ChoiceBox fx:id="accessibilityChoser" layoutX="423.0" layoutY="449.0" prefHeight="25.0" prefWidth="200.0">
+                <Button fx:id="btnSaveSite" layoutX="500.0" layoutY="567.0" mnemonicParsing="false" onAction="#SaveSite" text="Save Site" />
+                <ChoiceBox fx:id="accessibilityChoser" layoutX="424.0" layoutY="408.0" prefHeight="25.0" prefWidth="200.0">
                   <items>
                     <FXCollections fx:factory="observableArrayList">
                       <String fx:value="Item 1" />
@@ -64,7 +65,7 @@
                     </FXCollections>
                   </items>
                 </ChoiceBox>
-                <ChoiceBox fx:id="categoryChoser" layoutX="423.0" layoutY="388.0" prefHeight="25.0" prefWidth="200.0">
+                <ChoiceBox fx:id="categoryChoser" layoutX="424.0" layoutY="356.0" prefHeight="25.0" prefWidth="200.0">
                   <items>
                     <FXCollections fx:factory="observableArrayList">
                       <String fx:value="Item 1" />
@@ -73,7 +74,7 @@
                     </FXCollections>
                   </items>
                 </ChoiceBox>
-                <ChoiceBox fx:id="siteChoser" layoutX="424.0" layoutY="189.0" prefHeight="25.0" prefWidth="200.0">
+                <ChoiceBox fx:id="siteChoser" layoutX="425.0" layoutY="166.0" prefHeight="25.0" prefWidth="200.0">
                   <items>
                     <FXCollections fx:factory="observableArrayList">
                       <String fx:value="Item 1" />
@@ -91,7 +92,9 @@
                     </FXCollections>
                   </items>
                 </ChoiceBox>
-                <Label id="lblAccessibilty" layoutX="423.0" layoutY="364.0" text="Category:" />
+                <Label id="lblAccessibilty" layoutX="424.0" layoutY="333.0" text="Category:" />
+                <Label id="lblMapName" fx:id="lblEstimatedTime" layoutX="427.0" layoutY="442.0" text="Estimated Time:" />
+                <TextField id="tf" fx:id="tfEstimatedTime" layoutX="425.0" layoutY="462.0" onAction="#SaveSite" prefWidth="200.0" promptText="Estimated Time" />
               </children>
             </AnchorPane>
           </content>

@@ -6,13 +6,22 @@ import gui.MainGUI.SceneType;
 import common.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Map;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.control.cell.PropertyValueFactory;
 import common.Action;
 import common.Message;
@@ -26,12 +35,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 import javax.swing.JOptionPane;//library for popup messages
 
@@ -46,27 +57,21 @@ public class MainGUIController implements ControllerListener {
 	@FXML
 	private TableView<Map> SearchResultsTable;
 //	@FXML
-//	private TableColumn<SearchTable, String> col_choicePanel;
-//	@FXML
-//	private TableColumn<SearchTable, String> col_CityName;
-//	@FXML
-//	private TableColumn<SearchTable, String> col_DescName;
-//	@FXML
 //	private TableColumn<Map, String> col_SiteName;
 	@FXML
 	private TableColumn<Map, String> col_city;
 	@FXML
 	private TableColumn<Map, String> col_cityDescription;
 	@FXML
-	private TableColumn<Map, String> col_map;
+	private TableColumn<Map.Entry<String, String>, String> col_map;
 	@FXML
 	private TableColumn<Map, String> col_mapDescription;
 	@FXML
 	private TableColumn<Map, String> col_price;
-	@FXML
-	private TableColumn<Map, String> col_sitesNumber;
-	@FXML
-	private TableColumn<Map, String> col_version;
+//	@FXML
+//	private TableColumn<Map, String> col_sitesNumber;
+//	@FXML
+//	private TableColumn<Map, String> col_version;
     @FXML
     private Button btnControl;
     @FXML
@@ -121,17 +126,17 @@ public class MainGUIController implements ControllerListener {
 			if (!cityName.isEmpty())
 				data.add(cityName);
 			else
-			   data.add("null");
+			   data.add(null);
 			
 			if (!siteName.isEmpty()) 
 				data.add(siteName);
 			else
-			   data.add("null");
+			   data.add(null);
 			
 			if (!mapDescription.isEmpty())
 				data.add(mapDescription);
 			else
-			   data.add("null");
+			   data.add(null);
 			myMessage = new Message(Action.SEARCH, data);
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (IOException e) {
@@ -215,9 +220,11 @@ public class MainGUIController implements ControllerListener {
 
 	@FXML
 	void initialize() {
-		setPersonalInfoBooleanBinding();
+		setSearchInfoBooleanBinding();
+		//setTableViewForMapsSearchResult(null);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void handleMessageFromServer(Object msg) {
 		try {
@@ -225,62 +232,71 @@ public class MainGUIController implements ControllerListener {
 			switch (currMsg.getAction()) {
 			case LOGIN:
 				if ((Integer) currMsg.getData().get(0) == 0) {
-					tfUser.setVisible(false);
-					pfPassword.setVisible(false);
-					btnLogin.setVisible(false);
-					btnRegister.setVisible(false);
-					btnLogout.setVisible(true);
-					MainGUI.currUser = (User) currMsg.getData().get(1);
-					Permission permission = ((User) currMsg.getData().get(1)).getPermission();
-					switch (permission) {
-					case CLIENT:
-						MainGUI.currClient = (Client) currMsg.getData().get(1);
-						btnMyProfile.setVisible(true);
-						break;
-					case EDITOR:
-						MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
-						btnEditMaps.setVisible(true);
-						btnBuy.setVisible(false);
-						break;
-					case MANAGING_EDITOR:
-						MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
-						btnEditMaps.setVisible(true);
-						btnBuy.setVisible(false);
-						break;
-					case CEO:
-						MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
-						btnManage.setVisible(true);
-						btnEditMaps.setVisible(true);
-						btnBuy.setVisible(false);
-						break;
-					default:
-
-					}
-					Platform.runLater(() -> {
+						tfUser.setVisible(false);
+						pfPassword.setVisible(false);
+						btnLogin.setVisible(false);
+						btnRegister.setVisible(false);
+						btnLogout.setVisible(true);
+						MainGUI.currUser = (User) currMsg.getData().get(1);
+						Permission permission = ((User) currMsg.getData().get(1)).getPermission();
+						switch (permission) {
+						case CLIENT:
+							MainGUI.currClient = (Client) currMsg.getData().get(1);
+							btnMyProfile.setVisible(true);
+							break;
+						case EDITOR:
+							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
+							btnEditMaps.setVisible(true);
+							btnBuy.setVisible(false);
+							btnManage.setVisible(true);
+							btnEditMaps.setVisible(true);
+							btnBuy.setVisible(false);
+							break;
+						case MANAGING_EDITOR:
+							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
+							btnEditMaps.setVisible(true);
+							btnBuy.setVisible(false);
+							btnManage.setVisible(true);
+							btnEditMaps.setVisible(true);
+							btnBuy.setVisible(false);
+							break;
+						case CEO:
+							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
+							btnManage.setVisible(true);
+							btnEditMaps.setVisible(true);
+							btnBuy.setVisible(false);
+							break;
+						default:
+						}
 						String name = ((User) currMsg.getData().get(1)).getUserName();
-						lblWelcome.setText("Welcome " + name + "!");
-					});
+						Platform.runLater(() -> {
+							lblWelcome.setText("Welcome " + name + "!");
+						});
 				} else {
 					// System.out.println((currMsg.getData().get(1)).toString());
 					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
-							JOptionPane.INFORMATION_MESSAGE);
-					tfUser.setText("");
-					pfPassword.setText("");
+					JOptionPane.INFORMATION_MESSAGE);
+					Platform.runLater(() -> {
+						tfUser.setText("");
+						pfPassword.setText("");
+					});
 				}
 				break;
 			case LOGOUT:
 				try {
-					tfUser.setText("");
-					pfPassword.setText("");
-					tfUser.setVisible(true);
-					pfPassword.setVisible(true);
-					btnLogin.setVisible(true);
-					btnRegister.setVisible(true);
-					btnLogout.setVisible(false);
-					btnMyProfile.setVisible(false);
 					Platform.runLater(() -> {
+						tfUser.setText("");
+						pfPassword.setText("");
 						lblWelcome.setText("Welcome");
 					});
+						tfUser.setVisible(true);
+						pfPassword.setVisible(true);
+						btnLogin.setVisible(true);
+						btnRegister.setVisible(true);
+						btnLogout.setVisible(false);
+						btnMyProfile.setVisible(false);
+						btnManage.setVisible(false);
+
 					JOptionPane.showMessageDialog(null, "Disconnected successfully", "Notification",
 							JOptionPane.DEFAULT_OPTION);
 				} catch (Exception e) {
@@ -289,22 +305,16 @@ public class MainGUIController implements ControllerListener {
 				}
 				break;
 			case SEARCH:
-			 if((Integer)currMsg.getData().get(0) == 0) {
-				//ArrayList<Map> maps = new ((Map) currMsg.getData().get(1));
-				//setTableViewForMapsSearchResult(maps);
-				//System.out.println(((Map) currMsg.getData().get(0)).toString());
+			 if((Integer)currMsg.getData().get(0) == 0) 
+			 {
+				 HashMap<Integer, String> maps = new HashMap<>();
+					maps = (HashMap<Integer, String>) currMsg.getData().get(1);
+				 setTableViewForMapsSearchResult(maps);
 			 }
 //	      	 else {
 //	      		 clientUI.display(currMsg.getData().get(1).toString() + "\n"
 //	      				 + "The message was not sent to the gui.Please retry\"");
 //	      	 }
-				break;
-			case ADD_PURCHASE:
-				if ((Integer) currMsg.getData().get(0) == 0) {
-					// clientUI.display("Purchase added successfully\n");
-				} else {
-					// clientUI.display(currMsg.getData().get(1).toString() + "\n");
-				}
 				break;
      			default:
 					
@@ -315,34 +325,46 @@ public class MainGUIController implements ControllerListener {
 
 	}
 
-	public void setTableViewForMapsSearchResult(ArrayList<Map> maps) {
+
+	public void setTableViewForMapsSearchResult(HashMap<Integer, String> maps) 
+	{
 		Platform.runLater(new Runnable() {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void run() {
-				ObservableList<Map> mapsList = FXCollections.observableArrayList();
-//				while (!maps.isEmpty())
-//				{
-//					mapsList.add(new Map(maps));
-//				}
-				//col_map.setCellValueFactory(new PropertyValueFactory<Map, String>("Map"));
-				col_mapDescription.setCellValueFactory(new PropertyValueFactory<Map, String>("mapDescription"));
-				col_city.setCellValueFactory(new PropertyValueFactory<Map, String>("city"));
-				col_cityDescription.setCellValueFactory(new PropertyValueFactory<Map, String>("cityDescription"));
-				col_price.setCellValueFactory(new PropertyValueFactory<Map, String>("price"));
-				col_version.setCellValueFactory(new PropertyValueFactory<Map, String>("version"));
-				col_sitesNumber.setCellValueFactory(new PropertyValueFactory<Map, String>("sitesNumber"));
-
-				SearchResultsTable.getColumns().addAll(col_map, col_mapDescription, col_city, col_cityDescription,
-						col_price, col_version, col_sitesNumber);
-				SearchResultsTable.setItems(mapsList);
+				//Create Map object and insert the Value properties from the search HashMap
+				Map<String, String> maps_string  = new HashMap<>();
+				for  (Integer currmap  :  maps.keySet())  {
+				maps_string.put(maps.get(currmap).split(",")[0], maps.get(currmap).split(",")[1]);
+				}
+				// Create ObservableList of type Map
+				ObservableList<Map>  keys  =  FXCollections.observableArrayList();
+				// Insert every pair according to the names of columns
+				for  (Integer key  :  maps.keySet())  
+				{
+				Map<String, String>  m  =  new  HashMap<String, String>();
+				m.put("description",  maps.get(key).split(",")[0]);
+				m.put("poi", maps.get(key).split(",")[1]);
+				keys.add(m);
+				}
+				// Create the columns necessary for the current search  -  site or city
+				col_mapDescription  = new  TableColumn<>("description");
+				col_mapDescription.setCellValueFactory(new MapValueFactory( "description"));
+				col_price  =  new  TableColumn<>("poi");
+				col_price.setCellValueFactory(new MapValueFactory("poi"));
+				// Set columns as children of the table view
+				//SearchResultsTable.getColumns().setAll(col_mapDescription, col_price);
+				// Set the ObservableList<Map> as items
+				SearchResultsTable.setItems(keys);
 			}
 		});
 	}
 
+
+
 	@FXML
 	void Manage(ActionEvent event) {
-		MainGUI.MainStage.setTitle("Global City Map - Clients Management");
+		MainGUI.MainStage.setTitle("Global City Map - Users Management");
 		MainGUI.openScene(SceneType.ClientsManagement);
 	}
 
@@ -351,13 +373,8 @@ public class MainGUIController implements ControllerListener {
 		MainGUI.MainStage.setTitle("Global City Map - Edit Tool");
 		MainGUI.openScene(SceneType.Edit);
     }
-    @FXML
-    void UserList(ActionEvent event) {
-		MainGUI.MainStage.setTitle("Global City Map - UserList");
-		MainGUI.openScene(SceneType.ClientsManagement);
-    }
     
-	void setPersonalInfoBooleanBinding() {
+	void setSearchInfoBooleanBinding() {
 		BooleanBinding booleanBind;
 		booleanBind = (tfCitySearch.textProperty().isEmpty()).and(tfSiteSearch.textProperty().isEmpty()).and(tfDesSearch.textProperty().isEmpty());
 		btnSearch.disableProperty().bind(booleanBind);

@@ -44,8 +44,7 @@ public class InboxDB {
 
 			// Prepare statement to insert new user
 			String sql = "INSERT INTO Inbox (`id`, `senderUsername`, `senderPermission`, `receiverUsername`, `receiverPermission`, " +
-						 "`content`, `status`, `receiveDate`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)" +
-						 "WHERE name = ?";
+						 "`content`, `status`, `receiveDate`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
 			// Execute sql query, get number of changed rows
 			int changedRows = SQLController.ExecuteUpdate(sql, params);
