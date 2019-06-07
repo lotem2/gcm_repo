@@ -180,7 +180,7 @@ public class MainGUIController implements ControllerListener {
 	
 	@FXML
 	void Statistics(ActionEvent event) {
-		MainGUI.openScene(MainGUI.SceneType.STATISTICS);
+		MainGUI.openScene(MainGUI.SceneType.Statistics);
 	}
 
 	@FXML
