@@ -6,9 +6,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
-import javax.security.auth.callback.Callback;
 import javax.swing.ButtonGroup;
 import javax.swing.JOptionPane;
 
@@ -18,6 +18,7 @@ import entity.Purchase;
 import entity.Purchase.PurchaseType;
 import entity.Report;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -36,6 +37,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.Callback;
 
 public class StatisticsController implements ControllerListener {
 
@@ -43,13 +45,13 @@ public class StatisticsController implements ControllerListener {
 	static ArrayList<String> citiesList;
 
 	@FXML
-	private TableView<?> tblCityPurchase;
+	private TableView<Map.Entry<String, Integer>> tblCityPurchase;
 
 	@FXML
 	private TableColumn<?, ?> clmDescriptionPerCity;
 
 	@FXML
-	private TableColumn<?, ?> clmPurchaseDaily;
+	private TableColumn<Map.Entry<String, Integer>, String> clmPurchaseDaily;
 
 	@FXML
 	private TableColumn<?, ?> clmCityReport;
@@ -76,7 +78,7 @@ public class StatisticsController implements ControllerListener {
 	private Label lblOTS;
 
 	@FXML
-	private TableColumn<?, ?> clmCityDaily;
+	private TableColumn<Map.Entry<String, Integer>, String> clmCityDaily;
 
 	@FXML
 	private TableColumn<?, ?> clmDescriptionReport;
@@ -86,7 +88,10 @@ public class StatisticsController implements ControllerListener {
 
 	@FXML
 	private Button btnBackToMain;
-
+	
+	@FXML
+	private Button btnShowStatisticsAll;
+	
 	@FXML
 	private Button btnShowStatistics;
 
@@ -95,6 +100,13 @@ public class StatisticsController implements ControllerListener {
 
 	@FXML
 	private DatePicker dpTo;
+	
+	@FXML
+	private DatePicker dpFromAll;
+	
+	@FXML
+	private DatePicker dpToAll;
+	
 
 	@FXML
 	void CityPurchaseTable(ActionEvent event) {
@@ -167,6 +179,28 @@ public class StatisticsController implements ControllerListener {
 					JOptionPane.WARNING_MESSAGE);
 		}
 	}
+	
+	@FXML
+	void ShowStatisticsAll(ActionEvent event) {
+		try {
+			String city = choiceBoxCity.getSelectionModel().getSelectedItem();
+			LocalDate fromDate = dpFrom.getValue();
+			LocalDate toDate = dpTo.getValue();
+			DateTimeFormatter dTF = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			Message myMessage;
+
+			ArrayList<Object> data = new ArrayList<Object>();
+			myMessage = new Message(Action.CITY_ACTIVITY_REPORT, data);
+			data.add(dTF.format(fromDate));
+			data.add(dTF.format(toDate));
+			data.add(city);
+			MainGUI.GUIclient.sendToServer(myMessage);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null,
+					e.toString() + " Could not send message to server.  Terminating client.", "Error",
+					JOptionPane.WARNING_MESSAGE);
+		}
+	}
 
 	@FXML
 	void backToMainGUI(ActionEvent event) {
@@ -188,37 +222,29 @@ public class StatisticsController implements ControllerListener {
 					lblOTS.setText("One time subscription: " + OneTime);
 					lblLTS.setText("Long term subscription: " + LongTerm);
 				});
-				HashMap<String, String> map = (HashMap<String, String>) (currMsg.getData().get(1));
+				HashMap<String, Integer> map = (HashMap<String, Integer>) (currMsg.getData().get(1));
+				clmCityDaily.setCellValueFactory(
+						new Callback<TableColumn.CellDataFeatures<Map.Entry<String, Integer>, String>, ObservableValue<String>>() {
+							@Override
+							public ObservableValue<String> call(
+									TableColumn.CellDataFeatures<Map.Entry<String, Integer>, String> p) {
+								// this callback returns property for just one cell, you can't use a loop here
+								// for first column we use key
+								return new SimpleStringProperty(p.getValue().getKey());
+							}
+						});
+				clmPurchaseDaily.setCellValueFactory(
+						new Callback<TableColumn.CellDataFeatures<Map.Entry<String, Integer>, String>, ObservableValue<String>>() {
+							@Override
+							public ObservableValue<String> call(
+									TableColumn.CellDataFeatures<Map.Entry<String, Integer>, String> p) {
+								// for second column we use value
+								return new SimpleStringProperty(p.getValue().getValue().toString());
+							}
+						});
 
-//				// use fully detailed type for Map.Entry<String, String>
-//				clmCityDaily.setCellValueFactory(
-//						new Callback<TableColumn.CellDataFeatures<Map.Entry<String, String>, String>, ObservableValue<String>>() {
-//
-//							@Override
-//							public ObservableValue<String> call(
-//									TableColumn.CellDataFeatures<Map.Entry<String, String>, String> p) {
-//								// this callback returns property for just one cell, you can't use a loop here
-//								// for first column we use key
-//								return new SimpleStringProperty(p.getValue().getKey());
-//							}
-//						});
-//
-//				TableColumn<Map.Entry<String, String>, String> column2 = new TableColumn<>("Value");
-//				column2.setCellValueFactory(
-//						new Callback<TableColumn.CellDataFeatures<Map.Entry<String, Integer>, String>, ObservableValue<String>>() {
-//
-//							@Override
-//							public ObservableValue<String> call(
-//									TableColumn.CellDataFeatures<Map.Entry<String, String>, String> p) {
-//								// for second column we use value
-//								return new SimpleStringProperty(p.getValue().getValue());
-//							}
-//						});
-//
-//				ObservableList<Map.Entry<String, String>> items = FXCollections.observableArrayList(map.entrySet());
-//				final TableView<Map.Entry<String, String>> table = new TableView<>(items);
-//
-//				table.getColumns().setAll(clmCityDaily, clmPurchaseDaily);
+				ObservableList<Entry<String,Integer>> items = FXCollections.observableArrayList(map.entrySet());
+				tblCityPurchase.setItems(items);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
