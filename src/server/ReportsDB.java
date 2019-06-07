@@ -118,8 +118,7 @@ public class ReportsDB implements IReport{
 			// Go through the result set and build the Purchase entity
 			while (rs.next()) 
 			{	
-				//cityName.put("cityName", rs.getString("cityName"));
-				cityDetails.put("numOfPurchases",rs.getInt("numOfPurchases") );
+				cityDetails.put(rs.getString("cityName"),rs.getInt("numOfPurchases") );
 				
 				// Add 0 to indicate success
 				data.add(new Integer(0));
