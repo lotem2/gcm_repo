@@ -5,6 +5,8 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
+import com.sun.glass.ui.Size;
+
 /**
  * Entity that represents a Map object in the GCM system
  */
@@ -31,7 +33,7 @@ public class Map implements java.io.Serializable{
 	 */
 	public Map(int id, String mapname, String description, String cityname, ArrayList<Site> sites, byte[] image) {
 		this.id = id;
-		this.setName(mapname);
+		this.mapname = mapname;
 		this.description = description;
 		this.cityname = cityname;
 		this.sites = sites;
@@ -123,6 +125,21 @@ public class Map implements java.io.Serializable{
 	 */
 	@Override
 	public String toString() {
-		return super.toString() + "\nDescription: " + description + "\nNumber of sites: " + sites.size();
+		if(sites != null || sites.size() !=0) {
+			String str = "=========================================================================\n" +
+					"						  " + mapname +"						 		  \n" +
+					"	Description: " + description + "\n" +
+					"	City: " + cityname + "\n" + 
+					"	List of sites:" + "\n=========================================\n"; 
+			
+			for (Site site : sites) {
+				str += site.toString();
+				str += "\n";
+			}
+			
+			return str;
+		}
+
+		return "";
 	}
 }

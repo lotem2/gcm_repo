@@ -5,7 +5,11 @@ package entity;
  * to track the activity on GCM system according to a specified period
  * of time
  */
-public class Report {
+public class Report implements java.io.Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private String m_cityName;
 	private int m_numOfMembers;
