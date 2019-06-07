@@ -290,9 +290,9 @@ public class EditWindowController implements ControllerListener {
 		lblWelcome.setText("Welcome " + MainGUI.currUser.getUserName() + "!");
         btnBrowse.setOnAction(btnLoadEventListener);
         setButtonsBooleanBinding();
-		GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
+		//GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
 		//GUIClient.sendActionToServer(Action.GET_ALL_SITES_LIST);
-        setAllChoiceBoxes();
+        //setAllChoiceBoxes();
         //setCityChoiceBox();
         setLists();
 		Permission permission = MainGUI.currUser.getPermission();
@@ -420,6 +420,8 @@ public class EditWindowController implements ControllerListener {
     	tfCityDescription.clear();
     	tfrouteDescription.clear();
     	tableRouteDeatils.getItems().clear();
+    	tfCityName.setDisable(false);
+    	tfCityDescription.setDisable(false);
     }
 
 	/**
