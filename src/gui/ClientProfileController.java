@@ -313,18 +313,7 @@ GUIClient client;
 				}
 	}
 	
-	void sendRequestToServer(String userName) {
-		ArrayList<Object> data = new ArrayList<Object>();
-		data.add(userName);
-		Message myMessage = new Message(Action.GET_USER_PURCHASES,data);
-		try {
-			MainGUI.GUIclient.sendToServer(myMessage);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message", "Error",
-					JOptionPane.WARNING_MESSAGE);
-		}
-	}
-	
+
 	void setRadioButtonGroup() {
 		final ToggleGroup radioButtonGroup = new ToggleGroup();
 		rbtnPreviousCreditCard.setToggleGroup(radioButtonGroup);
@@ -417,7 +406,6 @@ GUIClient client;
 				col_expiryDate.setCellValueFactory(new PropertyValueFactory<Purchase,String>("expiryDate"));
 				col_price.setCellValueFactory(new PropertyValueFactory<Purchase,String>("price"));
 
-				//purchasesTable.getColumns().addAll(col_cityName, col_purchaseType, col_purchaseDate,col_expiryDate,col_price);
 				purchasesTable.setItems(currPurchasesList);
 			}
 		});
@@ -429,8 +417,9 @@ GUIClient client;
 		String city = purchase.getCityName();
 		//sending the name of the city to the show Window
 		ArrayList<Object> data = new ArrayList<Object>();
-		data.add(city);
-		sendWatchRequestToServer(Action.WATCH,data);
+		data.add(purchase.getUserName());
+		data.add(purchase.getCityName());
+		GUIClient.sendActionToServer(Action.WATCH,data);
 		Permission permission = (MainGUI.currClient.getPermission());
 		switch(permission) 
 		{
@@ -446,16 +435,6 @@ GUIClient client;
 
     }
 	
-    void sendWatchRequestToServer(Action action, ArrayList<Object> data) {
-    		Message myMessage = new Message(Action.WATCH,data);
-		try {
-			MainGUI.GUIclient.sendToServer(myMessage);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message to the server", "Error",
-					JOptionPane.WARNING_MESSAGE);
-		}
-    }
-
     
 //    EventHandler<ActionEvent> btnLoadEventListener
 //    = new EventHandler<ActionEvent>(){
@@ -499,14 +478,7 @@ GUIClient client;
 		Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
 		ArrayList<Object> data = new ArrayList<Object>();
 		data.add(purchase);
-		Message myMessage = new Message(Action.RENEW,data);
-		try {
-			MainGUI.GUIclient.sendToServer(myMessage);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message to the server", "Error",
-					JOptionPane.WARNING_MESSAGE);
-		}
-		
+		GUIClient.sendActionToServer(Action.RENEW,data);
     }
 	/**
 	 *

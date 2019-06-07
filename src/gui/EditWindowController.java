@@ -290,10 +290,10 @@ public class EditWindowController implements ControllerListener {
 		lblWelcome.setText("Welcome " + MainGUI.currUser.getUserName() + "!");
         btnBrowse.setOnAction(btnLoadEventListener);
         setButtonsBooleanBinding();
-        sendCitiesRequestToServer();
+		GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
+		//GUIClient.sendActionToServer(Action.GET_ALL_SITES_LIST);
         setAllChoiceBoxes();
         //setCityChoiceBox();
-        //sendAllSitesRequestToServer();
         setLists();
 		Permission permission = MainGUI.currUser.getPermission();
 		switch (permission) {
@@ -315,36 +315,7 @@ public class EditWindowController implements ControllerListener {
 
 		}
     }
-	/**
-	 *
-	 *sending to the server the request to get the list of all cities
-	 *
-	 *
-	 */ 
-    void sendCitiesRequestToServer() {
-		Message myMessage = new Message(Action.GET_CITY_PRICE);
-		try {
-			MainGUI.GUIclient.sendToServer(myMessage);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message", "Error",
-					JOptionPane.WARNING_MESSAGE);
-		}
-    }
-	/**
-	 *
-	 *sending to the server the request to get the list of all the sites in the city
-	 *
-	 *
-	 */ 
-    void sendAllSitesRequestToServer() {
-		Message myMessage = new Message(Action.GET_ALL_SITES_LIST);
-		try {
-			MainGUI.GUIclient.sendToServer(myMessage);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message", "Error",
-					JOptionPane.WARNING_MESSAGE);
-		}
-    }
+
 	/**
 	 *
 	 *method to start on all the ready lists: accesssibilty and categories

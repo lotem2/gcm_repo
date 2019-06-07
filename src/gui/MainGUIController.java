@@ -71,11 +71,7 @@ public class MainGUIController implements ControllerListener {
 //	@FXML
 //	private TableColumn<Map, String> col_version;
     @FXML
-    private Button btnControl;
-    @FXML
     private Button btnEditMaps;
-	@FXML
-	private Button btnDownload;
 	@FXML
 	private Button btnLogin;
 	@FXML
@@ -83,15 +79,11 @@ public class MainGUIController implements ControllerListener {
 	@FXML
 	private Button btnManage;
 	@FXML
-	private Button btnStatistics;
-	@FXML
 	private Button btnMyProfile;
 	@FXML
 	private Button btnRegister;
 	@FXML
 	private Button btnSearch;
-	@FXML
-	private Button btnShow;
 	@FXML
 	private Button btnBuy;
 	@FXML
@@ -177,16 +169,6 @@ public class MainGUIController implements ControllerListener {
 	}
 
 	@FXML
-	void Download(ActionEvent event) {
-		// handle the event here
-	}
-
-	@FXML
-	void Show(ActionEvent event) {
-		// handle the event here
-	}
-
-	@FXML
 	void Logout(ActionEvent event) {
 		ArrayList<Object> data = new ArrayList<Object>();
 		String userName = MainGUI.currUser.getUserName();
@@ -202,6 +184,7 @@ public class MainGUIController implements ControllerListener {
 
 	@FXML
 	void Register(ActionEvent event) {
+		MainGUI.MainStage.setTitle("Global City Map - Registration");
 		MainGUI.openScene(MainGUI.SceneType.REGISTER);
 	}
 
@@ -214,7 +197,6 @@ public class MainGUIController implements ControllerListener {
 	@FXML
 	void initialize() {
 		setSearchInfoBooleanBinding();
-		//setTableViewForMapsSearchResult(null);
 	}
 
 	@SuppressWarnings("unchecked")
