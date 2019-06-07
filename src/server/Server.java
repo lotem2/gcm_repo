@@ -64,6 +64,9 @@ public class Server extends AbstractServer {
 			case EDIT_USER_DETAILS:
 				replyMsg = UsersDB.getInstance().EditUser(currMsg.getData());
 				break;
+			case GET_USER_PURCHASES:
+				replyMsg = PurchaseDB.getInstance().getPurchasesByUser(currMsg.getData());
+				break;
 			case SEARCH:
 				replyMsg = MapDB.getInstance().Search(currMsg.getData());
 				break;
