@@ -5,7 +5,9 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-
+import java.io.File;
+import java.io.FileWriter;
+import javafx.stage.FileChooser;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JOptionPane;
@@ -16,6 +18,7 @@ import common.Message;
 import common.Permission;
 import entity.Client;
 import entity.User;
+import entity.Purchase.PurchaseType;
 import gui.MainGUI.SceneType;
 import entity.Map;
 import entity.Purchase;
@@ -60,6 +63,10 @@ GUIClient client;
     private AnchorPane ClientProfileWindow;
     @FXML 
     private TabPane TabPaneMyProfile;
+    @FXML
+    private Button btnDownload;
+    @FXML
+    private Button btnRenew;
     @FXML
     private Button btnMain;
     @FXML 
@@ -270,6 +277,7 @@ GUIClient client;
 		lblWelcome.setText("Welcome " + MainGUI.currUser.getUserName() + "!");
 		//setRadioButtonGroup();
 		setPersonalInfoBooleanBinding();
+		//btnDownload.setOnAction(btnLoadEventListener);
 		sendRequestToServer(MainGUI.currClient.getUserName());
 		String telephoneAsString = String.valueOf(MainGUI.currClient.getTelephone());
 		long lastFourDigitsLong=Math.abs(MainGUI.currClient.getCardNumber())%10000;
@@ -304,7 +312,9 @@ GUIClient client;
 	}
 	
 	void sendRequestToServer(String userName) {
-		Message myMessage = new Message(Action.GET_USER_PURCHASES,userName);
+		ArrayList<Object> data = new ArrayList<Object>();
+		data.add(userName);
+		Message myMessage = new Message(Action.GET_USER_PURCHASES,data);
 		try {
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (Exception e) {
@@ -372,6 +382,19 @@ GUIClient client;
 				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
 						JOptionPane.WARNING_MESSAGE);
 		break;
+		case RENEW:
+			if ((Integer) currMsg.getData().get(0) == 0) 
+			{
+		    	ArrayList<Purchase> purchases = (ArrayList<Purchase>) currMsg.getData().get(1);
+				ObservableList<Purchase> currPurchasesList = FXCollections.observableArrayList(purchases);
+				setTableViewForPurchases(currPurchasesList);
+				JOptionPane.showMessageDialog(null,"Automated certificate renewal has succeeded.\n You've got a 10% discount!", "Notification",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
+			else 
+				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
+						JOptionPane.WARNING_MESSAGE);
+		break;
 		default:
 		}
 	}
@@ -386,11 +409,11 @@ GUIClient client;
 			@SuppressWarnings("unchecked")
 			@Override
 			public void run() {
-				col_cityName.setCellValueFactory(new PropertyValueFactory<Purchase,String>("City"));
-				col_purchaseType.setCellValueFactory(new PropertyValueFactory<Purchase,String>("Purchase Type"));
-				col_purchaseDate.setCellValueFactory(new PropertyValueFactory<Purchase,String>("Purchase Date"));
-				col_expiryDate.setCellValueFactory(new PropertyValueFactory<Purchase,String>("Expiry Date"));
-				col_price.setCellValueFactory(new PropertyValueFactory<Purchase,String>("Price"));
+				col_cityName.setCellValueFactory(new PropertyValueFactory<Purchase,String>("cityName"));
+				col_purchaseType.setCellValueFactory(new PropertyValueFactory<Purchase,String>("purchaseType"));
+				col_purchaseDate.setCellValueFactory(new PropertyValueFactory<Purchase,String>("purchaseDate"));
+				col_expiryDate.setCellValueFactory(new PropertyValueFactory<Purchase,String>("expiryDate"));
+				col_price.setCellValueFactory(new PropertyValueFactory<Purchase,String>("price"));
 
 				//purchasesTable.getColumns().addAll(col_cityName, col_purchaseType, col_purchaseDate,col_expiryDate,col_price);
 				purchasesTable.setItems(currPurchasesList);
@@ -400,9 +423,89 @@ GUIClient client;
 
     @FXML
     void Watch(ActionEvent event) {
+		Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
+		String city = purchase.getCityName();
+		//sending the name of the city to the show Window
+		ArrayList<Object> data = new ArrayList<Object>();
+		data.add(city);
+		sendWatchRequestToServer(Action.WATCH,data);
+		Permission permission = (MainGUI.currClient.getPermission());
+		switch(permission) 
+		{
+			case CLIENT:
+			{
+				MainGUI.MainStage.setTitle("Global City Map - View Maps");
+				break;
+			}
+			default:
+				MainGUI.MainStage.setTitle("Global City Map - Edit Maps");
+		}
+		MainGUI.openScene(SceneType.Edit);
+
     }
 	
+    void sendWatchRequestToServer(Action action, ArrayList<Object> data) {
+    		Message myMessage = new Message(Action.WATCH,data);
+		try {
+			MainGUI.GUIclient.sendToServer(myMessage);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message to the server", "Error",
+					JOptionPane.WARNING_MESSAGE);
+		}
+    }
 
+    
+//    EventHandler<ActionEvent> btnLoadEventListener
+//    = new EventHandler<ActionEvent>(){
+//     	  
+//        @Override
+//        public void handle(ActionEvent event) {
+//            FileChooser fileChooser = new FileChooser();
+//
+//            //Set extension filter
+//            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
+//            fileChooser.getExtensionFilters().add(extFilter);
+//            
+//            //Show save file dialog
+//            File file = fileChooser.showSaveDialog(null);
+//            SaveFile(content,file);
+//            
+//            if(file != null){
+//				JOptionPane.showMessageDialog(null, "The file couldn't be downloaded", "Error",
+//						JOptionPane.WARNING_MESSAGE);
+//            }
+//        }
+//    };
+//    
+//    private void SaveFile(String content, File file){
+//        try {
+//            FileWriter fileWriter = null;
+//             
+//            fileWriter = new FileWriter(file);
+//            fileWriter.write(content);
+//            fileWriter.close();
+//        } catch (IOException ex) {
+//			JOptionPane.showMessageDialog(null, "The file couldn't be downloaded", "Error",
+//					JOptionPane.WARNING_MESSAGE);
+//        }
+//    }
+       
+
+    @FXML
+    void Renew(ActionEvent event) 
+    {
+		Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
+		ArrayList<Object> data = new ArrayList<Object>();
+		data.add(purchase);
+		Message myMessage = new Message(Action.RENEW,data);
+		try {
+			MainGUI.GUIclient.sendToServer(myMessage);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message to the server", "Error",
+					JOptionPane.WARNING_MESSAGE);
+		}
+		
+    }
 	/**
 	 *
 	 *If the user wants to change his details.

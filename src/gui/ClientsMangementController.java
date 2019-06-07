@@ -94,6 +94,8 @@ GUIClient client;
 		}
     	
     }
+
+
 	/**
 	 *handling message from server, by getting all the clients details.
 	 *	

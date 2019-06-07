@@ -23,8 +23,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.control.cell.PropertyValueFactory;
-import common.Action;
-import common.Message;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -237,12 +235,16 @@ public class MainGUIController implements ControllerListener {
 						case CLIENT:
 							MainGUI.currClient = (Client) currMsg.getData().get(1);
 							btnMyProfile.setVisible(true);
+							btnEditMaps.setText("Show Maps");
+							btnEditMaps.setVisible(true);
+							btnBuy.setVisible(true);
 							break;
 						case EDITOR:
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
 							btnEditMaps.setVisible(true);
 							btnBuy.setVisible(false);
 							btnManage.setVisible(true);
+							btnEditMaps.setText("Edit Maps");
 							btnEditMaps.setVisible(true);
 							btnBuy.setVisible(false);
 							break;
@@ -251,12 +253,14 @@ public class MainGUIController implements ControllerListener {
 							btnEditMaps.setVisible(true);
 							btnBuy.setVisible(false);
 							btnManage.setVisible(true);
+							btnEditMaps.setText("Edit Maps");
 							btnEditMaps.setVisible(true);
 							btnBuy.setVisible(false);
 							break;
 						case CEO:
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
 							btnManage.setVisible(true);
+							btnEditMaps.setText("Edit Maps");
 							btnEditMaps.setVisible(true);
 							btnBuy.setVisible(false);
 							break;
@@ -285,6 +289,8 @@ public class MainGUIController implements ControllerListener {
 						btnLogout.setVisible(false);
 						btnMyProfile.setVisible(false);
 						btnManage.setVisible(false);
+						btnEditMaps.setVisible(false);
+						btnBuy.setVisible(false);
 						lblWelcome.setText("Welcome");
 					});
 					JOptionPane.showMessageDialog(null, "Disconnected successfully", "Notification",
@@ -360,7 +366,17 @@ public class MainGUIController implements ControllerListener {
 
 	@FXML
     void EditMaps(ActionEvent event) {
-		MainGUI.MainStage.setTitle("Global City Map - Edit Tool");
+		Permission permission = (MainGUI.currClient.getPermission());
+		switch(permission) 
+		{
+			case CLIENT:
+			{
+				MainGUI.MainStage.setTitle("Global City Map - View Maps");
+				break;
+			}
+			default:
+				MainGUI.MainStage.setTitle("Global City Map - Edit Maps");
+		}
 		MainGUI.openScene(SceneType.Edit);
     }
     
