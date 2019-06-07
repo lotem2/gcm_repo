@@ -81,10 +81,20 @@ public class Purchase implements java.io.Serializable{
 	public LocalDate getPurchaseDate() { return m_purchaseDate; }
 
 	/**
+	 * Set the date the purchase was done
+	 */
+	public void setPurchaseDate(LocalDate newdate) { m_purchaseDate = newdate; }
+
+	/**
 	 * Get the expiry date for this purchase
 	 * @return LocalDate
 	 */
 	public LocalDate getExpirationDate() { return m_expirationDate; }
+
+	/**
+	 * Set the expiry date for this purchase
+	 */
+	public void setExpirationDate(LocalDate newdate) { m_expirationDate = newdate; }
 
 	/**
 	 * get number renew for this purchase
@@ -109,4 +119,9 @@ public class Purchase implements java.io.Serializable{
 	 * @return float
 	 */
 	public float getPrice() { return m_price; }
+
+	/**
+	 * Set the price of the purchase
+	 */
+	public void setPrice(float newprice) { m_price = newprice; }
 }
