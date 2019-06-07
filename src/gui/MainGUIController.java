@@ -225,44 +225,43 @@ public class MainGUIController implements ControllerListener {
 			switch (currMsg.getAction()) {
 			case LOGIN:
 				if ((Integer) currMsg.getData().get(0) == 0) {
-					tfUser.setVisible(false);
-					pfPassword.setVisible(false);
-					btnLogin.setVisible(false);
-					btnRegister.setVisible(false);
-					btnLogout.setVisible(true);
-					MainGUI.currUser = (User) currMsg.getData().get(1);
-					Permission permission = ((User) currMsg.getData().get(1)).getPermission();
-					switch (permission) {
-					case CLIENT:
-						MainGUI.currClient = (Client) currMsg.getData().get(1);
-						btnMyProfile.setVisible(true);
-						break;
-					case EDITOR:
-						MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
-						btnEditMaps.setVisible(true);
-						btnBuy.setVisible(false);
-						btnManage.setVisible(true);
-						btnEditMaps.setVisible(true);
-						btnBuy.setVisible(false);
-						break;
-					case MANAGING_EDITOR:
-						MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
-						btnEditMaps.setVisible(true);
-						btnBuy.setVisible(false);
-						btnManage.setVisible(true);
-						btnEditMaps.setVisible(true);
-						btnBuy.setVisible(false);
-						break;
-					case CEO:
-						MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
-						btnManage.setVisible(true);
-						btnEditMaps.setVisible(true);
-						btnBuy.setVisible(false);
-						break;
-					default:
-
-					}
 					Platform.runLater(() -> {
+						tfUser.setVisible(false);
+						pfPassword.setVisible(false);
+						btnLogin.setVisible(false);
+						btnRegister.setVisible(false);
+						btnLogout.setVisible(true);
+						MainGUI.currUser = (User) currMsg.getData().get(1);
+						Permission permission = ((User) currMsg.getData().get(1)).getPermission();
+						switch (permission) {
+						case CLIENT:
+							MainGUI.currClient = (Client) currMsg.getData().get(1);
+							btnMyProfile.setVisible(true);
+							break;
+						case EDITOR:
+							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
+							btnEditMaps.setVisible(true);
+							btnBuy.setVisible(false);
+							btnManage.setVisible(true);
+							btnEditMaps.setVisible(true);
+							btnBuy.setVisible(false);
+							break;
+						case MANAGING_EDITOR:
+							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
+							btnEditMaps.setVisible(true);
+							btnBuy.setVisible(false);
+							btnManage.setVisible(true);
+							btnEditMaps.setVisible(true);
+							btnBuy.setVisible(false);
+							break;
+						case CEO:
+							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
+							btnManage.setVisible(true);
+							btnEditMaps.setVisible(true);
+							btnBuy.setVisible(false);
+							break;
+						default:
+						}
 						String name = ((User) currMsg.getData().get(1)).getUserName();
 						lblWelcome.setText("Welcome " + name + "!");
 					});
@@ -276,16 +275,16 @@ public class MainGUIController implements ControllerListener {
 				break;
 			case LOGOUT:
 				try {
-					tfUser.setText("");
-					pfPassword.setText("");
-					tfUser.setVisible(true);
-					pfPassword.setVisible(true);
-					btnLogin.setVisible(true);
-					btnRegister.setVisible(true);
-					btnLogout.setVisible(false);
-					btnMyProfile.setVisible(false);
-					btnManage.setVisible(false);
 					Platform.runLater(() -> {
+						tfUser.setText("");
+						pfPassword.setText("");
+						tfUser.setVisible(true);
+						pfPassword.setVisible(true);
+						btnLogin.setVisible(true);
+						btnRegister.setVisible(true);
+						btnLogout.setVisible(false);
+						btnMyProfile.setVisible(false);
+						btnManage.setVisible(false);
 						lblWelcome.setText("Welcome");
 					});
 					JOptionPane.showMessageDialog(null, "Disconnected successfully", "Notification",
