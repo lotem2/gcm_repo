@@ -14,10 +14,10 @@ public class Server extends AbstractServer {
 	// Variables
 	private static final DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	final public static int DEFAULT_PORT = 5555;
-	static private HashMap<String, ConnectionToClient> clients;
+	static private HashMap<User, ConnectionToClient> clients;
 	public Server(int port) {
 		super(port);
-		clients = new HashMap<String, ConnectionToClient>();
+		clients = new HashMap<User, ConnectionToClient>();
 	}
 
 	public void handleMessageFromClient(Object msg, ConnectionToClient client) {
@@ -35,34 +35,41 @@ public class Server extends AbstractServer {
 					ArrayList<Object> input = new ArrayList<Object>();
 					input.add(new Integer(1));
 					input.add(new String("Client already connected."));
-					replyMsg = new Message(Action.LOGIN, input);
+					replyMsg = new Message(Action.LOGIN, new Integer(1), new String("Client already connected."));
 				} else {
 					// Get User's details
 					replyMsg = UsersDB.getInstance().getUser(currMsg.getData());
 					if (((Integer) replyMsg.getData().get(0)) == 0) {
 						// Adding the current user to the list of clients connected
-						clients.put(currMsg.getData().get(0).toString(), client);
+						clients.put((User)replyMsg.getData().get(1), client);
 						client.setName(currMsg.getData().get(0).toString());
+
+						System.out.println("[" + sdf.format(Calendar.getInstance().getTime()) +  "] " + 
+								currMsg.getData().get(0).toString() + " has connected.");
 					}
 
 					replyMsg.setAction(Action.LOGIN);
-					System.out.println("[" + sdf.format(Calendar.getInstance().getTime()) +  "] " + 
-							currMsg.getData().get(0).toString() + " has connected.");
 				}
 				break;
 			case LOGOUT:
 				// remove client from list of clients and send success message
+				System.out.println("[" + sdf.format(Calendar.getInstance().getTime()) +  "] " + 
+						client.getName() + " has disconnected.");
 				client.setName("");
-				clients.remove(currMsg.getData().get(0).toString());
+				clients.remove(getKeybyValue(client));
 				ArrayList<Object> input = new ArrayList<Object>();
 				input.add(new Integer(0));
-				replyMsg = new Message(Action.LOGOUT, input);
+				replyMsg = new Message(Action.LOGOUT, new Integer(0));
 				break;
 			case REGISTER:
 				replyMsg = UsersDB.getInstance().AddUser(currMsg.getData());
 				break;
 			case EDIT_USER_DETAILS:
 				replyMsg = UsersDB.getInstance().EditUser(currMsg.getData());
+				break;
+			case GET_USER_PURCHASES:
+				replyMsg = PurchaseDB.getInstance().getPurchasesByUser(currMsg.getData());
+				replyMsg.setAction(Action.GET_USER_PURCHASES);
 				break;
 			case SEARCH:
 				replyMsg = MapDB.getInstance().Search(currMsg.getData());
@@ -87,6 +94,10 @@ public class Server extends AbstractServer {
 				replyMsg = ReportsDB.getInstance().produceActivityReport((currMsg.getData()));
 				replyMsg.setAction(Action.ACTIVITY_REPORT);
 				break;
+			case CITY_ACTIVITY_REPORT:
+				replyMsg = ReportsDB.getInstance().produceActivityReportToCity((currMsg.getData()));
+				replyMsg.setAction(Action.CITY_ACTIVITY_REPORT);
+				break;
 			default:
 				break;
 			}
@@ -106,7 +117,8 @@ public class Server extends AbstractServer {
 
 	protected void clientDisconnected(ConnectionToClient client) {
 		// Remove client from list of clients
-		clients.remove(client.getName());
+		String msg = "[" + sdf.format(Calendar.getInstance().getTime()) +  "] " + client.getName()+ " has disconnected.";
+		clients.remove(getKeybyValue(client));
 	}
 
 	/** Hoot method to handle client's disconnection **/
@@ -119,7 +131,7 @@ public class Server extends AbstractServer {
 			msg = "[" + sdf.format(Calendar.getInstance().getTime()) +  "] A Client has disconnected";
 		}
 		
-		clients.remove(client.getName());
+		clients.remove(getKeybyValue(client));
 		System.out.println(msg);
 	}
 
@@ -128,15 +140,23 @@ public class Server extends AbstractServer {
 	 * value: {@value} true if user exists, else false
 	 **/
 	private boolean DoesUserExists(String username) {
-//		Thread[] clients = getClientConnections();
-//
-//		for (Thread client : clients) {
-//			if (client.getName() == username) {
-//				return true;
-//			}
-//		}
-		if(clients.containsKey(username)) return true;
+		for (User user : clients.keySet()) {
+			if(user.getUserName().equals(username)) return true;
+		}
 		return false;
+	}
+	
+	/**
+	 * Private method to get current user object from value object in hash map
+	 * value: {@value} true if user exists, else false
+	 **/
+	private User getKeybyValue(ConnectionToClient client) {
+		for (User user : clients.keySet()) {
+			if(clients.get(user).equals(client))
+				return user;
+		}
+		
+		return null;
 	}
 
 	public static void main(String[] args) {

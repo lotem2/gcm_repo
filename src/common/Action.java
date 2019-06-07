@@ -28,4 +28,5 @@ public enum Action {
 	ACTIVITY_REPORT,
 	RENEW,
 	WATCH,
+	CITY_ACTIVITY_REPORT
 }

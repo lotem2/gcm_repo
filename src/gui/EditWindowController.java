@@ -12,7 +12,7 @@ import java.util.Iterator;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.IOUtils;
+//import org.apache.commons.io.IOUtils;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 

@@ -277,7 +277,7 @@ public class BuyController implements ControllerListener {
 			}
 		}
 		String totalPrice = Float.toString(price);
-		lblTotalPrice.setText("Totla Price: " + totalPrice);
+		lblTotalPrice.setText("Total Price: " + totalPrice);
 		return totalPrice;
 	}
 

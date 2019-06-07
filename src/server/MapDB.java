@@ -5,6 +5,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -119,12 +120,8 @@ public class MapDB {
 	public Message AddNewMap(ArrayList<Object> params){
 		// Variables
 		ArrayList<Object> data = new ArrayList<Object>();
-		int changedRows = 0;
 
 		try {
-			// Connect to DB
-			SQLController.Connect();
-
 			// Check if the map to add is already in the database
 			if(SQLController.DoesRecordExist("Maps", "mapname", "cityname", "description", 
 					params.get(0), params.get(1), params.get(2)))
@@ -137,14 +134,9 @@ public class MapDB {
 			// Add the conversion of the map's image url to byte array to params object
 			params.add(setImage(params.get(3).toString()));
 
-			// Execute sql query, get number of changed rows
-			changedRows = SQLController.ExecuteUpdate(sql, params);
+			// Insert new map using private editMap method
+			editMap(sql, params);
 
-			// Check if update was successful - result should be greater than zero
-			if (changedRows == 0) {
-				 throw new Exception("Map was not added successfully.");
-			}
-			
 			// Create data to match the success pattern
 			data.add(new Integer(0)); data.add(new String("Map was added successfully."));
 		}
@@ -152,7 +144,7 @@ public class MapDB {
 			data.add(new Integer(1)); data.add(new String("There was a problem with the SQL service."));
 		}
 		catch(Exception e) {
-			data.add(new Integer(1)); data.add(e.getMessage());
+			data.add(new Integer(1)); data.add("Map was not added successfully");
 		}
 		finally {
 			// Disconnect DB
@@ -197,7 +189,7 @@ public class MapDB {
 					+ 		  "(SELECT id FROM Sites WHERE name = ?))";
 
 			// Get the correct parameters for the map-site relation query
-			params = (ArrayList<Object>)params.subList(0, 3);
+			params = new ArrayList<Object>(params.subList(0, 3));
 
 			// Connect to DB
 			SQLController.Connect();
@@ -280,7 +272,7 @@ public class MapDB {
 				maps.add(new Map(id, mapname, description, cityname, sites, image));
 			}
 
-			replyMsg = new Message(null, maps);	// Add content of the array list to the message
+			replyMsg = new Message(null, new Integer(0), maps);	// Add content of the array list to the message
 		}
 		catch (SQLException e) {
 			replyMsg = new Message(null, new Integer(1), e.getMessage());
@@ -348,8 +340,55 @@ public class MapDB {
 	}
 
 	/**
+	 * Create a request for approval of a map's new version
+	 * @param params - Contain map's name, the sender's user entity 
+	 * @return {@link Message} - Indicating success/failure with corresponding message 
+	 */
+	public Message createNewVersionRequest(ArrayList<Object> params){
+		// Variables
+		ArrayList<Object> data  = new ArrayList<Object>();
+
+		try {
+			// Check if a new map version is currently under management approval
+			if(SQLController.DoesRecordExist("Inbox","content", "status", 
+						"Approve " + params.get(0).toString() + " new version", "New"))
+				throw new Exception("New version is under approval, cannot create publish request.");
+
+			// Prepare statement to insert new map
+			String content = "Approve " + params.get(0).toString() + " new version";
+
+			// Insert new Inbox message to managers with the approval request of map's new version
+			Message msg = InboxDB.getInstance().AddInboxMessage(
+					((User)params.get(1)).getUserName(), 
+					((User)params.get(1)).getPermission().toString(),
+					Permission.MANAGING_EDITOR.toString(),
+					content,
+					new String("New"),
+					LocalDate.now());
+
+			// Check if insertion was successful
+			if((Integer)msg.getData().get(0) == 1) throw new Exception("Request for approval was not successful");
+
+			// Create data to match the success pattern
+			data.add(new Integer(0)); data.add(new String("Requset for approval submmited successfuly."));
+		}
+		catch (SQLException e) {
+			data.add(new Integer(1)); data.add(new String("There was a problem with the SQL service."));
+		}
+		catch(Exception e) {
+			data.add(new Integer(1)); data.add(e.getMessage());
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(null);
+		}
+
+		return new Message(null, data);
+	}
+	
+	/**
 	 * Update details in database of the current map's new version, set current version as active
-	 * @param params - Contain the id of the map to be updated and management repose - approve/decline
+	 * @param params - Contain the user entity of the manager, response - approve/decline, map name and id
 	 * @return {@link Message} - Indicating success/failure with corresponding message
 	 */
 	public Message publishNewVersion(ArrayList<Object> params){
@@ -361,10 +400,12 @@ public class MapDB {
 		try {
 			// Add is_active = false to get the new sites add to database and to the map to display them on this version
 			// Get the id of sites that belong to the map using private getMapSitesID method
-			params.add(0); ArrayList<Object> sites = getMapSitesID((ArrayList<Object>)params.subList(1, params.size()));
+			params.add(0); 
+			ArrayList<Object> input = new ArrayList<Object>(params.subList(3, params.size()));
+			ArrayList<Object> sites = getMapSitesID(input);
 
 			// Add response of management to publishing new version and the map id
-			map_sities.add(params.get(0)); map_sities.add(params.get(1));
+			map_sities.add(params.get(1)); map_sities.add(params.get(3));
 
 			// Enter each site into the array list for query
 			for (Object site : sites)
@@ -377,8 +418,8 @@ public class MapDB {
 			SiteDB.getInstance().approveNewSites(map_sities); // Approve new sites added for this new version
 
 			// Add is_active = true to get the existing sites already in map to display their new details in map 
-			params.remove(2); params.add(1); map_sities.clear(); map_sities.add(params.get(0));
-			sites = getMapSitesID((ArrayList<Object>)params.subList(1, params.size()));
+			input.remove(4); input.add(1); map_sities.clear(); map_sities.add(params.get(1));
+			sites = getMapSitesID(input);
 
 			// Enter each site into the array list for query
 			for (Object site : sites)
@@ -386,6 +427,16 @@ public class MapDB {
 
 			// Approve editing of sites for this new version
 			SiteDB.getInstance().approveEditedSites(map_sities);
+
+			String content = "Got an update for map " + params.get(2).toString();
+ 			// Insert new Inbox message to clients letting them know there is a new version for the map
+			Message msg = InboxDB.getInstance().AddInboxMessage(
+					((User)params.get(0)).getUserName(), 
+					((User)params.get(0)).getPermission().toString(),
+					Permission.CLIENT.toString(),
+					content,
+					new String("New"),
+					LocalDate.now());
 		}
 		catch (SQLException e) {
 			replyMsg = new Message(null, new Integer(1), e.getMessage());
@@ -427,12 +478,12 @@ public class MapDB {
 				if(params.get(0).toString() == "Approve") {
 					sql = "UPDATE BridgeMSC SET is_active = 1 " +
 							 "siteID IN (";
-					params = (ArrayList<Object>)params.subList(2, params.size()); // prepare parameters to query
+					params = new ArrayList<Object>(params.subList(2, params.size())); // prepare parameters to query
 				}
 				else{
 					sql = "DELETE FROM BridgeMSC WHERE mapID = ? AND " +
 							"siteID IN (";
-					params = (ArrayList<Object>)params.subList(1, params.size()); // prepare parameters to query
+					params = new ArrayList<Object>(params.subList(1, params.size())); // prepare parameters to query
 				}
 
 				// Add question marks for the site's id
@@ -609,7 +660,7 @@ public class MapDB {
 			SQLController.Disconnect(null);
 		}
 	}
-	
+
 	/**
 	 * Private method to turn image to byte array to be saved in database
 	 * @param path - image's path

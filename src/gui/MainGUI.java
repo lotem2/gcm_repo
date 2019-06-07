@@ -38,7 +38,8 @@ public class MainGUI extends Application {
 		BUY,
 		ClientProfile,
 		ClientsManagement,
-		Edit
+		Edit,
+		Statistics
 	}
 
 	static final Map<SceneType, String> sceneFxmlLocationMapping = Map.ofEntries(
@@ -47,7 +48,9 @@ public class MainGUI extends Application {
 	    Map.entry(SceneType.BUY, "/BuyScene.fxml"),
 	    Map.entry(SceneType.ClientProfile, "/ClientProfileScene.fxml"),
 	    Map.entry(SceneType.ClientsManagement, "/ClientsManagementScene.fxml"),
-	    Map.entry(SceneType.Edit, "/EditScene.fxml")
+	    Map.entry(SceneType.Edit, "/EditScene.fxml"),
+	    Map.entry(SceneType.Statistics, "/StatisticsScene.fxml")
+
 	);
 	
 	static final Map<SceneType, Pair<Scene, ControllerListener>> sceneMapping = new HashMap<>();

@@ -24,31 +24,125 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.SplitMenuButton;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 
-public class StatisticsController implements ControllerListener {
+public class StatisticsController implements ControllerListener{
 
-	@FXML
-	private Button btnShowStatistics;
+    @FXML
+    private TableView<?> tblCityPurchase;
 
-	@FXML
-	void ShowStatistics(ActionEvent event) {
-	}
+    @FXML
+    private TableColumn<?, ?> clmDescriptionPerCity;
 
+    @FXML
+    private TableColumn<?, ?> clmPurchaseDaily;
+
+    @FXML
+    private TableColumn<?, ?> clmCityReport;
+
+    @FXML
+    private TableColumn<?, ?> clmNumPerCity;
+
+    @FXML
+    private TableView<?> tblAllActivityReport;
+
+    @FXML
+    private Label lblNumOfRenewals;
+
+    @FXML
+    private Label lblLTS;
+
+    @FXML
+    private SplitMenuButton choiceBoxCity;
+
+    @FXML
+    private TableColumn<?, ?> clmNumReport;
+
+    @FXML
+    private Label lblOTS;
+
+    @FXML
+    private TableColumn<?, ?> clmCityDaily;
+
+    @FXML
+    private TableColumn<?, ?> clmDescriptionReport;
+
+    @FXML
+    private Label lblOneTimeSub;
+	
+    @FXML
+	private Button btnBackToMain;
+
+    @FXML
+    void CityPurchaseTable(ActionEvent event) {
+
+    }
+
+    @FXML
+    void CityDaily(ActionEvent event) {
+
+    }
+
+    @FXML
+    void PurchaseDaily(ActionEvent event) {
+
+    }
+
+    @FXML
+    void LongTermSub(ActionEvent event) {
+
+    }
+
+    
+
+    @FXML
+    void AllActivityReportTable(ActionEvent event) {
+
+    }
+
+    @FXML
+    void CityReport(ActionEvent event) {
+
+    }
+
+    @FXML
+    void DescriptionReport(ActionEvent event) {
+
+    }
+
+    @FXML
+    void NumReport(ActionEvent event) {
+
+    }
+
+
+    @FXML
+    void DescriptionPerCity(ActionEvent event) {
+
+    }
+
+    @FXML
+    void NumPerCity(ActionEvent event) {
+
+    }
+    
 	@FXML
 	void backToMainGUI(ActionEvent event) {
 		MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
 	}
-	
+
+    @Override
+	public void handleMessageFromServer(Object msg) {
+    
+    }
+    
 	@FXML
 	void initialize() {
-	
-	}
-
-	@Override
-	public void handleMessageFromServer(Object msg) {
-
+		
 	}
 }

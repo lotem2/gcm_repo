@@ -83,6 +83,8 @@ public class MainGUIController implements ControllerListener {
 	@FXML
 	private Button btnManage;
 	@FXML
+	private Button btnStatistics;
+	@FXML
 	private Button btnMyProfile;
 	@FXML
 	private Button btnRegister;
@@ -173,6 +175,11 @@ public class MainGUIController implements ControllerListener {
 	void Buy(ActionEvent event) {
 		MainGUI.openScene(MainGUI.SceneType.BUY);
 	}
+	
+	@FXML
+	void Statistics(ActionEvent event) {
+		MainGUI.openScene(MainGUI.SceneType.Statistics);
+	}
 
 	@FXML
 	void Download(ActionEvent event) {
@@ -223,7 +230,6 @@ public class MainGUIController implements ControllerListener {
 			switch (currMsg.getAction()) {
 			case LOGIN:
 				if ((Integer) currMsg.getData().get(0) == 0) {
-					Platform.runLater(() -> {
 						tfUser.setVisible(false);
 						pfPassword.setVisible(false);
 						btnLogin.setVisible(false);
@@ -267,14 +273,17 @@ public class MainGUIController implements ControllerListener {
 						default:
 						}
 						String name = ((User) currMsg.getData().get(1)).getUserName();
-						lblWelcome.setText("Welcome " + name + "!");
-					});
+						Platform.runLater(() -> {
+							lblWelcome.setText("Welcome " + name + "!");
+						});
 				} else {
 					// System.out.println((currMsg.getData().get(1)).toString());
 					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
-							JOptionPane.INFORMATION_MESSAGE);
-					tfUser.setText("");
-					pfPassword.setText("");
+					JOptionPane.INFORMATION_MESSAGE);
+					Platform.runLater(() -> {
+						tfUser.setText("");
+						pfPassword.setText("");
+					});
 				}
 				break;
 			case LOGOUT:
@@ -282,6 +291,8 @@ public class MainGUIController implements ControllerListener {
 					Platform.runLater(() -> {
 						tfUser.setText("");
 						pfPassword.setText("");
+						lblWelcome.setText("Welcome");
+					});
 						tfUser.setVisible(true);
 						pfPassword.setVisible(true);
 						btnLogin.setVisible(true);
@@ -291,8 +302,6 @@ public class MainGUIController implements ControllerListener {
 						btnManage.setVisible(false);
 						btnEditMaps.setVisible(false);
 						btnBuy.setVisible(false);
-						lblWelcome.setText("Welcome");
-					});
 					JOptionPane.showMessageDialog(null, "Disconnected successfully", "Notification",
 							JOptionPane.DEFAULT_OPTION);
 				} catch (Exception e) {
