@@ -1,28 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<AnchorPane prefHeight="574.0" prefWidth="528.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="gui.StatisticsController">
+<AnchorPane prefHeight="574.0" prefWidth="528.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.StatisticsController">
    <children>
-      <Button fx:id="btnShowStatistics" layoutX="233.0" layoutY="464.0" mnemonicParsing="false" onAction="#ShowStatistics" text="Statistics" />
-      <Label layoutX="209.0" layoutY="52.0" prefHeight="49.0" prefWidth="110.0" text="Statistics">
-         <font>
-            <Font size="24.0" />
-         </font>
-      </Label>
-      <TableView layoutX="14.0" layoutY="136.0" prefHeight="258.0" prefWidth="205.0">
-        <columns>
-          <TableColumn prefWidth="86.0" text="City" />
-          <TableColumn prefWidth="117.0" text="Purchase number" />
-        </columns>
-      </TableView>
-      <Label layoutX="282.0" layoutY="146.0" text="One time subscription: " />
-      <Label layoutX="282.0" layoutY="180.0" text="long term subscription: " />
-      <Label layoutX="282.0" layoutY="216.0" text="Total number of renewals: " />
+      <TabPane prefHeight="575.0" prefWidth="528.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Daily Statistics">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Label fx:id="lblOTS" layoutX="286.0" layoutY="199.0" text="One time subscription: " />
+                        <TableView fx:id="tblCityPurchase" layoutX="24.0" layoutY="108.0" prefHeight="315.0" prefWidth="205.0">
+                          <columns>
+                            <TableColumn fx:id="clmCityDaily" prefWidth="86.0" text="City" />
+                            <TableColumn fx:id="clmPurchaseDaily" prefWidth="117.0" text="Purchase number" />
+                          </columns>
+                        </TableView>
+                        <Label layoutX="149.0" layoutY="37.0" prefHeight="49.0" prefWidth="160.0" text="Daily Statistics">
+                           <font>
+                              <Font size="24.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="lblNumOfRenewals" layoutX="286.0" layoutY="149.0" text="Total number of renewals: " />
+                        <Label fx:id="lblLTS" layoutX="285.0" layoutY="246.0" text="long term subscription: " />
+                        <Separator layoutX="267.0" layoutY="101.0" orientation="VERTICAL" prefHeight="325.0" prefWidth="9.0" />
+                        <Button fx:id="btnbackToMainGUI" layoutX="427.0" layoutY="25.0" mnemonicParsing="false" onAction="#backToMainGUI" text="Catalog" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Activity Report Per City">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Label layoutX="178.0" layoutY="56.0" prefHeight="49.0" prefWidth="173.0" text="Activity Report ">
+                           <font>
+                              <Font size="24.0" />
+                           </font>
+                        </Label>
+                        <DatePicker layoutX="50.0" layoutY="132.0" promptText="From" />
+                        <DatePicker layoutX="50.0" layoutY="185.0" promptText="To" />
+                        <SplitMenuButton fx:id="choiceBoxCity" layoutX="50.0" layoutY="248.0" mnemonicParsing="false" text="Choose city">
+                          <items>
+                            <MenuItem mnemonicParsing="false" text="Action 1" />
+                            <MenuItem mnemonicParsing="false" text="Action 2" />
+                          </items>
+                        </SplitMenuButton>
+                        <Separator layoutX="263.0" layoutY="119.0" orientation="VERTICAL" prefHeight="383.0" prefWidth="1.0" />
+                        <TableView layoutX="288.0" layoutY="119.0" prefHeight="305.0" prefWidth="223.0">
+                          <columns>
+                            <TableColumn fx:id="clmDescriptionPerCity" prefWidth="151.0" text="Description" />
+                            <TableColumn fx:id="clmNumPerCity" prefWidth="71.0" text="#" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab text="All Cities Activity Report">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="tblAllActivityReport" layoutX="7.0" layoutY="79.0" prefHeight="457.0" prefWidth="514.0">
+                          <columns>
+                            <TableColumn fx:id="clmCityReport" prefWidth="50.0" text="City" />
+                            <TableColumn fx:id="clmDescriptionReport" prefWidth="57.0" text="#Maps" />
+                              <TableColumn prefWidth="93.0" text="#One time sub'" />
+                              <TableColumn minWidth="1.0" prefWidth="105.0" text="#Long term subs'" />
+                              <TableColumn minWidth="0.0" prefWidth="64.0" text="#Renewals" />
+                              <TableColumn prefWidth="63.0" text="#Watches" />
+                              <TableColumn text="#Downloads" />
+                          </columns>
+                        </TableView>
+                        <Label layoutX="161.0" layoutY="26.0" prefHeight="49.0" prefWidth="160.0" text="Activity Report">
+                           <font>
+                              <Font size="24.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
    </children>
 </AnchorPane>
