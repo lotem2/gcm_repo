@@ -319,31 +319,38 @@ public class MainGUIController implements ControllerListener {
 
 	public void setTableViewForMapsSearchResult(HashMap<Integer, String> maps) 
 	{
-		//Create Map object and insert the Value properties from the search HashMap
-		Map<String, String> maps_string  = new HashMap<>();
-		for  (Integer currmap  :  maps.keySet())  {
-		maps_string.put(maps.get(currmap).split(",")[0], maps.get(currmap).split(",")[1]);
-		}
-		// Create ObservableList of type Map
-		ObservableList<Map>  keys  =  FXCollections.observableArrayList();
-		// Insert every pair according to the names of columns
-		for  (Integer key  :  maps.keySet())  
-		{
-		Map<String, String>  m  =  new  HashMap<String, String>();
-		m.put("description",  maps.get(key).split(",")[0]);
-		m.put("poi", maps.get(key).split(",")[1]);
-		keys.add(m);
-		}
-		// Create the columns necessary for the current search  -  site or city
-		col_mapDescription  = new  TableColumn<>("description");
-		col_mapDescription.setCellValueFactory(new MapValueFactory( "description"));
-		col_price  =  new  TableColumn<>("poi");
-		col_price.setCellValueFactory(new MapValueFactory("poi"));
-		// Set columns as children of the table view
-		SearchResultsTable.getColumns().setAll(col_mapDescription, col_price);
-		// Set the ObservableList<Map> as items
-		SearchResultsTable.setItems(keys);
-}
+		Platform.runLater(new Runnable() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public void run() {
+				//Create Map object and insert the Value properties from the search HashMap
+				Map<String, String> maps_string  = new HashMap<>();
+				for  (Integer currmap  :  maps.keySet())  {
+				maps_string.put(maps.get(currmap).split(",")[0], maps.get(currmap).split(",")[1]);
+				}
+				// Create ObservableList of type Map
+				ObservableList<Map>  keys  =  FXCollections.observableArrayList();
+				// Insert every pair according to the names of columns
+				for  (Integer key  :  maps.keySet())  
+				{
+				Map<String, String>  m  =  new  HashMap<String, String>();
+				m.put("description",  maps.get(key).split(",")[0]);
+				m.put("poi", maps.get(key).split(",")[1]);
+				keys.add(m);
+				}
+				// Create the columns necessary for the current search  -  site or city
+				col_mapDescription  = new  TableColumn<>("description");
+				col_mapDescription.setCellValueFactory(new MapValueFactory( "description"));
+				col_price  =  new  TableColumn<>("poi");
+				col_price.setCellValueFactory(new MapValueFactory("poi"));
+				// Set columns as children of the table view
+				//SearchResultsTable.getColumns().setAll(col_mapDescription, col_price);
+				// Set the ObservableList<Map> as items
+				SearchResultsTable.setItems(keys);
+			}
+		});
+	}
+
 
 
 	@FXML
