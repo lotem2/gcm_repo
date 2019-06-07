@@ -1,14 +1,14 @@
 package common;
 
 public enum Classification {
-Historic,
-Museum,
-Hotel,
-Restaurant,
-Public_institution,
-Park,
-Shop,
-Mall,
-Cinema,
-University
+HISTORIC,
+MUSEUM,
+HOTEL,
+RESTAURANT,
+PUBLIC_INSTTUTION,
+PARK,
+SHOP,
+MALL,
+CINEMA,
+UNIVERSITY
 }
