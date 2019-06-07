@@ -82,7 +82,7 @@ GUIClient client;
     void initialize() 
     {
     	//setTableViewForClients(clients);
-    	lblWelcome.setText("Welcome " + MainGUI.currUser.getUserName() + "!");
+    	lblWelcome.setText("Welcome " + MainGUI.currEmployee.getUserName() + "!");
 		Message myMessage = new Message(Action.SHOW_ALL_CLIENTS);					
 		try {
 			MainGUI.GUIclient.sendToServer(myMessage);
@@ -129,15 +129,13 @@ GUIClient client;
 			@SuppressWarnings("unchecked")
 			@Override
 			public void run() {
-				ObservableList<Client> clientsList = FXCollections.observableArrayList();
-				col_UserName.setCellValueFactory(new PropertyValueFactory<Client, String>("userName"));
+				ObservableList<Client> clientsList = FXCollections.observableArrayList(clients);
+				col_UserName.setCellValueFactory(new PropertyValueFactory<Client, String>("UserName"));
 				col_FirstName.setCellValueFactory(new PropertyValueFactory<Client, String>("FirstName"));
 				col_LastName.setCellValueFactory(new PropertyValueFactory<Client, String>("LastName"));
 				col_Telephone.setCellValueFactory(new PropertyValueFactory<Client, String>("Telephone"));
 				col_Email.setCellValueFactory(new PropertyValueFactory<Client, String>("Email"));
-				//col_Purchases.setCellValueFactory(new PropertyValueFactory<Client, String>("Purchases"));
 
-				clientsTable.getColumns().addAll(col_UserName, col_FirstName, col_LastName,col_Telephone,col_Email/*,col_Purchases*/);
 				clientsTable.setItems(clientsList);
 			}
 		});

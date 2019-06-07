@@ -267,10 +267,10 @@ GUIClient client;
 	 */
 	@FXML
 	void initialize() {
-		lblWelcome.setText("Welcome " + MainGUI.currClient.getUserName() + "!");
+		lblWelcome.setText("Welcome " + MainGUI.currUser.getUserName() + "!");
 		//setRadioButtonGroup();
 		setPersonalInfoBooleanBinding();
-		sendRequestToServer();
+		sendRequestToServer(MainGUI.currClient.getUserName());
 		String telephoneAsString = String.valueOf(MainGUI.currClient.getTelephone());
 		long lastFourDigitsLong=Math.abs(MainGUI.currClient.getCardNumber())%10000;
 		int lastFourDigits=Math.toIntExact(lastFourDigitsLong);
@@ -290,7 +290,7 @@ GUIClient client;
 					}
 					case CEO:
 					{
-						lblMyProfile.setText(MainGUI.currClient.getUserName() + "'s Profile");
+						//lblMyProfile.setText(MainGUI.currClient.getUserName() + "'s Profile");
 						tfUserName.setEditable(false);
 						tfFirstName.setEditable(false);
 						tfLastName.setEditable(false);
@@ -303,8 +303,8 @@ GUIClient client;
 				}
 	}
 	
-	void sendRequestToServer() {
-		Message myMessage = new Message(Action.GET_USER_PURCHASES);
+	void sendRequestToServer(String userName) {
+		Message myMessage = new Message(Action.GET_USER_PURCHASES,userName);
 		try {
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (Exception e) {
@@ -392,7 +392,7 @@ GUIClient client;
 				col_expiryDate.setCellValueFactory(new PropertyValueFactory<Purchase,String>("Expiry Date"));
 				col_price.setCellValueFactory(new PropertyValueFactory<Purchase,String>("Price"));
 
-				purchasesTable.getColumns().addAll(col_cityName, col_purchaseType, col_purchaseDate,col_expiryDate,col_price);
+				//purchasesTable.getColumns().addAll(col_cityName, col_purchaseType, col_purchaseDate,col_expiryDate,col_price);
 				purchasesTable.setItems(currPurchasesList);
 			}
 		});
