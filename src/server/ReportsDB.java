@@ -112,21 +112,21 @@ public class ReportsDB implements IReport{
 
 			// check if query succeeded
 			if(!rs.next()) {
-				throw new Exception();
+				throw new Exception("Error - encountered an error while producing the report");
 			}
 
+			// Add 0 to indicate success
+			data.add(new Integer(0));
 			// Go through the result set and build the Purchase entity
 			while (rs.next()) 
 			{	
 				cityDetails.put(rs.getString("cityName"),rs.getInt("numOfPurchases") );
-				
-				// Add 0 to indicate success
-				data.add(new Integer(0));
 				data.add(cityDetails);
 				data.add(rs.getInt("renew"));
 				data.add(rs.getInt("LongTermPurchases"));
 				data.add(rs.getInt("ShortTermPurchases"));
-			}	
+			}
+
 		}
 		catch(SQLException e) {
 			data.add(new Integer(1));
@@ -157,6 +157,7 @@ public class ReportsDB implements IReport{
 	{
 		// Variables
 		ArrayList<Object>         data        = new ArrayList<Object>();
+		ArrayList<Report>		  reports    = new ArrayList<Report>();
 		String 					  sql         = "";
 		ResultSet				  rs          = null;
 
@@ -170,7 +171,7 @@ public class ReportsDB implements IReport{
 					"       SUM(CASE WHEN purchaseType = 'LONG_TERM_PURCHASE' THEN 1 ELSE 0 END) as \'LongTermPurchases\'," +
 					"	    SUM(CASE WHEN purchaseType = 'SHORT_TERM_PURCHASE' THEN 1 ELSE 0 END) as \'ShortTermPurchases\'" +
 					"       FROM Purchases" +
-					"       WHERE purchaseDate >= '?' AND expiryDate <= '?' " +
+					"       WHERE purchaseDate >= ? AND expiryDate <= ? " +
 					"GROUP by cityName";
 
 			// Execute sql query, get results
@@ -178,8 +179,10 @@ public class ReportsDB implements IReport{
 
 			// check if query succeeded
 			if(!rs.next()) {
-				throw new Exception();
+				throw new Exception("Error - report data was not found for the requested dates");
 			}
+
+			rs.beforeFirst();
 
 			// Add 0 to indicate success
 			data.add(new Integer(0));
@@ -196,15 +199,9 @@ public class ReportsDB implements IReport{
 							rs.getInt("LongTermPurchases"),
 							rs.getInt("ShortTermPurchases")
 				);
-				data.add(report);
+				reports.add(report);
 			}
-
-			// Clear lists of parameters for the next queries and add the desired parameter
-			//params.clear(); params.add(rs.getString("cityName"));
-			
-			//Add number of maps for each city
-			//cityDetails = (HashMap <String, Integer>)(MapDB.getInstance().getMapsCount(params)).getData().get(1);
-			//data.add(cityDetails);
+			data.add(reports);
 	}
 	catch(SQLException e) {
 		data.add(new Integer(1));
@@ -234,7 +231,6 @@ public class ReportsDB implements IReport{
 	{
 		// Variables
 		ArrayList<Object>         data        = new ArrayList<Object>();
-		ArrayList<Report>		  reports    = new ArrayList<Report>();
 		String 					  sql         = "";
 		ResultSet				  rs          = null;
 
@@ -248,7 +244,7 @@ public class ReportsDB implements IReport{
 					"       SUM(CASE WHEN purchaseType = 'LONG_TERM_PURCHASE' THEN 1 ELSE 0 END) as \'LongTermPurchases\'," +
 					"	    SUM(CASE WHEN purchaseType = 'SHORT_TERM_PURCHASE' THEN 1 ELSE 0 END) as \'ShortTermPurchases\'" +
 					"       FROM Purchases" +
-					"       WHERE purchaseDate >= '?' AND expiryDate <= '?'  AND cityName = '?' " +
+					"       WHERE purchaseDate >= ? AND expiryDate <= ?  AND cityName = ? " +
 					" GROUP by cityName";
 
 			// Execute sql query, get results
@@ -256,8 +252,10 @@ public class ReportsDB implements IReport{
 
 			// check if query succeeded
 			if(!rs.next()) {
-				throw new Exception();
+				throw new Exception("Error - report data was not found for the requested dates");
 			}
+
+			rs.beforeFirst();
 
 			// Add 0 to indicate success
 			data.add(new Integer(0));
@@ -274,7 +272,7 @@ public class ReportsDB implements IReport{
 							rs.getInt("LongTermPurchases"),
 							rs.getInt("ShortTermPurchases")
 				);
-				reports.add(report);
+				data.add(report);
 			}
 	}
 	catch(SQLException e) {
