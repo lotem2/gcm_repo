@@ -46,14 +46,8 @@
                               <Font size="24.0" />
                            </font>
                         </Label>
-                        <DatePicker layoutX="50.0" layoutY="132.0" promptText="From" />
-                        <DatePicker layoutX="50.0" layoutY="185.0" promptText="To" />
-                        <SplitMenuButton fx:id="choiceBoxCity" layoutX="50.0" layoutY="248.0" mnemonicParsing="false" text="Choose city">
-                          <items>
-                            <MenuItem mnemonicParsing="false" text="Action 1" />
-                            <MenuItem mnemonicParsing="false" text="Action 2" />
-                          </items>
-                        </SplitMenuButton>
+                        <DatePicker fx:id="dpFrom" layoutX="50.0" layoutY="132.0" promptText="From" />
+                        <DatePicker fx:id="dpTo" layoutX="50.0" layoutY="185.0" promptText="To" />
                         <Separator layoutX="263.0" layoutY="119.0" orientation="VERTICAL" prefHeight="383.0" prefWidth="1.0" />
                         <TableView layoutX="288.0" layoutY="119.0" prefHeight="305.0" prefWidth="223.0">
                           <columns>
@@ -61,6 +55,9 @@
                             <TableColumn fx:id="clmNumPerCity" prefWidth="71.0" text="#" />
                           </columns>
                         </TableView>
+                        <ChoiceBox fx:id="choiceBoxCity" layoutX="50.0" layoutY="261.0" prefWidth="150.0" />
+                        <Label layoutX="50.0" layoutY="230.0" text="Choose city:" />
+                        <Button fx:id="btnShowStatistics" layoutX="78.0" layoutY="360.0" mnemonicParsing="false" onAction="#ShowStatistics" text="Show statistics" />
                      </children>
                   </AnchorPane>
             </content>
