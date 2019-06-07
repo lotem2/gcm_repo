@@ -315,6 +315,12 @@ public class EditWindowController implements ControllerListener {
 
 		}
     }
+	/**
+	 *
+	 *sending to the server the request to get the list of all cities
+	 *
+	 *
+	 */ 
     void sendCitiesRequestToServer() {
 		Message myMessage = new Message(Action.GET_CITY_PRICE);
 		try {
@@ -324,6 +330,12 @@ public class EditWindowController implements ControllerListener {
 					JOptionPane.WARNING_MESSAGE);
 		}
     }
+	/**
+	 *
+	 *sending to the server the request to get the list of all the sites in the city
+	 *
+	 *
+	 */ 
     void sendAllSitesRequestToServer() {
 		Message myMessage = new Message(Action.GET_ALL_SITES_LIST);
 		try {
@@ -333,12 +345,22 @@ public class EditWindowController implements ControllerListener {
 					JOptionPane.WARNING_MESSAGE);
 		}
     }
-    
+	/**
+	 *
+	 *method to start on all the ready lists: accesssibilty and categories
+	 *
+	 *
+	 */ 
     void setLists() {
         setCategoriesList();
         setAccessibleList();
     }
-    
+	/**
+	 *
+	 *method to start on all the binding while initializing.
+	 *
+	 *
+	 */ 
     void setButtonsBooleanBinding() {
         setSaveCityBooleanBinding();
         setSaveMapBooleanBinding();
@@ -346,7 +368,12 @@ public class EditWindowController implements ControllerListener {
         setSaveRouteBooleanBinding();
         setAddSiteBooleanBinding();
     }
-    
+	/**
+	 *
+	 *method to put the site info in the fields, gotten from the server, for the editor
+	 *
+	 *
+	 */ 
    void setSiteInfo(Site site) {
 	   tfSiteName.setText(site.getName());
 	   tfSiteDescription.setText(site.getDescription());
@@ -359,36 +386,51 @@ public class EditWindowController implements ControllerListener {
 	   else
 		   accessibilityChoser.setValue("No");
    }
-   
+	/**
+	 *
+	 *method to put the map info in the fields, gotten from the server, for the editor
+	 *
+	 *
+	 */ 
    void setMapInfo(Map map) {
 	   tfMapName.setText(map.getName());
 	   tfMapDescription.setText(map.getDescription());
-	   loadImage(map.getImageAsByte());
+	   //loadImage(map.getImageAsByte());
 	   
    }
    
-   void loadImage(byte[] imageBytesToAdd) {
-	   	   InputStream is = null;
-	   try {
-	     is = URLImage.openStream ();
-	     byte[] imageBytes = IOUtils.toByteArray(is);
-	   }
-	   catch (IOException e) {
-	     System.err.printf ("Failed while reading bytes from %s: %s", URLImage.toExternalForm(), e.getMessage());
-	     e.printStackTrace ();
-	     // Perform any other exception handling that's appropriate.
-	   }
-//	   finally {
-//	   if(is != null)	{ is.close(); }
+//   void loadImage(byte[] imageBytesToAdd) {
+//	   	   InputStream is = null;
+//	   try {
+//	     is = URLImage.openStream ();
+//	     byte[] imageBytes = IOUtils.toByteArray(is);
 //	   }
-   }
+//	   catch (IOException e) {
+//	     System.err.printf ("Failed while reading bytes from %s: %s", URLImage.toExternalForm(), e.getMessage());
+//	     e.printStackTrace ();
+//	     // Perform any other exception handling that's appropriate.
+//	   }
+////	   finally {
+////	   if(is != null)	{ is.close(); }
+////	   }
+//   }
    
-   
+	/**
+	 *
+	 *method to put the route info in the fields, gotten from the server, for the editor
+	 *
+	 *
+	 */ 
    void setRouteInfo(Route route) {
 	   //tfRouteName.setText(route.getName());
 	   tfrouteDescription.setText(route.getDescription());
    }
-   
+	/**
+	 *
+	 *method to put the city info in the fields, gotten from the server, for the editor
+	 *
+	 *
+	 */ 
    void setCityInfo(City city) {
 	   tfCityName.setText(city.getName());
 	   tfCityDescription.setText(city.getDescription());
@@ -396,7 +438,12 @@ public class EditWindowController implements ControllerListener {
    }
     
 
-    @FXML
+	/**
+	 *
+	 *method to initialize the fields, in the case that the editor wishes to add a new city
+	 *
+	 *
+	 */ 
     void addNewCity() {
     	tfCityName.clear();
     	tfCityDescription.clear();
@@ -404,7 +451,12 @@ public class EditWindowController implements ControllerListener {
     	tableRouteDeatils.getItems().clear();
     }
 
-    @FXML
+	/**
+	 *
+	 *method to initialize the fields, in the case that the editor wishes to add a new map
+	 *
+	 *
+	 */ 
     void addNewMap() {
     	tfMapName.clear();
     	tfMapDescription.clear();
@@ -415,20 +467,35 @@ public class EditWindowController implements ControllerListener {
   	
     }
 
-    @FXML
+	/**
+	 *
+	 *method to initialize the fields, in the case that the editor wishes to add a new Route
+	 *
+	 *
+	 */ 
     void addNewRoute() {
     	tfrouteDescription.clear();
     	tableRouteDeatils.getItems().clear();
     }
     
-    @FXML
+	/**
+	 *
+	 *method to initialize the fields, in the case that the editor wishes to add a new site
+	 *
+	 *
+	 */ 
     void addNewSite() {
     	tfSiteName.clear();
     	tfSiteDescription.clear();
     	tfX.clear();
     	tfY.clear();
     }
-    
+	/**
+	 *
+	 *method to initialize the map View for the client
+	 *
+	 *
+	 */ 
 	void setShowWindow() 
 	{		
 		btnAddSiteToRoute.setVisible(false);
@@ -453,37 +520,71 @@ public class EditWindowController implements ControllerListener {
 		tfSiteName.setDisable(true);
 		tfrouteDescription.setDisable(true);
 	}
-	
+	/**
+	 *
+	 *method to initialize the binding to change the city details
+	 *
+	 *
+	 */ 
 	void setSaveCityBooleanBinding() 
 	{
 		BooleanBinding booleanBind;
 		booleanBind = (tfCityName.textProperty().isEmpty()).or(tfCityDescription.textProperty().isEmpty());
 		btnSaveCity.disableProperty().bind(booleanBind);
 	}
+	/**
+	 *
+	 *method to initialize the binding to change the map details
+	 *
+	 *
+	 */ 
 	void setSaveMapBooleanBinding() 
 	{
 		BooleanBinding booleanBind;
 		booleanBind = (tfMapName.textProperty().isEmpty()).or(tfMapDescription.textProperty().isEmpty()).or(tfVersion.textProperty().isEmpty()).or(tfPrice.textProperty().isEmpty()).or(tfCityName.textProperty().isEmpty()).or(tfCityDescription.textProperty().isEmpty());
 		btnSaveMap.disableProperty().bind(booleanBind);
 	}
+	/**
+	 *
+	 *method to initialize the binding to change the site details
+	 *
+	 *
+	 */ 
 	void setSaveSiteBooleanBinding() 
 	{
 		BooleanBinding booleanBind;
 		booleanBind = (tfSiteName.textProperty().isEmpty()).or(tfSiteDescription.textProperty().isEmpty()).or(tfX.textProperty().isEmpty()).or(tfY.textProperty().isEmpty());
 		btnSaveSite.disableProperty().bind(booleanBind);
 	}
+	/**
+	 *
+	 *method to initialize the binding to change the route
+	 *
+	 *
+	 */  
 	void setSaveRouteBooleanBinding() 
 	{
 		BooleanBinding booleanBind;
 		booleanBind = (tfrouteDescription.textProperty().isEmpty().or(tfCityName.textProperty().isEmpty()).or(tfCityDescription.textProperty().isEmpty()));
 		btnSaveRoute.disableProperty().bind(booleanBind);
 	}
+	/**
+	 *
+	 *method to initialize the binding of the add sites to the route
+	 *
+	 *
+	 */  
     void setAddSiteBooleanBinding()	{
 		BooleanBinding booleanBind;
 		booleanBind = (tfrouteDescription.textProperty().isEmpty().or(tfCityName.textProperty().isEmpty()).or(tfCityDescription.textProperty().isEmpty()));
 		btnAddSiteToRoute.disableProperty().bind(booleanBind);
 	}
-      
+	/**
+	 *
+	 *method to initialize the choice box of the categories
+	 * @param <onMouseClicked>
+	 *
+	 */  
     void setCategoriesList()
     {
 	 ArrayList<String> categories = new ArrayList<String>();
@@ -501,6 +602,12 @@ public class EditWindowController implements ControllerListener {
      categoryChoser.setItems(list);
     }
     
+	/**
+	 *
+	 *method to initialize the choice box of the accessibility
+	 * @param <onMouseClicked>
+	 *
+	 */  
     void setAccessibleList()
     {
 	 ArrayList<String> accessible = new ArrayList<String>();
@@ -509,7 +616,12 @@ public class EditWindowController implements ControllerListener {
      ObservableList<String> list = FXCollections.observableArrayList(accessible);
      accessibilityChoser.setItems(list);
     }
-   
+	/**
+	 *
+	 *handle from server the responses for getting the cities list, the city object and the sites list
+	 * @param <onMouseClicked>
+	 *
+	 */  
 	@Override
 	public void handleMessageFromServer(Object msg) 
 	{
@@ -582,6 +694,12 @@ public class EditWindowController implements ControllerListener {
 		}
 	}
 	
+	/**
+	 *
+	 *method to listen to the city choice box
+	 * @param <onMouseClicked>
+	 *
+	 */  
 	void setAllChoiceBoxes() 
 	{
 		cityChoser.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
@@ -595,7 +713,12 @@ public class EditWindowController implements ControllerListener {
 		});
 		//setCityChoiceBox();
 	}
-	
+	/**
+	 *
+	 *method to initialize the choice box of the cities
+	 * @param <onMouseClicked>
+	 *
+	 */  
 	void setCityChoiceBox(String currCityName) {
 //		Platform.runLater(new Runnable() {
 //			@SuppressWarnings("unchecked")
@@ -627,7 +750,12 @@ public class EditWindowController implements ControllerListener {
 		//}
 	
 	
-	
+	/**
+	 *
+	 *method to initialize the choice box of the maps
+	 * @param <onMouseClicked>
+	 *
+	 */  
 	void setMapsChoiceBox(City currCity) 
 	{
     	ArrayList<Map> maps = currCity.getMaps();
@@ -643,7 +771,12 @@ public class EditWindowController implements ControllerListener {
 		mapChoser.setItems(currMapsList);
 	
 	}
-	
+	/**
+	 *
+	 *method to initialize the choice box of the routes
+	 * @param <onMouseClicked>
+	 *
+	 */  
 	void setRoutesChoiceBox(City currCity) 
 	{
     	ArrayList<Route> routes = currCity.getRoutes();
@@ -659,6 +792,12 @@ public class EditWindowController implements ControllerListener {
 		routesChoser.setItems(currRoutesList);
 	}
 	
+	/**
+	 *
+	 *method to initialize the choice box of the sites
+	 * @param <onMouseClicked>
+	 *
+	 */  
 	void setSitesChoiceBox(Map currMap) 
 	{
     	ArrayList<Site> sites = currMap.getSites();
