@@ -36,6 +36,8 @@ GUIClient client;
     @FXML
     private ResourceBundle resources;
     @FXML
+	private Button btnStatistics;
+    @FXML
     private URL location;
     @FXML
     private AnchorPane ClientsMangementWindow;
@@ -66,6 +68,11 @@ GUIClient client;
 		MainGUI.MainStage.setTitle("Global City Map");
 		MainGUI.openScene(SceneType.MAIN_GUI);
     }
+    
+	@FXML
+	void Statistics(ActionEvent event) {
+		MainGUI.openScene(MainGUI.SceneType.Statistics);
+	}
 
     @FXML
     void ShowDetails(ActionEvent event) {

@@ -85,8 +85,6 @@ public class MainGUIController implements ControllerListener {
 	@FXML
 	private Button btnManage;
 	@FXML
-	private Button btnStatistics;
-	@FXML
 	private Button btnMyProfile;
 	@FXML
 	private Button btnRegister;
@@ -176,11 +174,6 @@ public class MainGUIController implements ControllerListener {
 	@FXML
 	void Buy(ActionEvent event) {
 		MainGUI.openScene(MainGUI.SceneType.BUY);
-	}
-	
-	@FXML
-	void Statistics(ActionEvent event) {
-		MainGUI.openScene(MainGUI.SceneType.Statistics);
 	}
 
 	@FXML
