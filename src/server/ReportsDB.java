@@ -170,7 +170,7 @@ public class ReportsDB implements IReport{
 			sql = "SELECT cityName ,count(username) as \"numOfMembers\", SUM(renew) as \"renew\", SUM(views) as \"views\", SUM(downloads) as \"downloads\"," +
 					"       SUM(CASE WHEN purchaseType = 'LONG_TERM_PURCHASE' THEN 1 ELSE 0 END) as \'LongTermPurchases\'," +
 					"	    SUM(CASE WHEN purchaseType = 'SHORT_TERM_PURCHASE' THEN 1 ELSE 0 END) as \'ShortTermPurchases\'" +
-					"       FROM Purchasesn" +
+					"       FROM Purchases" +
 					"       WHERE purchaseDate >= '?' AND expiryDate <= '?' " +
 					"GROUP by cityName";
 
@@ -248,7 +248,7 @@ public class ReportsDB implements IReport{
 			sql = "SELECT cityName ,count(username) as \"numOfMembers\", SUM(renew) as \"renew\", SUM(views) as \"views\", SUM(downloads) as \"downloads\"," +
 					"       SUM(CASE WHEN purchaseType = 'LONG_TERM_PURCHASE' THEN 1 ELSE 0 END) as \'LongTermPurchases\'," +
 					"	    SUM(CASE WHEN purchaseType = 'SHORT_TERM_PURCHASE' THEN 1 ELSE 0 END) as \'ShortTermPurchases\'" +
-					"       FROM Purchasesn" +
+					"       FROM Purchases" +
 					"       WHERE purchaseDate >= '?' AND expiryDate <= '?'  AND cityName = '?' " +
 					" GROUP by cityName";
 
