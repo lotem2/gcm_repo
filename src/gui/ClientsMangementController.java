@@ -81,18 +81,8 @@ GUIClient client;
     @FXML
     void initialize() 
     {
-    	//setTableViewForClients(clients);
     	lblWelcome.setText("Welcome " + MainGUI.currEmployee.getUserName() + "!");
-		Message myMessage = new Message(Action.SHOW_ALL_CLIENTS);					
-		try {
-			MainGUI.GUIclient.sendToServer(myMessage);
-		}
-		catch (Exception e) 
-		{
-			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message to the Server", "Error",
-					JOptionPane.WARNING_MESSAGE);
-		}
-    	
+		GUIClient.sendActionToServer(Action.SHOW_ALL_CLIENTS);
     }
 
 

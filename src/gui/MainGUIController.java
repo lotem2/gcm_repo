@@ -175,11 +175,6 @@ public class MainGUIController implements ControllerListener {
 	void Buy(ActionEvent event) {
 		MainGUI.openScene(MainGUI.SceneType.BUY);
 	}
-	
-	@FXML
-	void Statistics(ActionEvent event) {
-		MainGUI.openScene(MainGUI.SceneType.Statistics);
-	}
 
 	@FXML
 	void Download(ActionEvent event) {
