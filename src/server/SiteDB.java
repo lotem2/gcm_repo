@@ -7,6 +7,7 @@ import server.SQLController;
 import common.*;
 import entity.*;
 import java.awt.Point;
+import java.math.*;
 
 public class SiteDB {
 	// Variables
@@ -49,8 +50,8 @@ public class SiteDB {
 			sql = "SELECT s.name as \"name\", s.cityname as \"cityname\", s.classification as \"classification\", "+
 					 " s.description as \"description\", s.accessible as \"accessible\", " +
 					 " s.visitDuration as \"visitDuration\", s.location as \"location\" " +
-					 " FROM Sites s, Maps m, Bridge b" +
-					 " WHERE m.mapID = b.mapID AND s.siteID AND m.description = ?";
+					 " FROM Sites s, Maps m, BridgeMSC b" +
+					 " WHERE b.mapID = ? AND m.mapID = b.mapID AND s.siteID = b.siteID";
 
 			// Execute sql query by calling private method getSites with the requested SELECT query
 			sites = getSites(sql, params);
@@ -119,8 +120,8 @@ public class SiteDB {
 
 
 	/**
-	 * Get City's sites according to the city's description provided by the client
-	 * @param params - Contains {@link Action} type and the city's description of the requested map
+	 * Get City's sites according to the city's name provided by the client
+	 * @param params - Contains {@link Action} type and the city's name
 	 * @return {@link Message} - Contains {@link ArrayList} of sites or failure message
 	 */
 	public Message getSitesbyCity(ArrayList<Object> params){
@@ -135,11 +136,7 @@ public class SiteDB {
 			SQLController.Connect();
 
 			// Prepare statement to get route's sites
-			sql = "SELECT s.name as \"name\", s.cityname as \"cityname\", s.classification as \"classification\", "+
-						 " s.description as \"description\", s.accessible as \"accessible\", " +
-						 " s.visitDuration as \"visitDuration\", s.location as \"location\" " +
-						 " FROM Cities c, Sites s, BridgeMSC b" +
-						 " WHERE r.mapID = b.mapID AND s.siteID AND c.description = ?";
+			sql = "SELECT * FROM Sites WHERE cityname = ?";
 
 			// Execute sql query by calling private method getSites with the requested SELECT query
 			sites = getSites(sql, params);
@@ -297,7 +294,8 @@ public class SiteDB {
 					sql += "?, ";
 	
 				// Execute query using private editSites method
-				editSite(sql.substring(0, sql.length()-1) + ")", (ArrayList<Object>)params.subList(1, params.size()));
+				ArrayList<Object> input = new ArrayList<Object>(params.subList(1, params.size()));
+				editSite(sql.substring(0, sql.length()-1) + ")", input);
 			}
 
 			// Create sql DELETE query to delete the rows which used for future update of sites
@@ -315,7 +313,8 @@ public class SiteDB {
 				sql += "?, ";
 
 			// Execute query using private editSites method
-			editSite(sql.substring(0, sql.length()-1) + "))", (ArrayList<Object>)params.subList(1, params.size()));			
+			ArrayList<Object> input = new ArrayList<Object>(params.subList(1, params.size()));
+			editSite(sql.substring(0, sql.length()-1) + "))", input);			
 			}
 		catch (SQLException e) {
 			throw e;
@@ -349,7 +348,8 @@ public class SiteDB {
 				sql += "?, ";
 
 			// Execute query using private editSites method
-			editSite(sql.substring(0, sql.length()-1) + ")", (ArrayList<Object>)params.subList(1, params.size()));
+			ArrayList<Object> input = new ArrayList<Object>(params.subList(1, params.size()));
+			editSite(sql.substring(0, sql.length()-1) + ")", input);
 			}
 		catch (SQLException e) {
 			throw e;
@@ -389,8 +389,9 @@ public class SiteDB {
 			while (rs.next())
 			{
 				// Reads location coordinates
-				String xLocation = rs.getString("location".split(",")[0]);
-				String yLocation = rs.getString("location".split(",")[1]);
+				String Location = rs.getString("location");
+				String xLocation = Location.split(",")[0];
+				String yLocation = Location.split(",")[1];
 
 				Site currSite = new Site(
 						rs.getString("name"),
@@ -399,7 +400,8 @@ public class SiteDB {
 						rs.getString("description"),
 						rs.getBoolean("accessible"),
 						rs.getFloat("visitDuration"),
-						new Point(Integer.parseInt(xLocation), Integer.parseInt(yLocation)));
+						new Point(Math.round(Float.parseFloat(xLocation)), 
+								Math.round(Float.parseFloat(yLocation))));
 
 				sites.add(currSite);
 			}

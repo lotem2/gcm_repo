@@ -81,7 +81,7 @@ public class PurchaseDB {
 	
 	/**
 	 * Edit renew column of specific purchase when user renews his purchase
-	 * @param params - the purchase date (the renew date) and the expiry date, user name and city name
+	 * @param params - the purchase entity to renew, user name and city name
 	 * @return {@link Message} - Contain result of action - success/failure and failure message in case of failure
 	 */
 	public Message renewPurchase(ArrayList<Object> params) {
@@ -90,14 +90,15 @@ public class PurchaseDB {
 		
 		try {
 			// Get current active purchase
-			Purchase current = ((ArrayList<Purchase>)((Message)getActivePurchase(params)).getData().get(1)).get(0);
+			Purchase current = (Purchase)params.get(0);
 
 			// Prepare statement to get current client's purchase
-			String sql = "UPDATE Purchases SET purchaseDate = ?, expiryDate = ?, renew = renew + 1" +
+			String sql = "UPDATE Purchases SET purchaseDate = ?, expiryDate = ?, renew = renew + 1, price = ?" +
 					 	 "WHERE username = ? AND cityName = ? purchaseDate = ? AND expiryDate = ?";
 
 			// Add parameters to match the UPDATE query
 			params.add(current.getPurchaseDate()); params.add(current.getExpirationDate());
+			params.add(current.getPrice());
 
 			// Execute sql query by calling private method editPurchase with the requested UPDATE query
 			editPurchase(sql, params);

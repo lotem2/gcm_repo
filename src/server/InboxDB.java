@@ -31,20 +31,26 @@ public class InboxDB {
 	
 	/**
 	 * Add a new inbox message to database
-	 * @param params - Contain new message's details
+	 * @param params - Contain dynamic new message's details
 	 * @return {@link Message} - Indicating success/failure with corresponding message
 	 */
-	public Message AddInboxMessage(ArrayList<Object> params) {
+	public Message AddInboxMessage(Object...objects) {
 		// Variables
 		ArrayList<Object> data = new ArrayList<Object>();
+		ArrayList<Object> params = new ArrayList<Object>();
 
 		try {
+			// Insert into params the values for the INSERT query
+			for (Object param : objects) {
+				params.add(param);
+			}
+
 			// Connect to DB
 			SQLController.Connect();
 
 			// Prepare statement to insert new user
-			String sql = "INSERT INTO Inbox (`id`, `senderUsername`, `senderPermission`, `receiverUsername`, `receiverPermission`, " +
-						 "`content`, `status`, `receiveDate`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+			String sql = "INSERT INTO Inbox (`senderUsername`, `senderPermission`, `receiverUsername`, `receiverPermission`, " +
+						 "`content`, `status`, `receiveDate`) VALUES (?, ?, NULL, ?, ?, ?, ?)";
 
 			// Execute sql query, get number of changed rows
 			int changedRows = SQLController.ExecuteUpdate(sql, params);

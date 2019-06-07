@@ -94,7 +94,8 @@ public class CityDB {
 
 		try {
 			// Get city entity by the city's name using getCity method
-			Message city = getCity((ArrayList<Object>)params.subList(0, 2));
+			ArrayList<Object> input = new ArrayList<Object>(params.subList(0, 2));
+			Message city = getCity(input);
 			
 			// If we encountered a problem during retrieval throwing an exception
 			if (city.getData().get(1) instanceof String) throw new Exception("Download proccess encountered a problem.");
@@ -138,7 +139,7 @@ public class CityDB {
 			sql = "SELECT id, name, description FROM Cities where name = ?";	// Prepare sql query
 			
 			// Execute sql query, get results
-			rs = SQLController.ExecuteQuery(sql, (ArrayList<Object>)params.subList(0, 1));
+			rs = SQLController.ExecuteQuery(sql, params);
 
 			// check if query succeeded
 			if(!rs.next())
@@ -154,12 +155,12 @@ public class CityDB {
 										rs.getString("description"), 
 										null, 
 										null, 
-										rs.getInt("purchasecounter"), 
-										rs.getFloat("price"));
+										0,
+										0);
 			}
 			
 			// Get city's maps by calling MapDB's getMapsByCity
-			Message maps = MapDB.getInstance().getMapsByCity((ArrayList<Object>)params.subList(0, 1));
+			Message maps = MapDB.getInstance().getMapsByCity(params);
 
 			if(maps.getData().get(1) instanceof String) // If encountered a problem during information retrieval 
 				throw new Exception(maps.getData().get(1).toString());
@@ -167,15 +168,18 @@ public class CityDB {
 			current_city.setMaps((ArrayList<Map>)maps.getData().get(1)); // Set city's maps list
 			
 			// Check according to the purchase type if city's routes retrieval is needed
-			if(PurchaseType.valueOf(params.get(1).toString()) == PurchaseType.LONG_TERM_PURCHASE) {
-				// Get city's routes by calling RouteDB's getRoutesByCity
-				Message routes = RouteDB.getInstance().getRoutesByCity((ArrayList<Object>)params.subList(0, 1));
+				if((params.size() > 1 && 
+						PurchaseType.valueOf(params.get(1).toString()) == PurchaseType.LONG_TERM_PURCHASE) ||
+						(params.size() == 1)) {
+					// Get city's routes by calling RouteDB's getRoutesByCity
+					Message msg = RouteDB.getInstance().getRoutesByCity(params);
 
-				if(routes.getData().get(1) instanceof String) // If encountered a problem during information retrieval 
-					throw new Exception(routes.getData().get(1).toString());
-				
-				current_city.setRoutes((ArrayList<Route>)routes.getData().get(1)); // Set city's routes list
-			}
+					// If encountered a problem during information retrieval set routes as null
+					ArrayList<Route> city_routes = msg.getData().get(1) instanceof String ? null : 
+												   (ArrayList<Route>)msg.getData().get(1);
+					
+					current_city.setRoutes(city_routes); // Set city's routes list
+				}
 
 			// Create success message with the city's instance
 			replyMsg = new Message(null, new Integer(0), current_city);

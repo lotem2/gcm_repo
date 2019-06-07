@@ -582,7 +582,7 @@ public class EditWindowController implements ControllerListener {
 	/**
 	 *
 	 *method to initialize the choice box of the categories
-	 * @param <onMouseClicked>
+	 *
 	 *
 	 */  
     void setCategoriesList()
@@ -605,7 +605,7 @@ public class EditWindowController implements ControllerListener {
 	/**
 	 *
 	 *method to initialize the choice box of the accessibility
-	 * @param <onMouseClicked>
+	 *
 	 *
 	 */  
     void setAccessibleList()
@@ -619,7 +619,7 @@ public class EditWindowController implements ControllerListener {
 	/**
 	 *
 	 *handle from server the responses for getting the cities list, the city object and the sites list
-	 * @param <onMouseClicked>
+	 *
 	 *
 	 */  
 	@Override
@@ -697,7 +697,7 @@ public class EditWindowController implements ControllerListener {
 	/**
 	 *
 	 *method to listen to the city choice box
-	 * @param <onMouseClicked>
+	 * 
 	 *
 	 */  
 	void setAllChoiceBoxes() 
@@ -716,7 +716,7 @@ public class EditWindowController implements ControllerListener {
 	/**
 	 *
 	 *method to initialize the choice box of the cities
-	 * @param <onMouseClicked>
+	 * 
 	 *
 	 */  
 	void setCityChoiceBox(String currCityName) {
@@ -753,7 +753,7 @@ public class EditWindowController implements ControllerListener {
 	/**
 	 *
 	 *method to initialize the choice box of the maps
-	 * @param <onMouseClicked>
+	 * 
 	 *
 	 */  
 	void setMapsChoiceBox(City currCity) 
@@ -774,7 +774,7 @@ public class EditWindowController implements ControllerListener {
 	/**
 	 *
 	 *method to initialize the choice box of the routes
-	 * @param <onMouseClicked>
+	 * 
 	 *
 	 */  
 	void setRoutesChoiceBox(City currCity) 
@@ -795,7 +795,7 @@ public class EditWindowController implements ControllerListener {
 	/**
 	 *
 	 *method to initialize the choice box of the sites
-	 * @param <onMouseClicked>
+	 * 
 	 *
 	 */  
 	void setSitesChoiceBox(Map currMap) 

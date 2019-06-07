@@ -5,7 +5,11 @@ import java.util.ArrayList;
 /**
  * Entity that represents a Route object in the GCM system
  */
-public class Route {
+public class Route implements java.io.Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int id;
 	private String cityname;
 	private ArrayList<Site> sites = new ArrayList<Site>();

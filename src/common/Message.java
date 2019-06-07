@@ -10,7 +10,7 @@ public class Message implements java.io.Serializable{
 	// Variables
 	private static final long serialVersionUID = 1L;
     private Action action;
-    private ArrayList<Object> data;
+    private ArrayList<Object> data = new ArrayList<Object>();
    
     /**
      * Public constructor of Message class
