@@ -185,7 +185,7 @@ public class PurchaseDB {
 	 * @return {@link ArrayList} - an {@link ArrayList} of type {@link Purchase} which satisfies the conditions
 	 * @throws SQLException, Exception 
 	 */
-	private ArrayList<Purchase> getPurchases(String sql, ArrayList<Object> params) throws SQLException, Exception {
+	public ArrayList<Purchase> getPurchases(String sql, ArrayList<Object> params) throws SQLException, Exception {
 		// Variables
 		ArrayList<Purchase> purchases = new ArrayList<Purchase>();
 		ArrayList<Object>   data 	  = new ArrayList<Object>();

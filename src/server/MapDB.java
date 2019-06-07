@@ -295,7 +295,58 @@ public class MapDB {
 
 		return replyMsg;
 	}
-	
+
+	/**
+	 * Get the amount of maps for a requested city
+	 * @param params - Contains city name
+	 * @return {@link Message} - Contains {@link ArrayList} of amount of {@link Map}s to a requested city,
+	 * else failure message
+	 */
+	public Message getMapsCount(ArrayList<Object> params){
+		// Variables
+		HashMap<String,Integer> data      = new HashMap<String,Integer>();
+		ResultSet 		        rs        = null;
+		Message 		        replyMsg  = null;
+
+		try {
+			// Connect to DB
+			SQLController.Connect();
+
+			// Prepare SELECT query
+			String sql = "SELECT cityName, COUNT(mapID) as 'numOfMaps' FROM `Maps` where cityname = '?'";
+
+			// Execute sql query, get results
+			rs = SQLController.ExecuteQuery(sql, params);
+
+			// check if query succeeded
+			if(!rs.next()) {
+				throw new Exception("No map was found.");
+			}
+
+			rs.beforeFirst(); // Return cursor to the start of the first row
+
+			// Reads data
+			while (rs.next())
+			{
+				data.put(rs.getString("cityName"), rs.getInt("numOfMaps"));
+			}
+
+			replyMsg = new Message(null, data);	// Add content of the array list to the message
+		}
+		catch (SQLException e) {
+			replyMsg = new Message(null, new Integer(1), e.getMessage());
+		}
+		catch(Exception e) {
+			replyMsg = new Message(null, new Integer(1), e.getMessage());
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(rs);
+		}
+
+		return replyMsg;
+	}
+
 	/**
 	 * Update details in database of the current map's new version, set current version as active
 	 * @param params - Contain the id of the map to be updated
