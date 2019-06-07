@@ -3,6 +3,10 @@ package entity;
 import common.*;
 import java.time.LocalDate;
 
+/**
+ * Entity that extends the User user abstract class in the GCM system
+ * and represents a client on the GCM system.
+ */
 public class Client extends User implements java.io.Serializable{
 	/**
 	 * 
@@ -15,7 +19,20 @@ public class Client extends User implements java.io.Serializable{
 	private LocalDate m_expirydate;
 	private final byte[] m_salt;
 
-	
+	/**
+	 * Constructor that builds the User entity
+	 * @param first - The user's first name
+	 * @param last - The user's last name
+	 * @param email - The user's password
+	 * @param id - The user's salt
+	 * @param username - Username of a client as it appears in database
+	 * @param email - The user's email
+	 * @param permission - The user's permission
+	 * @param id - The user's telephone number
+	 * @param id - The user's card number
+	 * @param id - The user's id
+	 * @param id - The user's expiry date of credit card
+	 */
 	/* Constructor */
 	public Client(String first, String last, String password, byte[] salt, String username,
 				  String email, Permission permission, long tel, long cardnumber, long id, LocalDate expirydate) {
@@ -27,11 +44,35 @@ public class Client extends User implements java.io.Serializable{
 }
 
 	/* Getters */
+
+
+	/**
+	 * Get User's unique salt
+	 * @return byte[]
+	 */
 	public byte[] getSalt() { return m_salt; }
+
+	/**
+	 * Get User's telephone number
+	 * @return long
+	 */
 	public long getTelephone() { return m_telephone; }
+
+	/**
+	 * Get User's credit card number
+	 * @return long
+	 */
 	public long getCardNumber() { return m_cardnumber; }
+
+	/**
+	 * Get User's expiry date of credit card
+	 * @return LocalDate
+	 */
 	public LocalDate getExpiryDate() { return m_expirydate; }
 
+	/**
+	 * Override of {@link Object}'s toString method
+	 */
 	@Override
 	public String toString() {
 			return super.toString() + "\nID: " + this.getID() + "\nCard number: " + m_cardnumber
