@@ -15,7 +15,7 @@
          <font>
             <Font size="13.0" />
          </font></RadioButton>
-    <RadioButton fx:id="rbSubscription" disable="true" layoutX="331.0" layoutY="337.0" mnemonicParsing="false" onAction="#Subscription" text="Subscription">
+    <RadioButton fx:id="rbSubscription" disable="true" layoutX="331.0" layoutY="299.0" mnemonicParsing="false" onAction="#Subscription" text="Subscription">
          <font>
             <Font size="13.0" />
          </font></RadioButton>
@@ -26,7 +26,7 @@
     </Label>
     <Label id="lblWelcome" layoutX="515.0" layoutY="16.0" text="Welcome" />
     <Button id="btnMain" fx:id="btnBackToMain" layoutX="513.0" layoutY="60.0" mnemonicParsing="false" onAction="#backToMainGUI" prefHeight="27.0" prefWidth="80.0" text="Catalog" />
-    <Label fx:id="lblTerm" layoutX="354.0" layoutY="371.0" text="Choose subscription's term:" />
+    <Label fx:id="lblTerm" layoutX="362.0" layoutY="338.0" text="Choose subscription's term:" />
     <Label fx:id="lblTotalPrice" layoutX="111.0" layoutY="618.0" text="Total Price:">
       <font>
         <Font size="30.0" />
@@ -48,7 +48,7 @@
     </Label>
     <Label fx:id="lblSubsriptionChoice" font="$x1" layoutX="331.0" layoutY="185.0" text="Choose the type of subscription:" />
     <Separator layoutX="280.0" layoutY="137.0" orientation="VERTICAL" prefHeight="419.0" />
-      <ChoiceBox fx:id="ChoiceBoxTerms" disable="true" layoutX="354.0" layoutY="398.0" prefHeight="17.0" prefWidth="162.0">
+      <ChoiceBox fx:id="ChoiceBoxTerms" disable="true" layoutX="364.0" layoutY="369.0" prefHeight="17.0" prefWidth="162.0">
          <items>
             <FXCollections fx:factory="observableArrayList">
                <String fx:value="Item 1" />
@@ -57,6 +57,5 @@
             </FXCollections>
          </items>
       </ChoiceBox>
-      <CheckBox fx:id="checkBoxDownload" disable="true" layoutX="352.0" layoutY="289.0" mnemonicParsing="false" onAction="#Download" text="Download maps" />
   </children>
 </AnchorPane>

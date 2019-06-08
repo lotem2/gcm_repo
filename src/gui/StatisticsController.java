@@ -236,8 +236,8 @@ public class StatisticsController implements ControllerListener {
 		case DAILY_REPORT:
 			try {
 				String totalRenewals = (String) (currMsg.getData().get(2)).toString();
-				String OneTime = (String) (currMsg.getData().get(3)).toString();
-				String LongTerm = (String) (currMsg.getData().get(4)).toString();
+				String LongTerm = (String) (currMsg.getData().get(3)).toString();
+				String OneTime = (String) (currMsg.getData().get(4)).toString();
 
 				Platform.runLater(() -> {
 					lblNumOfRenewals.setText("Total number of renewals: " + totalRenewals);
