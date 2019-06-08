@@ -124,4 +124,15 @@ public class Purchase implements java.io.Serializable{
 	 * Set the price of the purchase
 	 */
 	public void setPrice(float newprice) { m_price = newprice; }
+
+	/**
+	 * Override of {@link Object}'s toString method
+	 */
+	@Override
+	public String toString() {
+		return "Purchase - User name: " + this.getUserName() + "City name: " + this.getCityName() +
+			"Purchase type: " + this.getPurchaseType() + " Purchase date: " + this.getPurchaseDate() +
+			"Expirtaion date: " + this.getExpirationDate() + " renews: " + this.getRenewCounter() +
+			"Views: " +this.getViews() + " Downloads: " +this.getDownloads() + "price: " + this.getPrice();
+	}
 }

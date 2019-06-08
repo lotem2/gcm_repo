@@ -84,5 +84,12 @@ public class Route implements java.io.Serializable{
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+	/**
+	 * Override of {@link Object}'s toString method
+	 */
+	@Override
+	public String toString() {
+		return "Route - ID: " + this.getID() + "City name: " + this.getCityName() +
+			"Sites: " + this.getSites() + " Description: " + this.getDescription();
+	}
 }
