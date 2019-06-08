@@ -98,6 +98,9 @@ public class ReportsDB implements IReport{
 		HashMap <String, Integer> cityDetails          = new HashMap <String, Integer>();
 		ResultSet                 rs                   = null;
 		String                    sql                  = "";
+		int                       numOfRenw            = 0;
+		int                       numOfLTP             = 0;
+		int                       numOfOTP             = 0;
 
 		try {
 			// Connect to DB
@@ -115,18 +118,23 @@ public class ReportsDB implements IReport{
 				throw new Exception("Error - encountered an error while producing the report");
 			}
 
+			rs.beforeFirst(); // Return cursor to the start of the first row
+
 			// Add 0 to indicate success
 			data.add(new Integer(0));
-			// Go through the result set and build the Purchase entity
+
 			while (rs.next()) 
 			{	
 				cityDetails.put(rs.getString("cityName"),rs.getInt("numOfPurchases") );
-				data.add(cityDetails);
-				data.add(rs.getInt("renew"));
-				data.add(rs.getInt("LongTermPurchases"));
-				data.add(rs.getInt("ShortTermPurchases"));
+				numOfRenw += rs.getInt("renew");
+				numOfLTP += rs.getInt("LongTermPurchases");
+				numOfOTP += rs.getInt("ShortTermPurchases");
 			}
 
+			data.add(cityDetails);
+			data.add(numOfRenw);
+			data.add(numOfLTP);
+			data.add(numOfOTP);
 		}
 		catch(SQLException e) {
 			data.add(new Integer(1));
