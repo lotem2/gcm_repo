@@ -69,12 +69,12 @@
                         <TableView fx:id="tblAllActivityReport" layoutX="10.0" layoutY="164.0" prefHeight="538.0" prefWidth="677.0">
                           <columns>
                             <TableColumn fx:id="clmCityReport" prefWidth="79.0" text="City" />
-                            <TableColumn fx:id="clmDescriptionReport" prefWidth="51.0" text="#Maps" />
-                              <TableColumn prefWidth="163.0" text="#One time subscriptions" />
-                              <TableColumn minWidth="1.0" prefWidth="164.0" text="#Long term subscriptions" />
-                              <TableColumn minWidth="0.0" prefWidth="65.0" text="#Renewals" />
-                              <TableColumn prefWidth="71.0" text="#Watches" />
-                              <TableColumn prefWidth="83.0" text="#Downloads" />
+                              <TableColumn fx:id="clmOneTimePurchases" prefWidth="141.0" text="#One time purchases" />
+                              <TableColumn fx:id="clmLongTermPurchases" minWidth="1.0" prefWidth="149.0" text="#Long term purchases" />
+                            <TableColumn fx:id="clmMembers" prefWidth="88.0" text="#Members" />
+                              <TableColumn fx:id="clmRenewals" minWidth="0.0" prefWidth="65.0" text="#Renewals" />
+                              <TableColumn fx:id="clmWatches" prefWidth="71.0" text="#Watches" />
+                              <TableColumn fx:id="clmDownloads" prefWidth="83.0" text="#Downloads" />
                           </columns>
                         </TableView>
                         <Label layoutX="258.0" layoutY="22.0" prefHeight="49.0" prefWidth="160.0" text="Activity Report">

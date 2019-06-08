@@ -12,12 +12,12 @@ public class Report implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 
 	private String m_cityName;
-	private int m_numOfMembers;
-	private int m_numOfRenew;
-	private int m_numOfViews;
-	private int m_numOfDownloads;
-	private int m_numOfOTP;
-	private int m_numOfLTP;
+	private Integer m_numOfMembers;
+	private Integer m_numOfRenew;
+	private Integer m_numOfViews;
+	private Integer m_numOfDownloads;
+	private Integer m_numOfOTP;
+	private Integer m_numOfLTP;
 
 	/**
 	 * Constructor that builds the Report entity
@@ -32,18 +32,16 @@ public class Report implements java.io.Serializable{
 	public Report (String cityName, int numOfMembers, int numOfRenew,  int numOfViews, int numOfDownloads,
 			int numOfOTP, int numOfLTP)
 	{
-		m_cityName =cityName;
+		m_cityName = cityName;
 		m_numOfOTP = numOfOTP;
 		m_numOfLTP = numOfLTP;
 		m_numOfMembers = numOfMembers;
 	    m_numOfRenew = numOfRenew;
 	    m_numOfViews = numOfViews;
 		m_numOfDownloads = numOfDownloads;
-
 	}
 
 	/* Getters */
-
 	/**
 	 * Get city name
 	 * @return String - city's name
@@ -52,38 +50,48 @@ public class Report implements java.io.Serializable{
 
 	/**
 	 * Get total number of long time purchases
-	 * @return Integer - number of long time purchases
+	 * @return String - number of long time purchases
 	 */
-	public int getNumOfMaps() { return m_numOfLTP; }
+	public Integer getNumOfLTP() { return m_numOfLTP; }
 
 	/**
-	 * Get total number of short time purchases
-	 * @return Integer - number of short time purchases
+	 * Get total number of one time purchases
+	 * @return Integer - number of one time purchases
 	 */
-	public int getNumOfOTP() { return m_numOfOTP; }
+	public Integer getNumOfOTP() { return m_numOfOTP; }
 
 	/**
 	 * Get total number of subscribers
 	 * @return Integer - total number of subscribers
 	 */
-	public int getNumOfMembers() { return m_numOfMembers; }
+	public Integer getNumOfMembers() { return m_numOfMembers; }
 
 	/**
 	 * Get total number of subscribers who renewd their subscription
 	 * @return Integer -  total number of subscribers who renewd
 	 * their subscription
 	 */
-	public int getNumOfRenew() { return m_numOfRenew; }
+	public Integer getNumOfRenew() { return m_numOfRenew; }
 
 	/**
 	 * Get total number of subscribers' views
 	 * @return Integer - total number of subscribers' views
 	 */
-	public int getNumOfViews() { return m_numOfViews; }
+	public Integer getNumOfViews() { return m_numOfViews; }
 
 	/**
 	 * Get total number of subscribers' downloads
 	 * @return Integer - total number of subscribers' downloads
 	 */
-	public int getNumOfDownloads() { return m_numOfDownloads; }
+	public Integer getNumOfDownloads() { return m_numOfDownloads; }
+	
+	/**
+	 * Override of {@link Object}'s toString method
+	 */
+	@Override
+	public String toString() {
+			return "Report - City name: " + this.getCityName() + " OTP: " + this.getNumOfOTP() + " LTP: " + this.getNumOfLTP() 
+			+ " members: " + this.getNumOfMembers() + " renews: " + this.getNumOfRenew() + " views: " +this.getNumOfViews()
+			+ " downloads: " + this.getNumOfDownloads();
+	}
 }

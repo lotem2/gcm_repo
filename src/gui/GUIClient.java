@@ -31,6 +31,7 @@ public class GUIClient extends AbstractClient {
 		try {
 			currListener.handleMessageFromServer(msg);
 		} catch (Exception e) {
+			e.printStackTrace();
 			System.out.println(e);
 			System.out.println(msg);
 			System.out.println(currListener);

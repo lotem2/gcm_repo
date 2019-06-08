@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 
 import common.Action;
 import common.Message;
+import entity.Client;
 import entity.Purchase;
 import entity.Purchase.PurchaseType;
 import entity.Report;
@@ -36,6 +37,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 
@@ -68,13 +70,13 @@ public class StatisticsController implements ControllerListener {
 	private TableColumn<Map.Entry<String, Integer>, String> clmPurchaseDaily;
 
 	@FXML
-	private TableColumn<?, ?> clmCityReport;
+	private TableColumn<Report, String> clmCityReport;
 
 	@FXML
 	private Button btnShowStatistics;
 
 	@FXML
-	private TableView<?> tblAllActivityReport;
+	private TableView<Report> tblAllActivityReport;
 
 	@FXML
 	private Label lblNumOfRenewals;
@@ -113,7 +115,22 @@ public class StatisticsController implements ControllerListener {
 	private Label lblDownloads;
 
 	@FXML
-	private TableColumn<?, ?> clmDescriptionReport;
+	private TableColumn<Report, Integer> clmMembers;
+	
+    @FXML
+    private TableColumn<Report, Integer> clmOneTimePurchases;
+    
+    @FXML
+    private TableColumn<Report, Integer> clmLongTermPurchases;
+    
+    @FXML
+    private TableColumn<Report, Integer> clmRenewals;
+    
+    @FXML
+    private TableColumn<Report, Integer> clmWatches;
+
+    @FXML
+    private TableColumn<Report, Integer> clmDownloads;
 
 	@FXML
 	void CityPurchaseTable(ActionEvent event) {
@@ -256,19 +273,14 @@ public class StatisticsController implements ControllerListener {
 			break;
 		case CITY_ACTIVITY_REPORT:
 			if ((Integer) currMsg.getData().get(0) == 0) {
-				int members = ((Report) currMsg.getData().get(1)).getNumOfMembers();
-				int renewals = ((Report) currMsg.getData().get(1)).getNumOfRenew();
-				int views = ((Report) currMsg.getData().get(1)).getNumOfViews();
-				int downloads = ((Report) currMsg.getData().get(1)).getNumOfDownloads();
-				int ots = ((Report) currMsg.getData().get(1)).getNumOfOTP();
-				int lts = ((Report) currMsg.getData().get(1)).getNumOfMaps();
+				Report report = ((Report) currMsg.getData().get(1));
 				Platform.runLater(() -> {
-				lblMembers.setText(Integer.toString(members));
-				lblRenewals.setText(Integer.toString(renewals));
-				lblView.setText(Integer.toString(views));
-				lblDownloads.setText(Integer.toString(downloads));
-				lblOTS.setText(Integer.toString(ots));
-				lblLTS.setText(Integer.toString(lts));
+					lblMembers.setText("Number of members: " + report.getNumOfMembers());
+					lblRenewals.setText("Number of renewals: " + report.getNumOfRenew());
+					lblView.setText("Number of views: " + report.getNumOfViews());
+					lblDownloads.setText("Number of downloads: " + report.getNumOfDownloads());
+					lblOtsPerCity.setText("Number of one time subscriptions: " + report.getNumOfOTP());
+					lblLtsPerCity.setText("Number of long term subscriptions: " + report.getNumOfLTP());
 				});
 			} else {
 				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
@@ -276,9 +288,21 @@ public class StatisticsController implements ControllerListener {
 			}
 			break;
 		case ACTIVITY_REPORT:
-			ArrayList<Report> array = new ArrayList<Report>();
-			array = (ArrayList<Report>) (currMsg.getData().get(1));
-
+			if ((Integer) currMsg.getData().get(0) == 0) {
+				ArrayList<Report> reports = (ArrayList<Report>) (currMsg.getData().get(1));
+				ObservableList<Report> reportsList = FXCollections.observableArrayList(reports);
+				clmCityReport.setCellValueFactory(new PropertyValueFactory<Report, String>("CityName"));
+				clmLongTermPurchases.setCellValueFactory(new PropertyValueFactory<Report, Integer>("NumOfLTP"));
+				clmOneTimePurchases.setCellValueFactory(new PropertyValueFactory<Report, Integer>("NumOfOTP"));
+				clmMembers.setCellValueFactory(new PropertyValueFactory<Report, Integer>("NumOfMembers"));
+				clmRenewals.setCellValueFactory(new PropertyValueFactory<Report, Integer>("NumOfRenew"));
+				clmWatches.setCellValueFactory(new PropertyValueFactory<Report, Integer>("NumOfViews"));
+				clmDownloads.setCellValueFactory(new PropertyValueFactory<Report, Integer>("NumOfDownloads"));
+				tblAllActivityReport.setItems(reportsList);
+			} else {
+				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
 			break;
 		case GET_CITY_PRICE:
 			try {
