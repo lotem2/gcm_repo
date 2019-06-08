@@ -1,28 +1,38 @@
 package common;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-import java.util.*;
-import javax.mail.*;
-import javax.mail.Message;
-import javax.mail.internet.*;
-import java.util.HashMap;
-import java.util.Map;
 
-import common.*;
+import javax.imageio.ImageIO;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
 import entity.*;
-import entity.Purchase.PurchaseType;
+import server.InboxDB;
 import server.PurchaseDB;
+import server.SQLController;
 
 /**
  * Represents services to support the regular ongoing work of the GCM system 
@@ -42,18 +52,43 @@ public final class Services extends TimerTask {
 		boolean isWritingSuccessul = true;
 
 		try {
-			// Write to file using FileOutputStream
-		    FileOutputStream fos = new FileOutputStream(path + "\\" + cityToDownload.getName() + ".txt", false);
+			// Create a folder that match the city' name
+			File directory = new File(path + "\\" + cityToDownload.getName());
 
-		    // Write the city_maps object using ObjectOutputStream
-		    ObjectOutputStream oos = new ObjectOutputStream(fos);   
+			// Check if directory already exists - delete it and create it again
+			if(directory.exists()) directory.delete();
 
-		    // Writing the city's maps and 
-		    oos.writeObject(cityToDownload.getMaps());
+			directory.mkdir();	// Create the directory with the name given above
+			
+			// Go through each map and create the image
+			for (entity.Map city_map : cityToDownload.getMaps()) {
+				// Read image from byte array
+				BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(city_map.getImageAsByte()));
+				File newImage = new File(directory.getPath() + "\\" + city_map.getName()); // Create output file				
+			    ImageIO.write(bImage, "jpg", newImage); // Write image to the specified path
+			}
 
-		    // Close both ObjectOutputStream and FileOutputStream
-		    oos.close(); 
-		    fos.close();
+		    // Go through each map and write its toString method to the file
+		    try (FileWriter file = new FileWriter(directory.getPath() + 
+		    		"\\" + cityToDownload.getName() + "_Maps.txt", false)) {
+		        for (entity.Map currentMap : cityToDownload.getMaps()) {
+					file.write(currentMap.toString());
+					System.getProperty("line.separator");
+				}
+		    } catch (Exception e) {
+		        throw new Exception("There was a problem downloading the city.");
+		    }
+
+		    // Go through each route and write its toString method to the file
+		    try (FileWriter file = new FileWriter(directory.getPath() + 
+		    		"\\" + cityToDownload.getName() + "_Routes.txt", false)) {
+		        for (Route currentRoute : cityToDownload.getRoutes()) {
+					file.write(currentRoute.toString());
+					System.getProperty("line.separator");
+				}
+		    } catch (Exception e) {
+		        throw new Exception("There was a problem downloading the city.");
+		    }
 		} catch(Exception e) {
 		    e.printStackTrace();
 		    isWritingSuccessul = false;
@@ -170,5 +205,48 @@ public final class Services extends TimerTask {
 		// Set new task to the timer to run at the start of every day
 		Tasks_timer.scheduleAtFixedRate(new Services(), current_time.getTime(), 
 				TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
+	}
+	
+	/**
+	 * Create a request for approval of a map's new version
+	 * @param params - Contain map's name, the sender's user entity 
+	 * @return {@link Message} - Indicating success/failure with corresponding message 
+	 */
+	public common.Message createNewVersionRequest(ArrayList<Object> params){
+		// Variables
+		ArrayList<Object> data  = new ArrayList<Object>();
+
+		try {
+			// Check if a new map version is currently under management approval
+			if(SQLController.DoesRecordExist("Inbox","content", "status", 
+						"Approve " + params.get(0).toString() + " new version", "New"))
+				throw new Exception("New version is under approval, cannot create publish request.");
+
+			// Prepare statement to insert new map
+			String content = "Approve " + params.get(0).toString() + " new version";
+
+			// Insert new Inbox message to managers with the approval request of map's new version
+			common.Message msg = InboxDB.getInstance().AddInboxMessage(
+					((User)params.get(1)).getUserName(), 
+					((User)params.get(1)).getPermission().toString(),
+					Permission.MANAGING_EDITOR.toString(),
+					content,
+					new String("New"),
+					LocalDate.now());
+
+			// Check if insertion was successful
+			if((Integer)msg.getData().get(0) == 1) throw new Exception("Request for approval was not successful");
+
+			// Create data to match the success pattern
+			data.add(new Integer(0)); data.add(new String("Requset for approval submmited successfuly."));
+		}
+		catch (SQLException e) {
+			data.add(new Integer(1)); data.add(new String("There was a problem with the SQL service."));
+		}
+		catch(Exception e) {
+			data.add(new Integer(1)); data.add(e.getMessage());
+		}
+
+		return new common.Message(null, data);
 	}
 }
