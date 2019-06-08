@@ -32,70 +32,99 @@ public class SiteDB {
 
 	/**
 	 * Get maps's sites according to the map's description provided by the client
-	 * @param params - Contains {@link Action} type and the map's description of the requested map
+	 * @param params - contain permission of user who requested the information and the requested map id
 	 * @return {@link Message} - Contains {@link ArrayList} of sites or failure message
 	 */
 	public Message getSitesbyMap(ArrayList<Object> params){
 		// Variables
+		Message 		  msg 	= null;
 		ArrayList<Site>   sites = new ArrayList<Site>();
 		ArrayList<Object> data  = new ArrayList<Object>();
-		ResultSet         rs 	= null;
 		String sql              = "";
 
 		try {
-			// Connect to DB
-			SQLController.Connect();
-				
-			// Prepare statement to get map's sites
-			sql = "SELECT s.name as \"name\", s.cityname as \"cityname\", s.classification as \"classification\", "+
-					 " s.description as \"description\", s.accessible as \"accessible\", " +
-					 " s.visitDuration as \"visitDuration\", s.location as \"location\" " +
-					 " FROM Sites s, Maps m, BridgeMSC b" +
-					 " WHERE b.mapID = ? AND m.mapID = b.mapID AND s.siteID = b.siteID";
+			// Prepare sql statement according to the permission of the requesting user
+			if(params.get(0).toString().equals(Permission.CLIENT.toString())) {
+				// Prepare statement to get map's sites
+				sql = "SELECT s.name as \"name\", s.cityname as \"cityname\", s.classification as \"classification\", "+
+						 " s.description as \"description\", s.accessible as \"accessible\", " +
+						 " s.visitDuration as \"visitDuration\", s.location as \"location\" " +
+						 " FROM Sites s, Maps m, BridgeMSC b" +
+						 " WHERE b.mapID = ? AND is_active = 1 AND m.mapID = b.mapID AND s.siteID = b.siteID";
+			}
+			else {
+				sql = "SELECT * \n" + 
+					  "FROM Sites s \n" + 
+					  "WHERE  s.siteID IN " +
+					  "((SELECT b.siteID \n" + 
+						"FROM Sites b JOIN BridgeMSC as c ON b.siteID = c.siteID WHERE c.is_active = 0) \n" + 
+						"UNION \n" + 
+						"(SELECT s.siteID FROM (SELECT BridgeMSC.siteID as \"id\" " +
+						"FROM BridgeMSC where BridgeMSC.mapID = ?) as maps_sites,\n" + 
+						"Sites s JOIN Sites as s1 ON s.name = s1.name AND \n" + 
+						"(s.location = s1.location AND s.is_active = 0 AND s1.is_active = 1) "
+						+ "WHERE s1.siteID = maps_sites.id)) ";
+			}
+			// Exclude the permission type for the query
+			params = new ArrayList<Object>(params.subList(1, params.size()));
 
 			// Execute sql query by calling private method getSites with the requested SELECT query
 			sites = getSites(sql, params);
-			data.add(new Integer(0)); // set query result as success
-			data.add(sites);	// adding sites' array list
+			msg = new Message(null, new Integer(0), sites);
 	}
 		catch (SQLException e) {
-			data.add(new Integer(1));
-			data.add("There was a problem with the SQL service.");
+			msg = new Message(null, new Integer(1), new String("There was a problem with the SQL service."));
 		}
 		catch(Exception e) {
-			data.add(new Integer(1));
-			data.add("Sites for the current map where not found.");
-		}
-		finally {
-			SQLController.Disconnect(rs);
+			msg = new Message(null, new Integer(1), new String("Sites for the current map where not found."));
 		}
 
-		return new Message(null, data);
+		return msg;
 	}
 
 
 	/**
 	 * Get route's sites according to the route's description provided by the client
-	 * @param params - Contains {@link Action} type and the route's description of the requested map
+	 * @param params - contain permission of user who requested the information and the requested route id
 	 * @return {@link Message} - Contains {@link ArrayList} of sites or failure message
 	 */
 	public Message getSitesbyRoute(ArrayList<Object> params){
 		// Variables
 		ArrayList<Site>   sites = new ArrayList<Site>();
 		ArrayList<Object> data  = new ArrayList<Object>();
-		ResultSet         rs 	= null;
 		String sql 				= "";
 
 		try {
-			// Connect to DB
-			SQLController.Connect();
-
+			if(params.get(0).toString().equals(Permission.CLIENT.toString()))
 				// Prepare statement to get route's sites
-			sql = "SELECT s.name as \"name\", s.cityname as \"cityname\", s.classification as \"classification\", "+
-					" s.description as \"description\", s.accessible as \"accessible\", " +
-					 "s.visitDuration as \"visitDuration\", s.location as \"location\" " +
-		            "FROM Sites s, Routes r "+
-		            "WHERE LOCATE(s.name, r.sites) > 0 AND r.description LIKE '%?%'";
+				sql = "SELECT s.name as \"name\", s.cityname as \"cityname\", s.classification as \"classification\", "+
+						" s.description as \"description\", s.accessible as \"accessible\", " +
+						 "s.visitDuration as \"visitDuration\", s.location as \"location\" " +
+			            "FROM Sites s, Routes r "+
+			            "WHERE LOCATE(s.name, r.sites) > 0 AND r.id = ? AND r.is_active = 1";
+			else
+				sql = "SELECT s.name as \"name\", s.cityname as \"cityname\", s.classification as \"classification\", \"+\r\n" + 
+						"\" s.description as \"description\", s.accessible as \"accessible\", \" +\r\n" + 
+						"\"s.visitDuration as \"visitDuration\", s.location as \"location\"" + 
+						"FROM Sites s, "
+						+ "(SELECT st.siteID as \"rid\" FROM Sites st, Routes r WHERE LOCATE(st.name, r.sites) > 0 AND r.id = ?) as route_site\r\n" + 
+						"WHERE s.siteID IN \r\n" + 
+						"	((SELECT b.siteID \r\n" + 
+						"	FROM Sites b \r\n" + 
+						"    WHERE  b.siteID = route_site.rid AND b.is_active = 0 AND "
+						+ "NOT EXISTS(SELECT 1 from Sites s WHERE s.name = b.name AND s.location = b.location AND s.is_active = 1)) \r\n" + 
+						"     \r\n" + 
+						"     UNION  \r\n" + 
+						"     \r\n" + 
+						"     (SELECT s.siteID\r\n" + 
+						"     FROM Sites s\r\n" + 
+						"     JOIN Sites as s1 ON s.name = s1.name AND\r\n" + 
+						"     (s.location = s1.location AND s.is_active = 0 AND s1.is_active = 1) WHERE s1.siteID = route_site.rid)\r\n" + 
+						"     \r\n" + 
+						"     UNION\r\n" + 
+						"     \r\n" + 
+						"     (SELECT a.siteID as \"id2\" FROM Sites a\r\n" + 
+						"WHERE NOT EXISTS (SELECT 1 from Sites s WHERE s.name = a.name AND s.location = a.location AND s.is_active = 0) AND route_site.rid = a.siteID))";
 
 			// Execute sql query by calling private method getSites with the requested SELECT query
 			sites = getSites(sql, params);
@@ -111,9 +140,6 @@ public class SiteDB {
 			data.add(new Integer(1));
 			data.add("Sites for the current route where not found.");
 		}
-		finally {
-			SQLController.Disconnect(rs);
-		}
 
 		return new Message(null, data);
 	}
@@ -121,22 +147,36 @@ public class SiteDB {
 
 	/**
 	 * Get City's sites according to the city's name provided by the client
-	 * @param params - Contains {@link Action} type and the city's name
+	 * @param params - contain permission of user who requested the information and the requested city name
 	 * @return {@link Message} - Contains {@link ArrayList} of sites or failure message
 	 */
 	public Message getSitesbyCity(ArrayList<Object> params){
 		// Variables
 		ArrayList<Site>   sites = new ArrayList<Site>();
 		ArrayList<Object> data  = new ArrayList<Object>();
-		ResultSet         rs 	= null;
 		String sql 				= "";
 
 		try {
-			// Connect to DB
-			SQLController.Connect();
-
-			// Prepare statement to get route's sites
-			sql = "SELECT * FROM Sites WHERE cityname = ?";
+			// Prepare statement according to the permission
+			if(params.get(0).toString().equals(Permission.CLIENT.toString()))
+				// Prepare statement to get route's sites
+				sql = "SELECT * FROM Sites WHERE cityname = ? AND is_active = 1";
+			else
+				sql = "SELECT * \n" + 
+						"FROM   Sites s \n" + 
+						"WHERE s.cityname = ? AND s.siteID IN \n" + 
+						"((SELECT b.siteID \n" + 
+						" FROM Sites b, BridgeMSC c \n" + 
+						" WHERE b.siteID = c.siteID AND c.is_active = 0) UNION \n" + 
+						" (SELECT s.siteID \n" + 
+						"  FROM Sites s JOIN Sites as s1 ON s.name = s1.name AND \n" + 
+						"(s.location = s1.location AND s.is_active = 0 AND s1.is_active = 1) \n" + 
+						"WHERE s1.cityname = s.cityname) UNION \n" + 
+						"(SELECT a.siteID \n" + 
+						"FROM Sites a \n" + 
+						"WHERE not EXISTS \n" + 
+						"(SELECT 1 FROM Sites s WHERE \n" + 
+						"(s.name = a.name AND s.location = a.location AND s.is_active = 0) AND a.cityname = s.cityname)))";
 
 			// Execute sql query by calling private method getSites with the requested SELECT query
 			sites = getSites(sql, params);
@@ -152,23 +192,19 @@ public class SiteDB {
 			data.add(new Integer(1));
 			data.add("Sites for the current city where not found.");
 		}
-		finally {
-			SQLController.Disconnect(rs);
-		}
 
 		return new Message(null, data);
 	}
 	
 	/**
 	 * Edit a specific site's details 
-	 * @param params - Contain {@link Action} site's new details
+	 * @param params - Contain site's new details
 	 * @return {@link Message} - Indicating success/failure with corresponding message
 	 */
 	public Message updateSiteDetails(ArrayList<Object> params) {
 		// Variables
 		ArrayList<Object> data 		  = new ArrayList<Object>();
 		String 			  sql  		  = "";
-		int 			  changedRows = 0;
 
 		try {
 			// Check if a change to the requested site was already made
@@ -187,13 +223,8 @@ public class SiteDB {
 			else {
 				// Adding parameters for the WHERE clause and call AddSite 
 				// to add new record with updated value of a site that already exists but record that is not displayed yet
-				params.add(0); params.add(params.get(0)); params.add(params.get(5)); params.add(0);
+				params.add(0); params.add(params.get(0)); params.add(params.get(5));
 				AddSite(params);
-			}
-
-			// Check if update was successful - result should be greater than zero
-			if (changedRows == 0) {
-				 throw new Exception("Site was not edited successfully.");
 			}
 
 			// Add 0 to indicate success
@@ -207,10 +238,6 @@ public class SiteDB {
 		catch(Exception e) {
 			data.add(new Integer(1));
 			data.add(e.getMessage());
-		}
-		finally {
-			// Disconnect DB
-			SQLController.Disconnect(null);
 		}
 
 		return (new Message(Action.EDIT_SITE, data));
