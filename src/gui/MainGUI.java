@@ -39,7 +39,8 @@ public class MainGUI extends Application {
 		ClientProfile,
 		ClientsManagement,
 		Edit,
-		Statistics
+		Statistics,
+		Inbox
 	}
 
 	static final Map<SceneType, String> sceneFxmlLocationMapping = Map.ofEntries(
@@ -49,7 +50,8 @@ public class MainGUI extends Application {
 	    Map.entry(SceneType.ClientProfile, "/ClientProfileScene.fxml"),
 	    Map.entry(SceneType.ClientsManagement, "/ClientsManagementScene.fxml"),
 	    Map.entry(SceneType.Edit, "/EditScene.fxml"),
-	    Map.entry(SceneType.Statistics, "/StatisticsScene.fxml")
+	    Map.entry(SceneType.Statistics, "/StatisticsScene.fxml"),
+	    Map.entry(SceneType.Inbox, "/InboxScene.fxml")
 
 	);
 	

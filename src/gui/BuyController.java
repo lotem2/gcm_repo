@@ -1,5 +1,6 @@
 package gui;
 
+import java.io.File;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -11,6 +12,8 @@ import javax.swing.JOptionPane;
 
 import common.Action;
 import common.Message;
+import common.Services;
+import entity.City;
 import entity.Purchase;
 import entity.Purchase.PurchaseType;
 import javafx.beans.value.ChangeListener;
@@ -27,6 +30,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.FileChooser;
 
 public class BuyController implements ControllerListener {
 
@@ -95,9 +99,6 @@ public class BuyController implements ControllerListener {
 	private RadioButton rbSubscription;
 
 	@FXML
-	private CheckBox checkBoxDownload;
-
-	@FXML
 	private TextField tfCityDescription;
 
 	@FXML
@@ -118,9 +119,7 @@ public class BuyController implements ControllerListener {
 	@FXML
 	void OneTimeTerm(ActionEvent event) {
 		lblTotalPrice.setText("Total Price: ");
-		checkBoxDownload.setVisible(true);
 		ChoiceBoxTerms.setDisable(true);
-		checkBoxDownload.setDisable(false);
 		setPrice(rbSubscription.isSelected(), "", "");
 
 	}
@@ -128,7 +127,6 @@ public class BuyController implements ControllerListener {
 	@FXML
 	void Subscription(ActionEvent event) {
 		lblTotalPrice.setText("Total Price: ");
-		checkBoxDownload.setVisible(true);
 		ChoiceBoxTerms.setDisable(false);
 		// add a listener
 		ChoiceBoxTerms.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
@@ -190,7 +188,7 @@ public class BuyController implements ControllerListener {
 				data.add(m_Downloads);
 				data.add(m_price);
 
-				if(checkBoxDownload.isPressed()) {
+				if(rbBuyOnce.isSelected()) {
 					Message myTempMessage;
 					ArrayList<Object> tempData = new ArrayList<Object>();
 					tempData.add(ChoiceBoxCities.getValue());
@@ -211,6 +209,14 @@ public class BuyController implements ControllerListener {
 					e.toString() + " Could not send message to server.  Terminating client.", "Error",
 					JOptionPane.WARNING_MESSAGE);
 		}
+	}
+	
+	private String openSaveMapPrompt() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Image");
+        fileChooser.setInitialFileName("citymap.png");
+        File file = fileChooser.showSaveDialog(MainGUI.MainStage);
+		return file.getAbsolutePath();
 	}
 
 	@FXML
@@ -238,6 +244,7 @@ public class BuyController implements ControllerListener {
 		case BUY:
 			if ((Integer) currMsg.getData().get(0) == 0) {
 				JOptionPane.showMessageDialog(null, "Order Complete!", "", JOptionPane.INFORMATION_MESSAGE);
+				Services.writeCityToFile((City) currMsg.getData().get(1), openSaveMapPrompt());
 				MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
 			}
 

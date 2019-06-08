@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="775.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.InboxSceneController">
+   <children>
+      <Label layoutX="276.0" layoutY="34.0" text="Inbox">
+         <font>
+            <Font size="60.0" />
+         </font>
+      </Label>
+      <TableView fx:id="tblInbox" layoutX="75.0" layoutY="146.0" prefHeight="423.0" prefWidth="480.0">
+        <columns>
+            <TableColumn fx:id="clmMessages" prefWidth="365.0" text="Messages" />
+            <TableColumn fx:id="clmDate" prefWidth="114.0" text="Date" />
+        </columns>
+      </TableView>
+      <Pane fx:id="paneApproveDecline" layoutX="580.0" layoutY="146.0" prefHeight="68.0" prefWidth="63.0" visible="false">
+         <children>
+            <Button fx:id="btnApprove" layoutX="1.0" layoutY="2.0" mnemonicParsing="false" onAction="#Approve" text="Approve" />
+            <Button fx:id="btnDecline" layoutY="40.0" mnemonicParsing="false" onAction="#Decline" text="Decline" />
+         </children>
+      </Pane>
+      <Button fx:id="btnClose" layoutX="580.0" layoutY="598.0" mnemonicParsing="false" onAction="#Close" text="Close" />
+      <Button fx:id="btnRefresh" layoutX="6.0" layoutY="146.0" mnemonicParsing="false" onAction="#Refresh" prefHeight="25.0" prefWidth="63.0" text="Refresh" />
+   </children>
+</AnchorPane>

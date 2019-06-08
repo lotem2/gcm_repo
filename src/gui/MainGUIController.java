@@ -100,6 +100,8 @@ public class MainGUIController implements ControllerListener {
 	private Text txtMapsCatalog;
 	@FXML
 	private Label lblWelcome;
+	@FXML
+    private Button btnInbox;
 
 	/**
 	 * @param event making the data to send to the server
@@ -135,6 +137,8 @@ public class MainGUIController implements ControllerListener {
 			MainGUI.GUIclient.quit();
 		}
 	}
+	
+	
 
 	@FXML
 	void Login(ActionEvent event) {
@@ -161,6 +165,11 @@ public class MainGUIController implements ControllerListener {
 					e.toString() + " Could not send message to server.  Terminating client.", "Error",
 					JOptionPane.WARNING_MESSAGE);
 		}
+	}
+	
+	@FXML
+	void OpenInbox(ActionEvent event) {
+		MainGUI.openScene(MainGUI.SceneType.Inbox);
 	}
 
 	@FXML
@@ -221,6 +230,7 @@ public class MainGUIController implements ControllerListener {
 							btnEditMaps.setText("Show Maps");
 							btnEditMaps.setVisible(true);
 							btnBuy.setVisible(true);
+							btnInbox.setVisible(true);
 							break;
 						case EDITOR:
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
@@ -230,6 +240,7 @@ public class MainGUIController implements ControllerListener {
 							btnEditMaps.setText("Edit Maps");
 							btnEditMaps.setVisible(true);
 							btnBuy.setVisible(false);
+							btnInbox.setVisible(true);
 							break;
 						case MANAGING_EDITOR:
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
@@ -239,6 +250,7 @@ public class MainGUIController implements ControllerListener {
 							btnEditMaps.setText("Edit Maps");
 							btnEditMaps.setVisible(true);
 							btnBuy.setVisible(false);
+							btnInbox.setVisible(true);
 							break;
 						case CEO:
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
@@ -246,6 +258,7 @@ public class MainGUIController implements ControllerListener {
 							btnEditMaps.setText("Edit Maps");
 							btnEditMaps.setVisible(true);
 							btnBuy.setVisible(false);
+							btnInbox.setVisible(true);
 							break;
 						default:
 						}
@@ -279,6 +292,7 @@ public class MainGUIController implements ControllerListener {
 						btnManage.setVisible(false);
 						btnEditMaps.setVisible(false);
 						btnBuy.setVisible(false);
+						btnInbox.setVisible(false);
 					JOptionPane.showMessageDialog(null, "Disconnected successfully", "Notification",
 							JOptionPane.DEFAULT_OPTION);
 				} catch (Exception e) {
