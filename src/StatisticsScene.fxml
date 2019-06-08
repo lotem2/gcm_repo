@@ -11,28 +11,28 @@
 
 <AnchorPane prefHeight="574.0" prefWidth="528.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.StatisticsController">
    <children>
-      <TabPane prefHeight="575.0" prefWidth="528.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane prefHeight="775.0" prefWidth="700.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="Daily Statistics">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <Label fx:id="lblOTS" layoutX="286.0" layoutY="199.0" text="One time subscription: " />
-                        <TableView fx:id="tblCityPurchase" layoutX="24.0" layoutY="108.0" prefHeight="315.0" prefWidth="205.0">
+                        <Label fx:id="lblOTS" layoutX="443.0" layoutY="305.0" text="One time subscription: " />
+                        <TableView fx:id="tblCityPurchase" layoutX="91.0" layoutY="144.0" prefHeight="428.0" prefWidth="241.0">
                           <columns>
-                            <TableColumn fx:id="clmCityDaily" prefWidth="86.0" text="City" />
-                            <TableColumn fx:id="clmPurchaseDaily" prefWidth="117.0" text="Purchase number" />
+                            <TableColumn fx:id="clmCityDaily" prefWidth="108.0" text="City" />
+                            <TableColumn fx:id="clmPurchaseDaily" prefWidth="132.0" text="Purchase number" />
                           </columns>
                         </TableView>
-                        <Label layoutX="149.0" layoutY="37.0" prefHeight="49.0" prefWidth="160.0" text="Daily Statistics">
+                        <Label layoutX="265.0" layoutY="50.0" prefHeight="49.0" prefWidth="160.0" text="Daily Statistics">
                            <font>
                               <Font size="24.0" />
                            </font>
                         </Label>
-                        <Label fx:id="lblNumOfRenewals" layoutX="286.0" layoutY="149.0" text="Total number of renewals: " />
-                        <Label fx:id="lblLTS" layoutX="285.0" layoutY="246.0" text="long term subscription: " />
-                        <Separator layoutX="267.0" layoutY="101.0" orientation="VERTICAL" prefHeight="325.0" prefWidth="9.0" />
-                        <Button fx:id="btnbackToMainGUI" layoutX="427.0" layoutY="25.0" mnemonicParsing="false" onAction="#backToMainGUI" text="Catalog" />
+                        <Label fx:id="lblNumOfRenewals" layoutX="435.0" layoutY="244.0" text="Total number of renewals: " />
+                        <Label fx:id="lblLTS" layoutX="442.0" layoutY="365.0" text="long term subscription: " />
+                        <Separator layoutX="379.0" layoutY="150.0" orientation="VERTICAL" prefHeight="447.0" prefWidth="8.0" />
+                        <Button fx:id="btnbackToMainGUI" layoutX="593.0" layoutY="37.0" mnemonicParsing="false" onAction="#backToMainGUI" text="Catalog" />
                      </children>
                   </AnchorPane>
             </content>
@@ -41,23 +41,23 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <Label layoutX="178.0" layoutY="56.0" prefHeight="49.0" prefWidth="173.0" text="Activity Report ">
+                        <Label layoutX="264.0" layoutY="61.0" prefHeight="49.0" prefWidth="173.0" text="Activity Report ">
                            <font>
                               <Font size="24.0" />
                            </font>
                         </Label>
-                        <DatePicker fx:id="dpFrom" layoutX="50.0" layoutY="132.0" promptText="From" />
-                        <DatePicker fx:id="dpTo" layoutX="50.0" layoutY="185.0" promptText="To" />
-                        <Separator layoutX="263.0" layoutY="119.0" orientation="VERTICAL" prefHeight="383.0" prefWidth="1.0" />
-                        <TableView layoutX="288.0" layoutY="119.0" prefHeight="305.0" prefWidth="223.0">
-                          <columns>
-                            <TableColumn fx:id="clmDescriptionPerCity" prefWidth="151.0" text="Description" />
-                            <TableColumn fx:id="clmNumPerCity" prefWidth="71.0" text="#" />
-                          </columns>
-                        </TableView>
-                        <ChoiceBox fx:id="choiceBoxCity" layoutX="50.0" layoutY="261.0" prefWidth="150.0" />
-                        <Label layoutX="50.0" layoutY="230.0" text="Choose city:" />
-                        <Button fx:id="btnShowStatistics" layoutX="78.0" layoutY="360.0" mnemonicParsing="false" onAction="#ShowStatistics" text="Show statistics" />
+                        <DatePicker fx:id="dpFrom" layoutX="106.0" layoutY="148.0" promptText="From" />
+                        <DatePicker fx:id="dpTo" layoutX="105.0" layoutY="219.0" promptText="To" />
+                        <Separator layoutX="359.0" layoutY="160.0" orientation="VERTICAL" prefHeight="383.0" prefWidth="1.0" />
+                        <ChoiceBox fx:id="choiceBoxCity" layoutX="100.0" layoutY="339.0" prefWidth="150.0" />
+                        <Label layoutX="105.0" layoutY="295.0" text="Choose city:" />
+                        <Button fx:id="btnShowStatistics" layoutX="137.0" layoutY="474.0" mnemonicParsing="false" onAction="#ShowStatistics" text="Show statistics" />
+                        <Label fx:id="lblMembers" layoutX="415.0" layoutY="168.0" text="Number of members:" />
+                        <Label fx:id="lblRenewals" layoutX="415.0" layoutY="202.0" text="Number of renewals: " />
+                        <Label fx:id="lblView" layoutX="417.0" layoutY="239.0" text="Number of views:" />
+                        <Label fx:id="lblDownloads" layoutX="417.0" layoutY="275.0" text="Number of downloads:" />
+                        <Label fx:id="lblOtsPerCity" layoutX="416.0" layoutY="310.0" text="Number of one time subscriptions:" />
+                        <Label fx:id="lblLtsPerCity" layoutX="416.0" layoutY="343.0" text="Number of long term subscriptions:" />
                      </children>
                   </AnchorPane>
             </content>
@@ -66,25 +66,25 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <TableView fx:id="tblAllActivityReport" layoutX="7.0" layoutY="159.0" prefHeight="377.0" prefWidth="514.0">
+                        <TableView fx:id="tblAllActivityReport" layoutX="10.0" layoutY="164.0" prefHeight="538.0" prefWidth="677.0">
                           <columns>
-                            <TableColumn fx:id="clmCityReport" prefWidth="50.0" text="City" />
-                            <TableColumn fx:id="clmDescriptionReport" prefWidth="57.0" text="#Maps" />
-                              <TableColumn prefWidth="93.0" text="#One time sub'" />
-                              <TableColumn minWidth="1.0" prefWidth="105.0" text="#Long term subs'" />
-                              <TableColumn minWidth="0.0" prefWidth="64.0" text="#Renewals" />
-                              <TableColumn prefWidth="63.0" text="#Watches" />
-                              <TableColumn text="#Downloads" />
+                            <TableColumn fx:id="clmCityReport" prefWidth="79.0" text="City" />
+                            <TableColumn fx:id="clmDescriptionReport" prefWidth="51.0" text="#Maps" />
+                              <TableColumn prefWidth="163.0" text="#One time subscriptions" />
+                              <TableColumn minWidth="1.0" prefWidth="164.0" text="#Long term subscriptions" />
+                              <TableColumn minWidth="0.0" prefWidth="65.0" text="#Renewals" />
+                              <TableColumn prefWidth="71.0" text="#Watches" />
+                              <TableColumn prefWidth="83.0" text="#Downloads" />
                           </columns>
                         </TableView>
-                        <Label layoutX="161.0" layoutY="26.0" prefHeight="49.0" prefWidth="160.0" text="Activity Report">
+                        <Label layoutX="258.0" layoutY="22.0" prefHeight="49.0" prefWidth="160.0" text="Activity Report">
                            <font>
                               <Font size="24.0" />
                            </font>
                         </Label>
-                        <DatePicker fx:id="dpFromAll" layoutX="52.0" layoutY="75.0" />
-                        <DatePicker fx:id="dpToAll" layoutX="264.0" layoutY="75.0" />
-                        <Button fx:id="btnShowStatisticsAll" layoutX="206.0" layoutY="123.0" mnemonicParsing="false" onAction="#ShowStatisticsAll" text="Show Statistics" />
+                        <DatePicker fx:id="dpFromAll" layoutX="58.0" layoutY="96.0" />
+                        <DatePicker fx:id="dpToAll" layoutX="284.0" layoutY="95.0" />
+                        <Button fx:id="btnShowStatisticsAll" layoutX="534.0" layoutY="95.0" mnemonicParsing="false" onAction="#ShowStatisticsAll" text="Show Statistics" />
                      </children>
                   </AnchorPane>
               </content>

@@ -39,16 +39,30 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 
+import entity.Report;
+
 public class StatisticsController implements ControllerListener {
 
 	static HashMap<String, Float> citiesAndPrices;
 	static ArrayList<String> citiesList;
 
 	@FXML
+	private DatePicker dpFromAll;
+
+	@FXML
 	private TableView<Map.Entry<String, Integer>> tblCityPurchase;
 
 	@FXML
-	private TableColumn<?, ?> clmDescriptionPerCity;
+	private Button btnbackToMainGUI;
+
+	@FXML
+	private DatePicker dpFrom;
+
+	@FXML
+	private DatePicker dpTo;
+
+	@FXML
+	private Label lblView;
 
 	@FXML
 	private TableColumn<Map.Entry<String, Integer>, String> clmPurchaseDaily;
@@ -57,7 +71,7 @@ public class StatisticsController implements ControllerListener {
 	private TableColumn<?, ?> clmCityReport;
 
 	@FXML
-	private TableColumn<?, ?> clmNumPerCity;
+	private Button btnShowStatistics;
 
 	@FXML
 	private TableView<?> tblAllActivityReport;
@@ -69,10 +83,19 @@ public class StatisticsController implements ControllerListener {
 	private Label lblLTS;
 
 	@FXML
+	private Label lblMembers;
+
+	@FXML
+	private Button btnShowStatisticsAll;
+
+	@FXML
 	private ChoiceBox<String> choiceBoxCity;
 
 	@FXML
-	private TableColumn<?, ?> clmNumReport;
+	private Label lblRenewals;
+
+	@FXML
+	private Label lblOtsPerCity;
 
 	@FXML
 	private Label lblOTS;
@@ -81,32 +104,16 @@ public class StatisticsController implements ControllerListener {
 	private TableColumn<Map.Entry<String, Integer>, String> clmCityDaily;
 
 	@FXML
-	private TableColumn<?, ?> clmDescriptionReport;
-
-	@FXML
-	private Label lblOneTimeSub;
-
-	@FXML
-	private Button btnBackToMain;
-	
-	@FXML
-	private Button btnShowStatisticsAll;
-	
-	@FXML
-	private Button btnShowStatistics;
-
-	@FXML
-	private DatePicker dpFrom;
-
-	@FXML
-	private DatePicker dpTo;
-	
-	@FXML
-	private DatePicker dpFromAll;
-	
-	@FXML
 	private DatePicker dpToAll;
-	
+
+	@FXML
+	private Label lblLtsPerCity;
+
+	@FXML
+	private Label lblDownloads;
+
+	@FXML
+	private TableColumn<?, ?> clmDescriptionReport;
 
 	@FXML
 	void CityPurchaseTable(ActionEvent event) {
@@ -179,7 +186,7 @@ public class StatisticsController implements ControllerListener {
 					JOptionPane.WARNING_MESSAGE);
 		}
 	}
-	
+
 	@FXML
 	void ShowStatisticsAll(ActionEvent event) {
 		try {
@@ -193,10 +200,9 @@ public class StatisticsController implements ControllerListener {
 			data.add(dTF.format(fromDate));
 			data.add(dTF.format(toDate));
 			MainGUI.GUIclient.sendToServer(myMessage);
-		} catch (Exception e) { 
+		} catch (Exception e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(null,
-					"Could not send message to server.  Terminating client.", "Error",
+			JOptionPane.showMessageDialog(null, "Could not send message to server.  Terminating client.", "Error",
 					JOptionPane.WARNING_MESSAGE);
 		}
 	}
@@ -242,15 +248,37 @@ public class StatisticsController implements ControllerListener {
 							}
 						});
 
-				ObservableList<Entry<String,Integer>> items = FXCollections.observableArrayList(map.entrySet());
+				ObservableList<Entry<String, Integer>> items = FXCollections.observableArrayList(map.entrySet());
 				tblCityPurchase.setItems(items);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			break;
+		case CITY_ACTIVITY_REPORT:
+			if ((Integer) currMsg.getData().get(0) == 0) {
+				int members = ((Report) currMsg.getData().get(1)).getNumOfMembers();
+				int renewals = ((Report) currMsg.getData().get(1)).getNumOfRenew();
+				int views = ((Report) currMsg.getData().get(1)).getNumOfViews();
+				int downloads = ((Report) currMsg.getData().get(1)).getNumOfDownloads();
+				int ots = ((Report) currMsg.getData().get(1)).getNumOfOTP();
+				int lts = ((Report) currMsg.getData().get(1)).getNumOfMaps();
+				Platform.runLater(() -> {
+				lblMembers.setText(Integer.toString(members));
+				lblRenewals.setText(Integer.toString(renewals));
+				lblView.setText(Integer.toString(views));
+				lblDownloads.setText(Integer.toString(downloads));
+				lblOTS.setText(Integer.toString(ots));
+				lblLTS.setText(Integer.toString(lts));
+				});
+			} else {
+				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
+			break;
 		case ACTIVITY_REPORT:
 			ArrayList<Report> array = new ArrayList<Report>();
 			array = (ArrayList<Report>) (currMsg.getData().get(1));
+
 			break;
 		case GET_CITY_PRICE:
 			try {
@@ -278,7 +306,7 @@ public class StatisticsController implements ControllerListener {
 			MainGUI.GUIclient.sendToServer(myMessage);
 			myMessage = new Message(Action.GET_CITY_PRICE, data);
 			MainGUI.GUIclient.sendToServer(myMessage);
-		
+
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message", "Error",
 					JOptionPane.WARNING_MESSAGE);
