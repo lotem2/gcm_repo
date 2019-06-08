@@ -30,6 +30,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import entity.*;
+import entity.Purchase.PurchaseType;
 import server.InboxDB;
 import server.PurchaseDB;
 import server.SQLController;
@@ -183,6 +184,54 @@ public final class Services extends TimerTask {
 	     catch (Exception e) {
 	         e.printStackTrace();
 	     }
+	}
+
+	/**
+	 * Create a request for approval of a new city price.
+	 * Approval is granted by the CEO.
+	 * @param params - Contains city name, a new city price and the sender's user entity
+	 * @return {@link Message} - Indicating success/failure with corresponding message
+	 */
+	public static common.Message changeCityPriceRequest(ArrayList<Object> params){
+		// Variables
+		ArrayList<Object> data  = new ArrayList<Object>();
+
+		try {
+			// Check if a new map version is currently under management approval
+			if(SQLController.DoesRecordExist("Inbox","content", "status",
+						"Approve " + params.get(0).toString() + "'s new city price to" + params.get(1).toString(), "New"))
+				throw new Exception("New version is under approval, cannot create publish request.");
+
+			// Prepare statement to insert new map
+			String content = "Approve " + params.get(0).toString() + "'s new city price to" + params.get(1).toString();
+
+			// Insert new Inbox message to managers with the approval request of map's new version
+			common.Message msg = InboxDB.getInstance().AddInboxMessage(
+					((User)params.get(2)).getUserName(),
+					((User)params.get(2)).getPermission().toString(),
+					Permission.MANAGING_EDITOR.toString(),
+					content,
+					new String("New"),
+					LocalDate.now());
+
+			// Check if insertion was successful
+			if((Integer)msg.getData().get(0) == 1) throw new Exception("Request for approval was not successful");
+
+			// Create data to match the success pattern
+			data.add(new Integer(0)); data.add(new String("Requset for approval submmited successfuly."));
+		}
+		catch (SQLException e) {
+			data.add(new Integer(1)); data.add(new String("There was a problem with the SQL service."));
+		}
+		catch(Exception e) {
+			data.add(new Integer(1)); data.add(e.getMessage());
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(null);
+		}
+
+		return new common.Message(null, data);
 	}
 	
 	@Override

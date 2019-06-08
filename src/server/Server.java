@@ -78,6 +78,14 @@ public class Server extends AbstractServer {
 				replyMsg = CityDB.getInstance().getCitiesList();
 				replyMsg.setAction(Action.GET_CITY_PRICE);
 				break;
+			case EDIT_CITY_PRICE:
+				replyMsg = Services.changeCityPriceRequest(currMsg.getData());
+				replyMsg.setAction(Action.EDIT_CITY_PRICE);
+				break;
+			case APPROVE_CITY_PRICE:
+				replyMsg = CityDB.getInstance().UpdateCityPriceAfterApproval(currMsg.getData());
+				replyMsg.setAction(Action.APPROVE_CITY_PRICE);
+				break;
 			case SHOW_ALL_CLIENTS:
 				replyMsg = UsersDB.getInstance().getAllUsers();
 				replyMsg.setAction(Action.SHOW_ALL_CLIENTS);

@@ -120,6 +120,50 @@ public class CityDB {
 	}
 	
 	/**
+	 * Edit requested city's price
+	 * @param - {@link ArrayList} of type {@link Object} containing new price and city name
+	 * @return {@link Message} - Contains {@link ArrayList} with success message or failure message
+	 */
+	public Message UpdateCityPriceAfterApproval(ArrayList<Object> params){
+		// Variables
+		ArrayList<Object> data        = new ArrayList<Object>();
+		Message           replyMsg    = null;
+		ResultSet      	  rs 		  = null;
+		String 		      sql		  = null;
+
+		//Insert params at the following order: city name, new price.
+		data.add(params.get(1));data.add(params.get(0));
+		try {
+			// Connect to DB
+			SQLController.Connect();
+
+			sql = "UPDATE `Cities` SET price = ? WHERE Cities.name = ?"; // Prepare sql query
+
+			// Execute sql query, get results
+			rs = SQLController.ExecuteQuery(sql, data);
+
+			// check if query succeeded
+			if(!rs.next())
+				throw new Exception("City price was not updated succesfully.");
+
+			// Create success message with the city's instance
+			replyMsg = new Message(Action.EDIT_CITY_PRICE, new Integer(0));
+		}
+		catch (SQLException e) {
+			replyMsg = new Message(Action.EDIT_CITY_PRICE, new Integer(1),
+					new String("There was a problem with the SQL service."));
+			}
+		catch(Exception e) {
+			replyMsg = new Message(Action.EDIT_CITY_PRICE, new Integer(1), e.getMessage());
+		}
+		finally {
+			SQLController.Disconnect(rs);
+		}
+
+		return replyMsg;
+	}
+
+	/**
 	 * Get city from database according to the requested city's name
 	 * @param params - {@link ArrayList} of type {@link Object} contains requested city's name
 	 * @return {@link Message} - Contains {@link City} object with full details or failure message
@@ -197,7 +241,7 @@ public class CityDB {
 
 		return replyMsg;
 	}
-	
+
 	/**
 	 * Add new city to database
 	 * @param params - Contain new city's details
