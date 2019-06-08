@@ -174,7 +174,7 @@ public class SiteDB {
 			// Check if a change to the requested site was already made
 			if(SQLController.DoesRecordExist("Sites","name", "location","is_active", 
 					params.get(0), params.get(5), 0)) {
-				// Prepare statement to insert new user
+				// Prepare statement to insert new site
 				sql = "UPDATE Sites SET name = ?, classification = ?, description = ?, accessible = ?, " +
 							 "visitDuration = ?, location = ? " +
 							 "WHERE name = ?, location = ?, is_active = ?";	
