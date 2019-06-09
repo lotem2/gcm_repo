@@ -86,6 +86,8 @@ public class EditWindowController implements ControllerListener {
     @FXML
     private Button btnBrowse;
     @FXML
+    private Button btnDeleteSite;
+    @FXML
     private Button btnSaveCity;
     @FXML
     private Button btnSaveMap;
@@ -93,6 +95,10 @@ public class EditWindowController implements ControllerListener {
     private Button btnSaveRoute;
     @FXML
     private Button btnSaveSite;
+    @FXML
+    private Button btnUpdatePrice;
+    @FXML
+    private Button btnUpdateVersion;
     @FXML
     private ChoiceBox<String> categoryChoser;
     @FXML
@@ -298,6 +304,7 @@ public class EditWindowController implements ControllerListener {
 		MainGUI.MainStage.setTitle("Global City Map");
 		MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
     }
+    
 
     @FXML
     void initialize() {
@@ -470,7 +477,7 @@ public class EditWindowController implements ControllerListener {
     	tfPrice.clear();
     	tfX.clear();
     	tfY.clear();
-  	
+    	btnUpdateVersion.setDisable(true);
     }
 
 	/**
@@ -495,6 +502,7 @@ public class EditWindowController implements ControllerListener {
     	tfSiteDescription.clear();
     	tfX.clear();
     	tfY.clear();
+    	btnDeleteSite.setDisable(true);
     }
 	/**
 	 *
@@ -537,6 +545,18 @@ public class EditWindowController implements ControllerListener {
 		BooleanBinding booleanBind;
 		booleanBind = (tfCityName.textProperty().isEmpty()).or(tfCityDescription.textProperty().isEmpty());
 		btnSaveCity.disableProperty().bind(booleanBind);
+	}
+	/**
+	 *
+	 *method to initialize the binding to update the price of the city
+	 *
+	 *
+	 */ 
+	void setUpdatePriceBooleanBinding() 
+	{
+		BooleanBinding booleanBind;
+		booleanBind = (tfPrice.textProperty().isEmpty()).or(tfCityDescription.textProperty().isEmpty());
+		btnUpdatePrice.disableProperty().bind(booleanBind);
 	}
 	/**
 	 *
@@ -681,7 +701,9 @@ public class EditWindowController implements ControllerListener {
 				{
 			    	ArrayList<Site> sites = (ArrayList<Site>) currMsg.getData().get(1);
 					ObservableList<Site> currSitesList = FXCollections.observableArrayList(sites);
-					setTableViewForRouteSites(currSitesList);
+					//setTableViewForRouteSites(currSitesList);
+					setAddSitesToRouteChoiceBox(sites);
+					routesChoiceBoxListener(currSitesList);
 				}
 				else 
 					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
@@ -763,6 +785,43 @@ public class EditWindowController implements ControllerListener {
 					    }
 						
 					}
+
+			}
+		});
+
+	}
+		void routesChoiceBoxListener(ObservableList<Site> sitesToAddList) 
+		{
+			routesChoser.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() 
+			{
+		      @Override
+		      public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) 
+		      {
+		    	  String currRouteName = (routesChoser.getItems().get((Integer) number2));
+					if (currRouteName.equals("Add New Route"))
+					{
+						addNewRoute();
+					}
+					else
+					{
+						setTableViewForRouteSites(sitesToAddList);
+					}
+				}
+			
+		});
+		}
+
+		 
+		void addSiteToRoute(ArrayList<Site> sites) 
+		{
+			sitesChoserForRoutes.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+		      @Override
+		      public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
+		    	  String currSiteName = (sitesChoserForRoutes.getItems().get((Integer) number2));
+				    for(Site currSite : sites){
+				        if(currSite.getName() != null && currSite.getName().contains(currSiteName))
+				        	tableRouteDeatils.getItems().add(currSite);
+				    }
 
 			}
 		});
@@ -983,6 +1042,46 @@ public class EditWindowController implements ControllerListener {
 		});
 	}
     
+
+    @FXML
+    void DeleteSite(ActionEvent event) {
+    	int siteIndex = cityChoser.getSelectionModel().getSelectedIndex();
+    	String cityName = cityChoser.getSelectionModel().getSelectedItem();
+    	String mapName = mapChoser.getSelectionModel().getSelectedItem();
+    	String siteName = siteChoser.getSelectionModel().getSelectedItem();
+    	siteChoser.getItems().remove(siteIndex);
+		try {
+			Message myMessage;
+    	   myMessage = new Message(Action.REMOVE_SITE,cityName,mapName,siteName);
+			MainGUI.GUIclient.sendToServer(myMessage);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
+					"Error", JOptionPane.WARNING_MESSAGE);
+			MainGUI.GUIclient.quit();
+		}
+    }
+	
+  //@param params - Contains city name, a new city price and the sender's user entity
+    @FXML
+    void UpdatePrice(ActionEvent event) {
+    	float newPrice = Float.valueOf(tfPrice.getText());
+    	String cityName = cityChoser.getSelectionModel().getSelectedItem();
+		try {
+			Message myMessage;
+    	   myMessage = new Message(Action.EDIT_CITY_PRICE,cityName,newPrice,MainGUI.currUser.getPermission());
+			MainGUI.GUIclient.sendToServer(myMessage);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
+					"Error", JOptionPane.WARNING_MESSAGE);
+			MainGUI.GUIclient.quit();
+		}
+    }
+
+    @FXML
+    void UpdateVersion(ActionEvent event) {
+    }
+	
+	
 }
 
 
