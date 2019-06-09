@@ -55,18 +55,16 @@ public class MainGUIController implements ControllerListener {
 	private AnchorPane MapSearchWindow;
 	@FXML
 	private TableView<Map> SearchResultsTable;
-//	@FXML
-//	private TableColumn<Map, String> col_SiteName;
 	@FXML
-	private TableColumn<Map, String> col_city;
+	private TableColumn<Map, String> col_cityName;
 	@FXML
-	private TableColumn<Map, String> col_cityDescription;
+	private TableColumn<Map, String> col_description;
 	@FXML
-	private TableColumn<Map.Entry<String, String>, String> col_map;
+	private TableColumn<Map, String> col_mapsNumber;
 	@FXML
-	private TableColumn<Map, String> col_mapDescription;
+	private TableColumn<Map, String> col_sitesNumber;
 	@FXML
-	private TableColumn<Map, String> col_price;
+	private TableColumn<Map, String> col_routesNumber;
 //	@FXML
 //	private TableColumn<Map, String> col_sitesNumber;
 //	@FXML
@@ -352,17 +350,26 @@ public class MainGUIController implements ControllerListener {
 				for  (Integer key  :  maps.keySet())  
 				{
 				Map<String, String>  m  =  new  HashMap<String, String>();
-				m.put("description",  maps.get(key).split(",")[0]);
-				m.put("poi", maps.get(key).split(",")[1]);
+				m.put("City Name",  maps.get(key).split(",")[0]);
+				m.put("Description", maps.get(key).split(",")[1]);
+				m.put("Number of Maps", maps.get(key).split(",")[2]);
+				m.put("Number Of Sites", maps.get(key).split(",")[3]);
+				m.put("Number Of Routes", maps.get(key).split(",")[4]);
 				keys.add(m);
 				}
 				// Create the columns necessary for the current search  -  site or city
-				col_mapDescription  = new  TableColumn<>("description");
-				col_mapDescription.setCellValueFactory(new MapValueFactory( "description"));
-				col_price  =  new  TableColumn<>("poi");
-				col_price.setCellValueFactory(new MapValueFactory("poi"));
+				col_cityName  = new  TableColumn<>("City Name");
+				col_cityName.setCellValueFactory(new MapValueFactory( "City Name"));
+				col_description  =  new  TableColumn<>("Description");
+				col_description.setCellValueFactory(new MapValueFactory("Description"));
+				col_mapsNumber  = new  TableColumn<>("Number of Maps");
+				col_mapsNumber.setCellValueFactory(new MapValueFactory( "Number of Maps"));
+				col_sitesNumber  =  new  TableColumn<>("Number Of Sites");
+				col_sitesNumber.setCellValueFactory(new MapValueFactory("Number Of Sites"));
+				col_routesNumber  =  new  TableColumn<>("Number Of Routes");
+				col_routesNumber.setCellValueFactory(new MapValueFactory("Number Of Routes"));
 				// Set columns as children of the table view
-				//SearchResultsTable.getColumns().setAll(col_mapDescription, col_price);
+				SearchResultsTable.getColumns().setAll(col_cityName, col_description,col_mapsNumber,col_sitesNumber,col_routesNumber);
 				// Set the ObservableList<Map> as items
 				SearchResultsTable.setItems(keys);
 			}
