@@ -176,8 +176,6 @@ public class EditWindowController implements ControllerListener {
     @FXML
     private TextField tfSiteName;
     @FXML
-    private TextField tfVersion;
-    @FXML
     private TextField tfX;
     @FXML
     private TextField tfY;
@@ -228,14 +226,20 @@ public class EditWindowController implements ControllerListener {
 		try {
 			Message myMessage;
 			String selection = siteChoser.getSelectionModel().getSelectedItem();
-			String siteName = tfSiteName.getText();
-			String siteDescription = tfSiteDescription.getText();
+			String map = mapChoser.getSelectionModel().getSelectedItem();
+			String city = cityChoser.getSelectionModel().getSelectedItem();
+			String name = tfSiteName.getText();
+			String description = tfSiteDescription.getText();
+			String accessible = accessibilityChoser.getSelectionModel().getSelectedItem();
 			String x = tfX.getText();
 			String y = tfY.getText();
+			String visitDuration = tfEstimatedTime.getText();
+			String location = (x+","+y);
+			String classification = categoryChoser.getSelectionModel().getSelectedItem();
 			if (selection.equals("Add New Site"))
-				myMessage = new Message(Action.ADD_SITE,siteName,siteDescription,x,y);
+				myMessage = new Message(Action.ADD_SITE,name,classification,description,accessible,visitDuration,location,0,map,city);
 			else
-				myMessage = new Message(Action.EDIT_SITE,siteName,siteDescription,x,y);
+				myMessage = new Message(Action.EDIT_SITE,name,classification,description,accessible,visitDuration,location,0,map,city);
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
@@ -270,7 +274,7 @@ public class EditWindowController implements ControllerListener {
 //			// if the item of the list is changed
 //			public void changed(ObservableValue ov,Number number1, Number number2) 
 //			{
-//				String currSiteName = sitesChoserForRoutes.getValue();
+//    			String currSiteName = sitesChoserForRoutes.getSelectionModel().getSelectedItem();
 //				
 //				
 //			}
@@ -287,10 +291,15 @@ public class EditWindowController implements ControllerListener {
 
     @FXML
     void initialize() {
+    	//Platform.runLater(() -> {
 		lblWelcome.setText("Welcome " + MainGUI.currUser.getUserName() + "!");
+    	//});
         btnBrowse.setOnAction(btnLoadEventListener);
         setButtonsBooleanBinding();
-		//GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
+        //getCitiesFromServer(Action.GET_CITY_PRICE);
+		//ArrayList<Object> data = new ArrayList<Object>();
+		//data.add(0);
+		//GUIClient.sendActionToServer(Action.GET_CITY_PRICE,data);
 		//GUIClient.sendActionToServer(Action.GET_ALL_SITES_LIST);
         //setAllChoiceBoxes();
         //setCityChoiceBox();
@@ -303,7 +312,6 @@ public class EditWindowController implements ControllerListener {
 			break;
 		case EDITOR:
 			tfPrice.setDisable(true);
-			tfVersion.setDisable(true);
 			break;
 		case MANAGING_EDITOR:
 
@@ -313,6 +321,15 @@ public class EditWindowController implements ControllerListener {
 			break;
 		default:
 
+		}
+    }
+    void getCitiesFromServer(Action action) {
+		Message myMessage = new Message(action);
+		try {
+			MainGUI.GUIclient.sendToServer(myMessage);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message to Server", "Error",
+					JOptionPane.WARNING_MESSAGE);
 		}
     }
 
@@ -364,6 +381,7 @@ public class EditWindowController implements ControllerListener {
 	 *
 	 */ 
    void setMapInfo(Map map) {
+	   setSitesChoiceBox(map);
 	   tfMapName.setText(map.getName());
 	   tfMapDescription.setText(map.getDescription());
 	   //loadImage(map.getImageAsByte());
@@ -433,7 +451,6 @@ public class EditWindowController implements ControllerListener {
     void addNewMap() {
     	tfMapName.clear();
     	tfMapDescription.clear();
-    	tfVersion.clear();
     	tfPrice.clear();
     	tfX.clear();
     	tfY.clear();
@@ -481,7 +498,6 @@ public class EditWindowController implements ControllerListener {
 		categoryChoser.setDisable(true);
 		accessibilityChoser.setDisable(true);
 		tfPrice.setDisable(true);
-		tfVersion.setDisable(true);
 		tfX.setVisible(false);
 		tfY.setVisible(false);
 		lbLocation.setVisible(false);
@@ -514,7 +530,7 @@ public class EditWindowController implements ControllerListener {
 	void setSaveMapBooleanBinding() 
 	{
 		BooleanBinding booleanBind;
-		booleanBind = (tfMapName.textProperty().isEmpty()).or(tfMapDescription.textProperty().isEmpty()).or(tfVersion.textProperty().isEmpty()).or(tfPrice.textProperty().isEmpty()).or(tfCityName.textProperty().isEmpty()).or(tfCityDescription.textProperty().isEmpty());
+		booleanBind = (tfMapName.textProperty().isEmpty()).or(tfMapDescription.textProperty().isEmpty()).or(tfPrice.textProperty().isEmpty()).or(tfCityName.textProperty().isEmpty()).or(tfCityDescription.textProperty().isEmpty());
 		btnSaveMap.disableProperty().bind(booleanBind);
 	}
 	/**
@@ -561,7 +577,6 @@ public class EditWindowController implements ControllerListener {
     void setCategoriesList()
     {
 	 ArrayList<String> categories = new ArrayList<String>();
-	 categories.add("Add New Category");
 	 categories.add("Cinema");
 	 categories.add("Historic Place");
 	 categories.add("Hotel");
@@ -684,7 +699,30 @@ public class EditWindowController implements ControllerListener {
 
 			}
 		});
-		//setCityChoiceBox();
+		
+//		mapChoser.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+//		      @Override
+//		      public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
+//		    	  String currMapName = (mapChoser.getItems().get((Integer) number2));
+//					if (currMapName.equals("Add New Map"))
+//					{
+//						System.out.print(currMapName);
+//						addNewMap();
+//					}
+//					else
+//					{
+//						//setMapInfo(currMap);
+//					}
+//
+//			}
+//		});
+//		siteChoser.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+//		      @Override
+//		      public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
+//		    	  String currSiteName = (siteChoser.getItems().get((Integer) number2));
+//			}
+//		});
+
 	}
 	/**
 	 *
@@ -891,9 +929,9 @@ public class EditWindowController implements ControllerListener {
 			public void run() {
 				//ObservableList<Site> sitesList = FXCollections.observableArrayList();
 				col_order.setCellValueFactory(new PropertyValueFactory<Site, String>(" "));
-				col_siteName.setCellValueFactory(new PropertyValueFactory<Site, String>("Site Name"));
-				col_siteDescription.setCellValueFactory(new PropertyValueFactory<Site, String>("Description"));
-				col_estTime.setCellValueFactory(new PropertyValueFactory<Site, String>("Esptimated Time"));
+				col_siteName.setCellValueFactory(new PropertyValueFactory<Site, String>("name"));
+				col_siteDescription.setCellValueFactory(new PropertyValueFactory<Site, String>("description"));
+				col_estTime.setCellValueFactory(new PropertyValueFactory<Site, String>("visitDuration"));
 
 				//tableRouteDeatils.getColumns().addAll(col_order, col_siteName, col_siteDescription,col_estTime);
 				tableRouteDeatils.setItems(currSitesList);
