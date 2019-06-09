@@ -52,11 +52,12 @@ public class RouteDB {
 						 "FROM Routes\n" + 
 						 "WHERE cityname = (SELECT c.name as \"cityname\"\n" + 
 					"                  		FROM Cities c\n" + 
-					"                  		WHERE c.name LIKE ? OR c.description LIKE ?)";
+					"                  		WHERE c.name LIKE ? OR c.description LIKE ?) AND Routes.is_active = 1";
 
 			// Add special characters for LIKE search in database
 			for(int i = 0; i < params.size(); i++) {
-				params.set(i,"%" + params.get(i).toString() + "%");
+				if(!params.get(i).toString().contains("%"))	// Add '%' in case the current parameter does not contain it
+					params.set(i,"%" + params.get(i).toString() + "%");
 			}
 
 			// Execute sql query, get results
@@ -90,7 +91,7 @@ public class RouteDB {
 	/**
 	 * Get routes list according to the requested city
 	 * @param params - Contains User permission and city name
-	 * @return {@link Message} - Contain {@link ArrayList} of type {@link Route} if retrieval succeeded, 
+	 * @return {@link Message} - Contains {@link ArrayList} of type {@link Route} if retrieval succeeded, 
 	 * else failure message
 	 */
 	public Message getRoutesByCity(ArrayList<Object> params){
@@ -112,9 +113,14 @@ public class RouteDB {
 			}
 			else
 			{
-				sql = "SELECT 1 FROM Routes r WHERE cityname = ? and r.id IN" +
-					  "SELECT a.id FROM Routes a WHERE NOT EXISTS (SELECT 1 FROM Routes WHERE"+
-						"r.name = a.name and r.cityname = a.cityname)";
+				sql = "SELECT * \n" + 
+						"FROM Routes r \n" + 
+						"WHERE r.cityname = ? AND r.id IN \n" + 
+						"(SELECT a.id as \"id\" FROM Routes a \n" + 
+						"WHERE r.cityname = a.cityname AND r.name = a.name AND \n" + 
+						"NOT EXISTS(SELECT 1 FROM Routes b "
+						+ "WHERE b.name = a.name AND b.cityname = a.cityname AND "
+						+ "b.is_active = 0 AND a.is_active = 1))";
 			}
 
 			// Execute sql query, get results
@@ -130,6 +136,7 @@ public class RouteDB {
 			while (rs.next())
 			{
 				int id = rs.getInt("id");
+				String name = rs.getString("name");
 				String cityname = rs.getString("cityname");
 				String description = rs.getString("description");
 
@@ -141,7 +148,7 @@ public class RouteDB {
 				sites = msg.getData().get(1) instanceof String ? null : (ArrayList<Site>)msg.getData().get(1);
 
 				// Add the new route to the array list
-				routes.add(new Route(id, cityname, sites, description));
+				routes.add(new Route(id, name, cityname, sites, description));
 			}
 
 			replyMsg = new Message(null, new Integer(0), routes);	// Create success message
@@ -162,100 +169,83 @@ public class RouteDB {
 
 	/**
 	 * Get route according to the requested city, description and sites
-	 * @param params - Contain city name, description and sites
-	 * @return {@link Message} - Contains {@link Route} if retrieval succeeded,
-	 * else failure message
+	 * @param params - Contains route name, city name, description and sites
+	 * @return {@link Message} - Indicating success/failure with corresponding message
 	 */
 	public Message UpdateRoute(ArrayList<Object> params){
 		// Variables
 		ArrayList<Object> data        = new ArrayList<Object>();
 		Message 		  msg         = null;
 		String            sql         = null;
-		int               changedRows = 0;
 
 		try {
+			// Check if a new map version is currently under management approval
+			if(SQLController.DoesRecordExist("Inbox","content", "status", 
+					"Approve " + params.get(1).toString() + " new version", "New"))
+				throw new Exception("New version is under approval, cannot save new changes.");
 
             // Check if a change to the requested route was already made
-            if(SQLController.DoesRecordExist("Routes","name","cityName", "is_active",
-								params.get(0), params.get(1), params.get(2), 0))
+            if(SQLController.DoesRecordExist("Routes","name","cityname", "is_active",
+								params.get(0), params.get(1), 0))
             {
             	// Prepare statement to insert new route
-            	sql = "UPDATE Routes SET cityName = ?, description = ?," +
-							 "sites = ?, is_active = ? " +
-							 "WHERE id = ?, cityName = ?, is_active = ?";
+            	sql = "UPDATE Routes SET name = ?, cityname = ?, description = ?," +
+							 "sites = ?, is_active = 0 " +
+							 "WHERE id = ?, cityName = ?, is_active = 0";
             }
             else // A change to the requested route hasn't been made yet
             {
             	// Prepare statement to insert new route
-    			sql = "INSERT INTO Routes (`name`, `cityName`, `description`, `sites`, `is_active`)" +
+    			sql = "INSERT INTO Routes (`name`, `cityname`, `description`, `sites`, `is_active`)" +
     						 "VALUES (?, ?, ?, ?, ?) ";
             }
 
-			// Connect to DB
-			SQLController.Connect();
+			// Insert update to routes using private editRoute method
+            editRoute(sql, params);
 
-			// Execute sql query, get results
-			changedRows = SQLController.ExecuteUpdate(sql, params);
-
-			// Check if update was successful - result should be greater than zero
-            if (changedRows == 0)
-            {
-                throw new Exception("Route was not added successfully.");
-            }
-            msg = new Message(Action.EDIT_ROUTE, data);
+            msg = new Message(Action.EDIT_ROUTE, new Integer(0), "Update route was successful.");
 		} catch (SQLException e) {
     		msg = new Message(null, new Integer(1), e.getMessage());
     	}
     	catch(Exception e) {
     		msg = new Message(null, new Integer(1), e.getMessage());
     	}
-   		finally {
-   			// Disconnect DB
-    		SQLController.Disconnect(null);
-    	}
+
     	return msg;
     }
 
 	/**
 	 * Add route according to the requested city, description and sites
-	 * @param params - Contain city name, description and sites
-	 * @return {@link Message} - Contains {@link Route} if retrieval succeeded,
-	 * else failure message
+	 * @param params - Contain route name, city name, description and sites
+	 * @return {@link Message} - Indicating success/failure with corresponding message
 	 */
 	public Message AddRoute(ArrayList<Object> params){
 		// Variables
-		ArrayList<Object> data        = new ArrayList<Object>();
 		Message 		  msg         = null;
 		String            sql         = null;
-		int               changedRows = 0;
 
 		try {
+			// Check if a new map version is currently under management approval
+			if(SQLController.DoesRecordExist("Inbox","content", "status", 
+					"Approve " + params.get(1).toString() + " new version", "New"))
+				throw new Exception("New version is under approval, cannot save new changes.");
 
             // Check if a change to the requested route was already made
-            if(SQLController.DoesRecordExist("Routes","cityName", "description","is_active", "sites", 
-								params.get(0), params.get(1), 1, params.get(3)))
+            if(SQLController.DoesRecordExist("Routes","name", "cityname", "description", "sites", 
+								params.get(0), params.get(1), params.get(2), params.get(3)))
             {
             	throw new Exception("This route already exists!");
             }
             else // A change to the requested route hasn't been made yet
             {
             	// Prepare statement to insert new route
-            	sql = "INSERT INTO Routes (`cityName`, `description`, `sites`, `is_active`)" +
-            			"VALUES (?, ?, ?, 1) ";
+            	sql = "INSERT INTO Routes (`name`, `cityname`, `description`, `sites`)" +
+            			"VALUES (?, ?, ?, ?) ";
             }
-
-            // Connect to DB
-			SQLController.Connect();
-
-			// Execute sql query, get results
-			changedRows = SQLController.ExecuteUpdate(sql, params);
-
-			// Check if update was successful - result should be greater than zero
-            if (changedRows == 0)
-            {
-                throw new Exception("Route was not added successfully.");
-            }
-            msg = new Message(Action.ADD_ROUTE, data);
+            
+            // Insert new updates to Routes table using private editRoute method
+            editRoute(sql, params);
+            msg = new Message(Action.ADD_ROUTE, new Integer(0), "Route was added successfully.");
 
 		} catch (SQLException e) {
 			msg = new Message(null, new Integer(1), e.getMessage());
@@ -263,10 +253,112 @@ public class RouteDB {
 		catch(Exception e) {
     		msg = new Message(null, new Integer(1), e.getMessage());
     	}
-		finally {
-   			// Disconnect DB
-   			SQLController.Disconnect(null);
-    	}
+
 		return msg;
+	}
+
+	/**
+	 * Responsible to update route 
+	 * @param params - Contains manager's response to the publishing and city name
+	 * @throws Exception 
+	 */
+	public void publishRoutes(ArrayList<Object> params) throws Exception {
+		// Variables
+		String sql 		= "";
+		String response = params.get(0).toString();
+
+		// Get the needed parameters for the queries ahead
+		params = new ArrayList<Object>(params.subList(1, params.size()));
+
+		try {
+			// If new version was approved - update details of existing maps to the changes made
+			if(response.equals("Approve")) {
+				// Update exisiting map's details to display the changes
+				sql = "UPDATE  Routes r1 \n" + 
+						"CROSS JOIN Routes r2 \n" + 
+						"SET     r1.name = r2.name, \n" + 
+						"		r1.cityname = r2.cityname, \n" + 
+						"	 	r1.description = r2.description, \n" + 
+						"		r1.sites = r2.sites \n" + 
+						"WHERE   r1.name = r2.name AND \n" + 
+						"		r1.cityname = r2.cityname AND \n" + 
+						"		r1.is_active = 1 AND \n" + 
+						"		r2.is_active = 0 AND \n" + 
+						"        m1.cityname = ?";
+
+				// Execute sql query using private editMap method
+				editRoute(sql, params);
+
+				// Update new maps to be displayed to users
+				sql = "UPDATE Routes SET Routes.is_active = 1 \n" + 
+					  "WHERE Routes.cityname = ? AND \n" + 
+					  "Routes.is_active = 0 AND \n" + 
+					  "NOT EXISTS(SELECT 1 FROM (SELECT * FROM Routes) as T1 "
+					  + "WHERE T1.name = Routes.name AND T1.cityname = Routes.cityname AND T1.is_active = 1)";
+
+				// Execute sql query using private editMap method
+				editRoute(sql, params);
+			}
+			else{
+				// Delete new maps which were added during editing process
+				sql = "DELETE FROM Routes \n" + 
+					  "WHERE Routes.cityname = ? AND \n" + 
+					  "Routes.is_active = 0 AND \n" + 
+					  "NOT EXISTS(SELECT 1 FROM (SELECT * FROM Routes) as T1 "
+					  + "WHERE T1.name = Routes.name AND T1.cityname = Routes.cityname AND T1.is_active = 1)";
+
+				// Execute sql query using private editMap method
+				editRoute(sql, params);
+			}
+			
+			// After update was made to existing/new maps, need to delete rows which handled
+			// the changes to the existing maps
+			sql = "DELETE FROM Routes WHERE Routes.cityname = ? AND "
+					+ "id IN (SELECT T1.id as \"id\"\n" + 
+					"			 FROM (SELECT * FROM Routes) as T1, (SELECT * FROM Routes) T2 \n" + 
+					"			 WHERE T1.id <> T2.id AND \n" + 
+					"				   T1.name = T2.name AND\n" + 
+					"                  T1.cityname = T2.cityname AND \n" + 
+					"				   T1.is_active = 0)";
+
+			// Execute sql query using private editMap method
+			editRoute(sql, params);
+		}
+		catch (SQLException e) {
+			throw e;
+		}
+		catch(Exception e) {
+			throw new Exception("Routes' update after management response was unsuccessful");
+		}
+	}
+	
+	/**
+	 * Generic query for UPDATE queries 
+	 * @param sql - the UPDATE query 
+	 * @param params - {@link ArrayList} of parameters to complete the requested UPDATE query
+	 * @throws SQLException, Exception
+	 */
+	private void editRoute(String sql, ArrayList<Object> params) throws SQLException, Exception {
+		try {
+			// Connect to DB
+			SQLController.Connect();
+
+			// Execute sql query, get number of rows affected
+			int changedRows = SQLController.ExecuteUpdate(sql, params);
+
+			// Check if update was successful - result should be greater than zero
+			if (changedRows == 0)
+				 throw new Exception("Operation on routes was unsuccessful.");
+			}
+		catch (SQLException e) {
+			throw e;
+		}
+		catch(Exception e) {
+			throw e;
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(null);
+		}
 	}
 }

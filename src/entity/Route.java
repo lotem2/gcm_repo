@@ -11,6 +11,7 @@ public class Route implements java.io.Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	private int id;
+	private String name;
 	private String cityname;
 	private ArrayList<Site> sites = new ArrayList<Site>();
 	private String description;
@@ -18,12 +19,14 @@ public class Route implements java.io.Serializable{
 	/**
 	 * Constructor that builds the Route entity
 	 * @param id - id of the route as it appears in database
+	 * @param name - the rotue's name
 	 * @param cityname - the city the route belongs to
 	 * @param sites - {@link ArrayList} of type {@link Site} list of sites that appear in the route
 	 * @param description - route's description
 	 */
-	public Route(int id, String cityname, ArrayList<Site> sites, String description) {
+	public Route(int id, String name, String cityname, ArrayList<Site> sites, String description) {
 		this.id = id;
+		this.name = name;
 		this.cityname = cityname;
 		this.sites = sites;
 		this.description = description;
@@ -35,6 +38,14 @@ public class Route implements java.io.Serializable{
 	 */
 	public int getID() {
 		return id;
+	}
+
+	/**
+	 * Get the rotue's name
+	 * @return String
+	 */
+	public String getName() {
+		return name;
 	}
 
 	/**
