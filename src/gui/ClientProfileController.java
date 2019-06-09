@@ -470,15 +470,33 @@ GUIClient client;
 //					JOptionPane.WARNING_MESSAGE);
 //        }
 //    }
-       
+    
+    
+//	private String openSaveMapPrompt() {
+//		FileChooser fileChooser = new FileChooser();
+//		fileChooser.setTitle("Save Image");
+//		fileChooser.setInitialFileName("citymap.png");
+//		File file = fileChooser.showSaveDialog(MainGUI.MainStage);
+//		return file.getAbsolutePath();
+//	}
+	/**
+	 *
+	 *Sends the server a request to renew the purchase for the same period of time with a 10% discount.
+	 *
+	 *
+	 *
+	 *
+	 */
 
     @FXML
     void Renew(ActionEvent event) 
     {
-		Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
-		ArrayList<Object> data = new ArrayList<Object>();
-		data.add(purchase);
-		GUIClient.sendActionToServer(Action.RENEW,data);
+//		Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
+//		float price = (float) (purchase.getPrice()*0.9);
+//		
+//		ArrayList<Object> data = new ArrayList<Object>();
+//		data.add(purchase);
+//		GUIClient.sendActionToServer(Action.RENEW,data);
     }
 	/**
 	 *
