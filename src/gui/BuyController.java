@@ -189,7 +189,7 @@ public class BuyController implements ControllerListener {
 				data.add(m_Downloads);
 				data.add(m_price);
 
-				if(rbBuyOnce.isSelected()) {
+				if (rbBuyOnce.isSelected()) {
 					Message myTempMessage;
 					ArrayList<Object> tempData = new ArrayList<Object>();
 					tempData.add(ChoiceBoxCities.getValue());
@@ -197,7 +197,7 @@ public class BuyController implements ControllerListener {
 					myTempMessage = new Message(Action.DOWNLOAD_PURCHASE, tempData);
 					MainGUI.GUIclient.sendToServer(myTempMessage);
 				}
-				
+
 				myMessage = new Message(Action.BUY, data);
 				MainGUI.GUIclient.sendToServer(myMessage);
 			} else {
@@ -211,12 +211,12 @@ public class BuyController implements ControllerListener {
 					JOptionPane.WARNING_MESSAGE);
 		}
 	}
-	
+
 	private String openSaveMapPrompt() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save Image");
-        fileChooser.setInitialFileName("citymap.png");
-        File file = fileChooser.showSaveDialog(MainGUI.MainStage);
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Save Image");
+		fileChooser.setInitialFileName("citymap.png");
+		File file = fileChooser.showSaveDialog(MainGUI.MainStage);
 		return file.getAbsolutePath();
 	}
 
@@ -255,7 +255,7 @@ public class BuyController implements ControllerListener {
 			}
 			break;
 		case DOWNLOAD_PURCHASE:
-			
+
 			break;
 		default:
 		}
@@ -284,7 +284,7 @@ public class BuyController implements ControllerListener {
 			default:
 			}
 		}
-		price =Double.parseDouble(new DecimalFormat("##.####").format(price));
+		price = Double.parseDouble(new DecimalFormat("##.####").format(price));
 		String totalPrice = String.valueOf(price);
 		lblTotalPrice.setText("Total Price: " + totalPrice);
 		return totalPrice;

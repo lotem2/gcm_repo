@@ -43,7 +43,7 @@
     </Label>
     <Label fx:id="lblMapsCatalog" font="$x1" layoutX="209.0" layoutY="138.0" text="Site Name:" />
     <Label fx:id="lblDescription" font="$x1" layoutX="30.0" layoutY="182.0" text="Description:" />
-      <Button fx:id="btnInbox" layoutX="513.0" layoutY="87.0"  onAction="#OpenInbox" prefHeight="27.0" prefWidth="94.0" text="Inbox" visible="false" />
+      <Button fx:id="btnInbox" layoutX="513.0" layoutY="87.0" mnemonicParsing="false" onAction="#OpenInbox" prefHeight="27.0" prefWidth="94.0" text="Inbox" visible="false" />
   </children>
   <rotationAxis>
     <Point3D />
