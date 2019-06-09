@@ -37,7 +37,7 @@ public class PurchaseDB {
 	 * @param params - Contain {@link Action} type and details of user's new purchase
 	 * @return {@link Message} - Indicating success/failure with corresponding message
 	 */
-	public Message AddPurchase(ArrayList<Object> params) {
+	public Message addPurchase(ArrayList<Object> params) {
 		// Variables
 		ArrayList<Object> data = new ArrayList<Object>();
 		ResultSet 		  rs   = null;
@@ -76,7 +76,7 @@ public class PurchaseDB {
 			SQLController.Disconnect(null);
 		}
 
-		return (new Message(Action.ADD_PURCHASE, data));
+		return (new Message(Action.BUY, data));
 	}
 	
 	/**
@@ -333,7 +333,7 @@ public class PurchaseDB {
 	/**
 	 * Method that runs every start of a new day, sends reminders to clients that their purchase is 
 	 * about to expire in 3 days from today
-	 * @param expireDate - the expire date of 3 days three days prior to today 
+	 * @param expireDate - the expire date of 3 days prior to today
 	 * @return {@link ArrayList} - an {@link ArrayList} of type {@link Purchase} which satisfies the conditions
 	 */
 	public void sendReminders(LocalDate expireDate){

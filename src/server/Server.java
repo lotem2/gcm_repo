@@ -10,6 +10,19 @@ import java.util.HashMap;
 import common.*;
 import entity.*;
 
+
+/**
+* This class extends {@link AbstractServer} class which
+* maintains a thread that waits for connection attempts
+* from clients. Thus, when a connection attempt occurs
+* it creates a new {@link ConnectionToClient} instance which
+* runs as a thread. When a client is thus connected to the
+* server, the two programs can then exchange {@link Object}
+* instances.
+*
+* Method {@link handleMessageFromClient} is overridden in
+* this class along with several other hook methods.
+*/
 public class Server extends AbstractServer {
 	// Variables
 	private static final DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -20,12 +33,20 @@ public class Server extends AbstractServer {
 		clients = new HashMap<User, ConnectionToClient>();
 	}
 
+	   /**
+	   * Handles a command sent from one client to the server.
+	   * This method is called by a synchronized method so it is also
+	   * implicitly synchronized.
+	   *
+	   * @param msg   the message sent.
+	   * @param client the connection connected to the client that
+	   *  sent the message.
+	   */
 	public void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		// Variables
 		Message currMsg = (Message) msg;
 		Message replyMsg = null;
-		ArrayList<Object> params;
- 
+
 		try {
 			switch (currMsg.getAction()) {
 			case LOGIN:
@@ -74,6 +95,22 @@ public class Server extends AbstractServer {
 			case SEARCH:
 				replyMsg = MapDB.getInstance().Search(currMsg.getData());
 				break;
+			case BUY:
+				replyMsg = PurchaseDB.getInstance().addPurchase(currMsg.getData());
+				replyMsg.setAction(Action.BUY);
+				break;
+			case VIEW_PURCHASE:
+				replyMsg = PurchaseDB.getInstance().viewPurchase(currMsg.getData());
+				replyMsg.setAction(Action.VIEW_PURCHASE);
+				break;
+			case RENEW:
+				replyMsg = PurchaseDB.getInstance().renewPurchase(currMsg.getData());
+				replyMsg.setAction(Action.RENEW);
+				break;
+			case DOWNLOAD_PURCHASE:
+				replyMsg = PurchaseDB.getInstance().downloadPurchase(currMsg.getData());
+				replyMsg.setAction(Action.DOWNLOAD_PURCHASE);
+				break;
 			case GET_CITY_PRICE:
 				replyMsg = CityDB.getInstance().getCitiesList();
 				replyMsg.setAction(Action.GET_CITY_PRICE);
@@ -116,20 +153,29 @@ public class Server extends AbstractServer {
 		}
 	}
 
-	/** Hook method to handle client's connection **/
+	/*
+	 * Hook method to handle client's connection
+	 */
 	protected void clientConnected(ConnectionToClient client) {
 		// display on server and clients that the client has connected.
 		String msg = "[" + sdf.format(Calendar.getInstance().getTime()) +  "] A Client has connected";
 		System.out.println(msg);
 	}
 
+	/**
+	 * Hook method called each time a new client connection is
+	 * accepted.
+	 * @param client the connection connected to the client.
+	 */
 	protected void clientDisconnected(ConnectionToClient client) {
 		// Remove client from list of clients
 		String msg = "[" + sdf.format(Calendar.getInstance().getTime()) +  "] " + client.getName()+ " has disconnected.";
 		clients.remove(getKeybyValue(client));
 	}
 
-	/** Hoot method to handle client's disconnection **/
+	/*
+	 * Hook method to handle client's disconnection *
+	 */
 	synchronized protected void clientException(ConnectionToClient client, Throwable exception) {
 		String msg;
 
@@ -141,6 +187,13 @@ public class Server extends AbstractServer {
 		
 		clients.remove(getKeybyValue(client));
 		System.out.println(msg);
+	}
+
+   /**
+	* Hook method called when the server starts listening for
+	*/
+	protected void serverStarted()  {
+			Services.setTimer();
 	}
 
 	/**
