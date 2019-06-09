@@ -2,11 +2,13 @@ package server;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import common.Action;
 import common.Message;
+import common.Permission;
 import common.Services;
 import entity.*;
 import entity.Purchase.PurchaseType;
@@ -165,7 +167,7 @@ public class CityDB {
 
 	/**
 	 * Get city from database according to the requested city's name
-	 * @param params - {@link ArrayList} of type {@link Object} contains requested city's name
+	 * @param params - {@link ArrayList} of type {@link Object} contain user's permission and requested city name
 	 * @return {@link Message} - Contains {@link City} object with full details or failure message
 	 */
 	public Message getCity(ArrayList<Object> params) {
@@ -181,9 +183,12 @@ public class CityDB {
 			SQLController.Connect();
 
 			sql = "SELECT id, name, description FROM Cities where name = ?";	// Prepare sql query
+
+			// Get city name from params
+			ArrayList<Object> param = new ArrayList<Object>(params.subList(1, params.size()));
 			
 			// Execute sql query, get results
-			rs = SQLController.ExecuteQuery(sql, params);
+			rs = SQLController.ExecuteQuery(sql, param);
 
 			// check if query succeeded
 			if(!rs.next())
@@ -247,7 +252,7 @@ public class CityDB {
 	 * @param params - Contain new city's details
 	 * @return {@link Message} - Indicating success/failure with corresponding message 
 	 */
-	public Message AddNewCity(ArrayList<Object> params){
+	public Message addNewCity(ArrayList<Object> params){
 		// Variables
 		ArrayList<Object> data = new ArrayList<Object>();
 		int changedRows = 0;
@@ -286,5 +291,126 @@ public class CityDB {
 		}
 
 		return new Message(null, data);
+	}
+
+	/**
+	 * Update details in database of the current city's new version, update the collection of maps
+	 * @param params - Contain the user entity of the manager, response - approve/decline, city name
+	 * @return {@link Message} - Indicating success/failure with corresponding message
+	 */
+	public Message publishMapsCollection(ArrayList<Object> params) {
+		// Variables 
+		User 	currentManager = (User)params.get(0);
+		Message replyMsg;
+		
+		try {
+			// Get the maps' id that need to update their content after the management response
+			// using city name
+			ArrayList<Object> param = new ArrayList<Object>(params.subList(2, params.size()));
+			ArrayList<Integer> maps = getToApproveMapsID(param);
+
+			// Update every maps using MapDB's publishNewVersion method
+			for (Integer mapid : maps) {
+				param.clear(); param.add(params.get(1)); param.add(mapid);
+				MapDB.getInstance().publishNewVersion(params);
+			}
+			
+			// Update the details of the city's maps collection using MapDB's updateMapDetailsAfterApproval method
+			MapDB.getInstance().updateMapDetailsAfterApproval(params);
+			
+			// Update the details of the city's routes collection using RouteDB's publishRoutes method
+			RouteDB.getInstance().publishRoutes(params);
+			
+			// Get list of purchases of users who purchased the city
+			param = new ArrayList<Object>(params.subList(2, params.size()));
+			ArrayList<Object> data = PurchaseDB.getInstance().getPurchasesByCity(param).getData();
+
+			if((Integer)data.get(0) != 1) {
+				ArrayList<Purchase> cityPurchases = (ArrayList<Purchase>)data.get(1);
+
+				// Write message to user who purchases city's map
+				String content = "Got an update for city " + params.get(2).toString();
+				// Go through each user's purchase and sending them message of map's update
+				for (Purchase purchase : cityPurchases) {
+		 			// Insert new Inbox message to clients letting them know there is a new version for the map
+					Message msg = InboxDB.getInstance().AddInboxMessage(
+							currentManager.getUserName(), 
+							currentManager.getPermission().toString(),
+							purchase.getUserName(),
+							Permission.CLIENT.toString(),
+							content,
+							new String("New"),
+							LocalDate.now());
+
+					// Check if we got an error while notifying users
+					if((Integer)msg.getData().get(1) == 1)
+						throw new Exception("Error while updating users about the map's version");
+				}
+			}
+			else
+				throw new Exception("Error while updating users about the map's version");
+			
+			replyMsg = new Message(null, new Integer(0));
+		}
+		catch (SQLException e) {
+			replyMsg = new Message(null, new Integer(1), e.getMessage());
+		}
+		catch (Exception e) {
+			replyMsg = new Message(null, new Integer(1), e.getMessage());
+		}
+
+		return replyMsg;
+	}
+	
+	/**
+	 * Private method to get the id of the maps of specific city
+	 * @param params - {@link ArrayList} contains city name
+	 * @return {@link ArrayList} - an {@link ArrayList} of type int representing the city's maps' id
+	 * that need update after the management response
+	 */
+	private ArrayList<Integer> getToApproveMapsID(ArrayList<Object> params){
+		// Variables
+		ArrayList<Integer> maps = new ArrayList<Integer>();
+		ResultSet	       rs	= null;
+
+		try {
+			// Connect to DB
+			SQLController.Connect();
+
+			// Prepare SELECT query
+			String sql = "SELECT m1.mapID as \"id\"" + 
+					"FROM Maps m1 n" + 
+					"WHERE m1.cityname = ? AND m1.mapID IN \n" + 
+					"(SELECT a.mapID as \"id\" FROM Maps a \n" + 
+					"WHERE m1.mapname = a.mapname AND m1.cityname = a.cityname AND \r\n" + 
+					"NOT EXISTS(SELECT 1 FROM Maps b WHERE b.mapname = a.mapname AND b.cityname = a.cityname "
+					+ "AND b.is_active = 1 AND a.is_active = 0))";
+
+			// Execute sql query, get results
+			rs = SQLController.ExecuteQuery(sql, params);
+
+			// check if query succeeded
+			if(!rs.next()) {
+				return null;
+			}
+
+			rs.beforeFirst(); // Return cursor to the start of the first row
+			
+			// Read data
+			while (rs.next())
+				maps.add(new Integer(rs.getInt("id")));
+		}
+		catch (SQLException e) {
+			return null;
+		}
+		catch(Exception e) {
+			return null;
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(rs);	
+		}
+
+		return maps;
 	}
 }
