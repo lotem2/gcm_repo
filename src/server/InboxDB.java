@@ -128,7 +128,7 @@ public class InboxDB {
 	/**
 	 * Get inbox message from database by the sender user name
 	 * @param params - Contain the sender user name
-	 * @return {@link Message} - Indicating success/failure with corresponding message
+	 * @return {@link Message} - contains {@link ArrayList} of type {@link Inbox} messages or a failure message
 	 */
 	public Message getInboxMessagesBySender(ArrayList<Object> params) {
 		// Variables
@@ -155,11 +155,42 @@ public class InboxDB {
 
 		return (new Message(null, data));
 	}
+
+	/**
+	 * Get inbox message from database by the reciever's user name
+	 * @param params - Contain the reciever's user name
+	 * @return {@link Message} - contains {@link ArrayList} of type {@link Inbox} messages or a failure message
+	 */
+	public Message getInboxMessagesByReciever(ArrayList<Object> params) {
+		// Variables
+		ArrayList<Object> 		data  	 = new ArrayList<Object>();
+		ArrayList<InboxMessage> messages = new ArrayList<InboxMessage>();
+
+		try {
+			// Prepare statement to insert new user
+			String sql = "SELECT * FROM Inbox WHERE receiverUsername = ?";
+
+			// Get messages from private method, add results into the data array list
+			messages = getInboxMessages(sql, params);
+			data.add(new Integer(0)); data.add(messages);
+
+			}
+		catch (SQLException e) {
+			data.add(new Integer(1));
+			data.add("There was a problem with the SQL service.");
+		}
+		catch(Exception e) {
+			data.add(new Integer(1));
+			data.add("No Inbox Messages were found.");
+		}
+
+		return (new Message(null, data));
+	}
 	
 	/**
 	 * get inbox message from database by the receiver's permission
 	 * @param params - Contain the receiver's permission
-	 * @return {@link Message} - Indicating success/failure with corresponding message
+	 * @return {@link Message} - contains {@link ArrayList} of type {@link Inbox} messages or a failure message
 	 */
 	public Message getInboxMessagesByPermission(ArrayList<Object> params) {
 		// Variables

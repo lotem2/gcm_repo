@@ -81,6 +81,9 @@ public class MainGUI extends Application {
 		primaryStage.setResizable(false);
 
 		openScene(SceneType.MAIN_GUI);
+		Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+		MainStage.setY(primaryScreenBounds.getMinY());
+		MainStage.setX(primaryScreenBounds.getMinX() + primaryScreenBounds.getWidth() / 4);
 		primaryStage.show();
 	}
 	
