@@ -223,6 +223,11 @@ public class SiteDB {
 		String 			  sql  		  = "";
 
 		try {
+			// Check if a new map version is currently under management approval
+			if(SQLController.DoesRecordExist("Inbox","content", "status", 
+					"Approve " + params.get(1).toString() + " new version", "New"))
+				throw new Exception("New version is under approval, cannot save new changes.");
+			
 			// Check if a change to the requested site was already made
 			if(SQLController.DoesRecordExist("Sites","name", "location","is_active", 
 					params.get(0), params.get(5), 0)) {
