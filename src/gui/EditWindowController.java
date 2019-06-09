@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,6 +57,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
+import java.awt.image.BufferedImage;
 //import sun.security.util.IOUtils;
 
 
@@ -313,11 +315,7 @@ public class EditWindowController implements ControllerListener {
     	//});
         btnBrowse.setOnAction(btnLoadEventListener);
         setButtonsBooleanBinding();
-        getCitiesFromServer(Action.GET_CITY_PRICE);
-		//ArrayList<Object> data = new ArrayList<Object>();
-		//data.add(0);
-		//GUIClient.sendActionToServer(Action.GET_CITY_PRICE,data);
-		//GUIClient.sendActionToServer(Action.GET_ALL_SITES_LIST);
+		GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
         //setAllChoiceBoxes();
         //setCityChoiceBox();
         setLists();
@@ -352,15 +350,6 @@ public class EditWindowController implements ControllerListener {
 
 		}
     }
-    void getCitiesFromServer(Action action) {
-		Message myMessage = new Message(action);
-		try {
-			MainGUI.GUIclient.sendToServer(myMessage);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message to Server", "Error",
-					JOptionPane.WARNING_MESSAGE);
-		}
-    }
 
 	/**
 	 *
@@ -384,6 +373,7 @@ public class EditWindowController implements ControllerListener {
         setSaveSiteBooleanBinding();
         setSaveRouteBooleanBinding();
         setAddSiteBooleanBinding();
+        setUpdatePriceBooleanBinding();
     }
 	/**
 	 *
@@ -413,26 +403,26 @@ public class EditWindowController implements ControllerListener {
 	   setSitesChoiceBox(map);
 	   tfMapName.setText(map.getName());
 	   tfMapDescription.setText(map.getDescription());
-	   //loadImage(map.getImageAsByte());
+	   loadImage(map.getImageAsByte());
 	   
    }
    
-//   void loadImage(byte[] imageBytesToAdd) {
-//	   	   InputStream is = null;
-//	   try {
-//	     is = URLImage.openStream ();
-//	     byte[] imageBytes = IOUtils.toByteArray(is);
-//	   }
-//	   catch (IOException e) {
-//	     System.err.printf ("Failed while reading bytes from %s: %s", URLImage.toExternalForm(), e.getMessage());
-//	     e.printStackTrace ();
-//	     // Perform any other exception handling that's appropriate.
-//	   }
-////	   finally {
-////	   if(is != null)	{ is.close(); }
-////	   }
-//   }
+   void loadImage(byte[] imageBytesToAdd) {
+//	   Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+//	   ImageView image = (ImageView) findViewById(R.id.imageView1);
+//
+//	   image.setImageBitmap(Bitmap.createScaledBitmap(bmp, image.getWidth(),
+//	                   image.getHeight(), false));
+   }
    
+//   byte[] sendImage()
+//   {
+//   	   BitMap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
+//	   ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//	   bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+//	   byte[] byteArray = stream.toByteArray();
+//	   return byteArray;
+//   }
 	/**
 	 *
 	 *method to put the route info in the fields, gotten from the server, for the editor
@@ -453,6 +443,9 @@ public class EditWindowController implements ControllerListener {
 	   tfCityName.setText(city.getName());
 	   tfCityDescription.setText(city.getDescription());
 	   tfPrice.setText(Float.toString(city.getPrice()));
+	   setMapsChoiceBox(city);//loading the maps in the city to a choice box
+	   setRoutesChoiceBox(city);//loading the routes in the city to a choice box
+	   GUIClient.sendActionToServer(Action.GET_ALL_SITES_LIST);//requests the list of the sites in the city
    }
     
 
@@ -596,6 +589,7 @@ public class EditWindowController implements ControllerListener {
 		booleanBind = (tfSiteName.textProperty().isEmpty()).or(tfSiteDescription.textProperty().isEmpty()).or(tfX.textProperty().isEmpty()).or(tfY.textProperty().isEmpty());
 		btnSaveSite.disableProperty().bind(booleanBind);
 	}
+	
 	/**
 	 *
 	 *method to initialize the binding to change the route
@@ -619,6 +613,7 @@ public class EditWindowController implements ControllerListener {
 		booleanBind = (tfrouteDescription.textProperty().isEmpty().or(tfCityName.textProperty().isEmpty()).or(tfCityDescription.textProperty().isEmpty()));
 		btnAddSiteToRoute.disableProperty().bind(booleanBind);
 	}
+    
 	/**
 	 *
 	 *method to initialize the choice box of the categories
@@ -702,8 +697,6 @@ public class EditWindowController implements ControllerListener {
 				{
 			    	City currCity = (City) currMsg.getData().get(1);
 			    	setCityInfo(currCity);
-			    	setMapsChoiceBox(currCity);
-			    	setRoutesChoiceBox(currCity);
 				}
 				else 
 					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
@@ -715,7 +708,6 @@ public class EditWindowController implements ControllerListener {
 				{
 			    	ArrayList<Site> sites = (ArrayList<Site>) currMsg.getData().get(1);
 					ObservableList<Site> currSitesList = FXCollections.observableArrayList(sites);
-					//setTableViewForRouteSites(currSitesList);
 					setAddSitesToRouteChoiceBox(sites);
 					routesChoiceBoxListener(currSitesList);
 				}
@@ -873,9 +865,9 @@ public class EditWindowController implements ControllerListener {
 				}
 				else
 				{
-					ArrayList<Object> data = new ArrayList<Object>();
-					data.add(currCityName);
-					Message myMessage = new Message(Action.GET_CITY,data);					
+					//ArrayList<Object> data = new ArrayList<Object>();
+					//data.add(currCityName);
+					Message myMessage = new Message(Action.GET_CITY,currCityName);					
 					try {
 						MainGUI.GUIclient.sendToServer(myMessage);
 					}
@@ -910,7 +902,7 @@ public class EditWindowController implements ControllerListener {
 		mapsList.add(0, "Add New Map");
 		ObservableList<String> currMapsList = FXCollections.observableArrayList(mapsList);
 		mapChoser.setItems(currMapsList);
-	
+		mapsChoiceBoxListener(currCity); 
 	}
 	/**
 	 *
@@ -931,6 +923,7 @@ public class EditWindowController implements ControllerListener {
 		routesList.add(0, "Add New Route");
 		ObservableList<String> currRoutesList = FXCollections.observableArrayList(routesList);
 		routesChoser.setItems(currRoutesList);
+ 
 	}
 	
 	/**
@@ -971,6 +964,7 @@ public class EditWindowController implements ControllerListener {
 		}
 		ObservableList<String> currSitesList = FXCollections.observableArrayList(sitesList);
 		routesChoser.setItems(currSitesList);
+
 	}
 	
 	/**
@@ -1106,6 +1100,16 @@ public class EditWindowController implements ControllerListener {
 
     @FXML
     void UpdateVersion(ActionEvent event) {
+//    	String cityName = cityChoser.getSelectionModel().getSelectedItem();
+//		try {
+//			Message myMessage;
+//    	    myMessage = new Message(Action.UPDATE_MAP_VERSION);
+//			MainGUI.GUIclient.sendToServer(myMessage);
+//		} catch (IOException e) {
+//			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
+//					"Error", JOptionPane.WARNING_MESSAGE);
+//			MainGUI.GUIclient.quit();
+//		}
     }
 	
 	
