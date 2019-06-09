@@ -61,8 +61,14 @@ public class PurchaseDB {
 
 			// Add 0 to indicate success
 			data.add(new Integer(0));
-
+			if(params.get(2) == PurchaseType.SHORT_TERM_PURCHASE)
+			{
+				// Get city entity by the city's name using getCity method
+				ArrayList<Object> input = new ArrayList<Object>(params.subList(1, 2));
+				Message city = CityDB.getInstance().getCity(input);
+				data.add(city);
 			}
+		}
 		catch (SQLException e) {
 			data.add(new Integer(1));
 			data.add("There was a problem with the SQL service.");
