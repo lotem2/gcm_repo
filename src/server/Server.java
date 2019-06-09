@@ -143,6 +143,10 @@ public class Server extends AbstractServer {
 				replyMsg = ReportsDB.getInstance().produceActivityReportToCity((currMsg.getData()));
 				replyMsg.setAction(Action.CITY_ACTIVITY_REPORT);
 				break;
+			case GET_INBOX_MESSAGES:
+				replyMsg = InboxDB.getInstance().getInboxMessagesByReciever((currMsg.getData()));
+				replyMsg.setAction(Action.GET_INBOX_MESSAGES);
+				break;
 			default:
 				break;
 			}

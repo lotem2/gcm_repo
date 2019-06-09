@@ -242,6 +242,8 @@ public class InboxDB {
 				throw new Exception();
 			}
 
+			rs.beforeFirst(); // Return cursor to the start of the first row
+
 			// Go through the result set and build the InboxMessage entity
 			while (rs.next())
 			{
@@ -253,7 +255,7 @@ public class InboxDB {
 													Permission.valueOf(rs.getString("receiverPermission").toUpperCase()), 
 													rs.getString("content"), 
 													Status.valueOf(rs.getString("status").toUpperCase()),
-													rs.getDate("recieveDate").toLocalDate());
+													rs.getDate("receiveDate").toLocalDate());
 				InboxMessages.add(msg);
 			}
 
