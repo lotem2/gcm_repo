@@ -45,32 +45,33 @@ public class InboxSceneController implements ControllerListener {
 	
 	InboxMessage m_selectedMessage;
 	
-	List<InboxMessage> m_inboxMessages = List.of(
-			new InboxMessage(0, "reciever", Permission.MANAGING_EDITOR, "reciever", Permission.CEO,
-					"Hello there you have a new request here to approve", Status.NEW, LocalDate.now()),
-			new InboxMessage(0, "reciever", Permission.MANAGING_EDITOR, "reciever", Permission.CEO,
-					"Hello there you have a new request here to approve", Status.DECLINED, LocalDate.now()),
-			new InboxMessage(0, "reciever", Permission.MANAGING_EDITOR, "reciever", Permission.CEO,
-					"Hello there you have a new request here to approve", Status.APPROVED, LocalDate.now()),
-			new InboxMessage(0, "reciever", Permission.MANAGING_EDITOR, "reciever", Permission.CEO,
-					"Hello there you have a new request here to approve", Status.DECLINED, LocalDate.now()),
-			new InboxMessage(0, "reciever", Permission.MANAGING_EDITOR, "reciever", Permission.CEO,
-					"Hello there you have a new request here to approve", Status.DECLINED, LocalDate.now()),
-			new InboxMessage(0, "reciever", Permission.MANAGING_EDITOR, "reciever", Permission.CEO,
-					"Hello there you have a new request here to approve", Status.APPROVED, LocalDate.now()),
-			new InboxMessage(0, "reciever", Permission.MANAGING_EDITOR, "reciever", Permission.CEO,
-					"Hello there you have a new request here to approve", Status.NEW, LocalDate.now()),
-			new InboxMessage(0, "reciever", Permission.MANAGING_EDITOR, "reciever", Permission.CEO,
-					"Hello there you have a new request here to approve", Status.DECLINED, LocalDate.now()),
-			new InboxMessage(0, "reciever", Permission.MANAGING_EDITOR, "reciever", Permission.CEO,
-					"Hello there you have a new request here to approve", Status.NEW, LocalDate.now())
-			);
+//	List<InboxMessage> m_inboxMessages = List.of(
+//			new InboxMessage(0, "reciever", Permission.MANAGING_EDITOR, "reciever", Permission.CEO,
+//					"Hello there you have a new request here to approve", Status.NEW, LocalDate.now()),
+//			new InboxMessage(0, "reciever", Permission.MANAGING_EDITOR, "reciever", Permission.CEO,
+//					"Hello there you have a new request here to approve", Status.DECLINED, LocalDate.now()),
+//			new InboxMessage(0, "reciever", Permission.MANAGING_EDITOR, "reciever", Permission.CEO,
+//					"Hello there you have a new request here to approve", Status.APPROVED, LocalDate.now()),
+//			new InboxMessage(0, "reciever", Permission.MANAGING_EDITOR, "reciever", Permission.CEO,
+//					"Hello there you have a new request here to approve", Status.DECLINED, LocalDate.now()),
+//			new InboxMessage(0, "reciever", Permission.MANAGING_EDITOR, "reciever", Permission.CEO,
+//					"Hello there you have a new request here to approve", Status.DECLINED, LocalDate.now()),
+//			new InboxMessage(0, "reciever", Permission.MANAGING_EDITOR, "reciever", Permission.CEO,
+//					"Hello there you have a new request here to approve", Status.APPROVED, LocalDate.now()),
+//			new InboxMessage(0, "reciever", Permission.MANAGING_EDITOR, "reciever", Permission.CEO,
+//					"Hello there you have a new request here to approve", Status.NEW, LocalDate.now()),
+//			new InboxMessage(0, "reciever", Permission.MANAGING_EDITOR, "reciever", Permission.CEO,
+//					"Hello there you have a new request here to approve", Status.DECLINED, LocalDate.now()),
+//			new InboxMessage(0, "reciever", Permission.MANAGING_EDITOR, "reciever", Permission.CEO,
+//					"Hello there you have a new request here to approve", Status.NEW, LocalDate.now())
+//			);
 	
 	private void sendApprovalOrDeclineMessage(boolean isApproved) {
 		ArrayList<Object> data = new ArrayList<Object>();
-		data.add(new Boolean(isApproved));
+		data.add(isApproved ? Status.APPROVED.toString() : Status.DECLINED.toString());
+		data.add(m_selectedMessage.getId());
 		try {
-			MainGUI.GUIclient.sendToServer(new Message(Action.UPDATE_MESSAGE_APPROVAL, data));
+			MainGUI.GUIclient.sendToServer(new Message(Action.UPDATE_INBOX_MSG_STATUS, data));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -112,7 +113,9 @@ public class InboxSceneController implements ControllerListener {
 		switch (currMsg.getAction()) 
 		{
 			case GET_INBOX_MESSAGES:
-				updateTable((List<InboxMessage>) currMsg.getData().get(1));
+				if ((Integer) currMsg.getData().get(0) == 0) {
+					updateTable((List<InboxMessage>) currMsg.getData().get(1));
+				}
 				break;
 		}
 		System.out.println("Error - got unsupported action - " + currMsg.getAction());
@@ -121,7 +124,7 @@ public class InboxSceneController implements ControllerListener {
 	@FXML
 	void initialize() {
 		CallToServer();
-		updateTable(m_inboxMessages);
+		//updateTable(m_inboxMessages);
 	}
 	
 	private void updateTable(List<InboxMessage> messages) {
