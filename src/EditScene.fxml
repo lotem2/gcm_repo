@@ -33,9 +33,9 @@
                 <ImageView id="mapViewer" fx:id="mapView" fitHeight="297.9998783770137" fitWidth="397.33319091796875" layoutX="11.0" layoutY="93.0" pickOnBounds="true" preserveRatio="true" />
                 <Label id="lblMapName" fx:id="lblMapView" font="$x1" layoutX="14.0" layoutY="63.0" text="Map View:" />
                 <Label fx:id="lblMapName" layoutX="426.0" layoutY="7.0" text="Map Name:" />
-                <TextField id="tf" fx:id="tfMapName" layoutX="423.0" layoutY="28.0" onAction="#SaveMap" prefWidth="200.0" promptText="Map Name" />
+                <TextField id="tf" fx:id="tfMapName" disable="true" layoutX="423.0" layoutY="28.0" onAction="#SaveMap" prefWidth="200.0" promptText="Map Name" />
                 <Label id="lblMapName" fx:id="lblMapDescription" layoutX="426.0" layoutY="57.0" text="Map Description:" />
-                <TextField id="tf" fx:id="tfMapDescription" alignment="TOP_LEFT" layoutX="423.0" layoutY="79.0" onAction="#SaveMap" prefHeight="51.0" prefWidth="200.0" promptText="Map Description" />
+                <TextField id="tf" fx:id="tfMapDescription" alignment="TOP_LEFT" disable="true" layoutX="423.0" layoutY="79.0" onAction="#SaveMap" prefHeight="51.0" prefWidth="200.0" promptText="Map Description" />
                 <Label id="lblMapName" fx:id="lblSiteChoose" font="$x1" layoutX="427.0" layoutY="142.0" text="Choose a site:" />
                 <Label id="lblMapName" fx:id="lblSiteName" layoutX="427.0" layoutY="198.0" text="Site Name:" />
                 <TextField id="tf" fx:id="tfSiteName" layoutX="425.0" layoutY="221.0" onAction="#SaveSite" prefWidth="200.0" promptText="Site Name" />
@@ -52,7 +52,7 @@
                 <Separator layoutX="413.0" layoutY="138.0" prefWidth="259.0" />
                 <Separator layoutX="409.0" layoutY="4.0" orientation="VERTICAL" prefHeight="558.0" />
                 <Separator layoutX="-1.0" layoutY="451.0" prefWidth="409.33319091796875" />
-                <Button id="btnSave" fx:id="btnSaveMap" layoutX="156.0" layoutY="567.0" mnemonicParsing="false" onAction="#SaveMap" prefHeight="27.0" prefWidth="97.0" text="Save Map" />
+                <Button id="btnSave" fx:id="btnSaveMap" layoutX="89.0" layoutY="554.0" mnemonicParsing="false" onAction="#SaveMap" prefHeight="27.0" prefWidth="97.0" text="Save Map" />
                 <Button fx:id="btnSaveSite" layoutX="500.0" layoutY="567.0" mnemonicParsing="false" onAction="#SaveSite" text="Save Site" />
                 <ChoiceBox fx:id="accessibilityChoser" layoutX="424.0" layoutY="408.0" prefHeight="25.0" prefWidth="200.0">
                   <items>
@@ -93,6 +93,7 @@
                 <Label id="lblAccessibilty" layoutX="424.0" layoutY="333.0" text="Category:" />
                 <Label id="lblMapName" fx:id="lblEstimatedTime" layoutX="427.0" layoutY="442.0" text="Estimated Time:" />
                 <TextField id="tf" fx:id="tfEstimatedTime" layoutX="425.0" layoutY="462.0" onAction="#SaveSite" prefWidth="200.0" promptText="Estimated Time" />
+                <Button id="btnSave" layoutX="267.0" layoutY="554.0" mnemonicParsing="false" onAction="#SaveMap" prefHeight="27.0" prefWidth="97.0" text="Delete Site" />
               </children>
             </AnchorPane>
           </content>
@@ -107,7 +108,7 @@
                 <TextField fx:id="tfCityName" disable="true" layoutX="12.0" layoutY="98.0" onAction="#SaveCity" prefWidth="200.0" promptText="City Name" />
                 <Label layoutX="14.0" layoutY="138.0" text="City Description:" />
                 <TextField fx:id="tfCityDescription" alignment="TOP_LEFT" disable="true" layoutX="12.0" layoutY="161.0" onAction="#SaveCity" prefHeight="98.0" prefWidth="200.0" promptText="City Description" />
-                <TextField id="tfDescription" fx:id="tfrouteDescription" alignment="TOP_LEFT" layoutX="14.0" layoutY="407.0" onAction="#SaveRoute" prefHeight="98.0" prefWidth="200.0" promptText="Route Description" />
+                <TextField id="tfDescription" fx:id="tfrouteDescription" alignment="TOP_LEFT" disable="true" layoutX="14.0" layoutY="407.0" onAction="#SaveRoute" prefHeight="98.0" prefWidth="200.0" promptText="Route Description" />
                 <Label fx:id="lblRouteDescription" layoutX="16.0" layoutY="387.0" text="Route Description:" />
                 <Separator layoutX="0.0" layoutY="306.0" prefWidth="260.0" />
                 <Separator layoutX="260.0" layoutY="0.0" orientation="VERTICAL" prefHeight="562.0" />

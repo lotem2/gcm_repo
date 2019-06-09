@@ -285,7 +285,7 @@ GUIClient client;
 		long lastFourDigitsLong=Math.abs(MainGUI.currClient.getCardNumber())%10000;
 		int lastFourDigits=Math.toIntExact(lastFourDigitsLong);
 		String LastFourDigitsString=String.valueOf(lastFourDigits);
-		Permission permission = (MainGUI.currClient.getPermission());
+		Permission permission = (MainGUI.currUser.getPermission());
 				switch(permission) 
 				{
 					case CLIENT:
@@ -420,7 +420,7 @@ GUIClient client;
 		data.add(purchase.getUserName());
 		data.add(purchase.getCityName());
 		GUIClient.sendActionToServer(Action.WATCH,data);
-		Permission permission = (MainGUI.currClient.getPermission());
+		Permission permission = (MainGUI.currUser.getPermission());
 		switch(permission) 
 		{
 			case CLIENT:

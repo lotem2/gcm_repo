@@ -376,7 +376,7 @@ public class MainGUIController implements ControllerListener {
 
 	@FXML
     void EditMaps(ActionEvent event) {
-		Permission permission = (MainGUI.currClient.getPermission());
+		Permission permission = (MainGUI.currUser.getPermission());
 		switch(permission) 
 		{
 			case CLIENT:
