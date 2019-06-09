@@ -150,7 +150,7 @@ public class BuyController implements ControllerListener {
 		try {
 			Message myMessage;
 			String m_cityName = "";
-			PurchaseType m_purchaseType = null;
+			String m_purchaseType = "";
 			LocalDate m_purchaseDate = LocalDate.now();
 			LocalDate m_expirationDate = null;
 			int m_renewCounter = 0;
@@ -164,10 +164,10 @@ public class BuyController implements ControllerListener {
 				m_cityName = ChoiceBoxCities.getSelectionModel().getSelectedItem();
 
 				if (rbBuyOnce.isSelected()) {
-					m_purchaseType = Purchase.PurchaseType.SHORT_TERM_PURCHASE;
+					m_purchaseType = Purchase.PurchaseType.SHORT_TERM_PURCHASE.toString();
 					m_expirationDate = LocalDate.now();
 				} else if (rbSubscription.isSelected()) {
-					m_purchaseType = Purchase.PurchaseType.LONG_TERM_PURCHASE;
+					m_purchaseType = Purchase.PurchaseType.LONG_TERM_PURCHASE.toString();
 					m_expirationDate = LocalDate.now().plusDays(10);
 				}
 
