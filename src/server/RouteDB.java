@@ -123,8 +123,9 @@ public class RouteDB {
 						+ "b.is_active = 0 AND a.is_active = 1))";
 			}
 
+			ArrayList<Object> city = new ArrayList<Object>(params.subList(1, params.size()));
 			// Execute sql query, get results
-			rs = SQLController.ExecuteQuery(sql, params);
+			rs = SQLController.ExecuteQuery(sql, city);
 
 			// check if query succeeded
 			if(!rs.next())
@@ -141,8 +142,9 @@ public class RouteDB {
 				String description = rs.getString("description");
 
 				// Get current route's sites list using SiteDB's getSitesByRoute
-				ArrayList<Object> routeDesc = new ArrayList<Object>(); routeDesc.add(description);
-				Message msg = SiteDB.getInstance().getSitesbyRoute(routeDesc);
+				ArrayList<Object> routeid = new ArrayList<Object>(params.subList(0, 1)); 
+				routeid.add(id);
+				Message msg = SiteDB.getInstance().getSitesbyRoute(routeid);
 
 				// Set the list of sites as null in case of a problem with the database/no sites for this route
 				sites = msg.getData().get(1) instanceof String ? null : (ArrayList<Site>)msg.getData().get(1);

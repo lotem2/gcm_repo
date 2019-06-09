@@ -297,7 +297,7 @@ public class MapDB {
 			else
 				sql = "SELECT *" + 
 					  "FROM Maps m1 \n" + 
-					  "WHERE m1.cityname = \"Jerusalem\" AND m1.mapID IN \r\n" + 
+					  "WHERE m1.cityname = ? AND m1.mapID IN \r\n" + 
 					  "(SELECT a.mapID as \"id\" FROM Maps a \r\n" + 
 					  "WHERE m1.mapname = a.mapname AND m1.cityname = a.cityname AND \r\n" + 
 					  "NOT EXISTS"
@@ -327,10 +327,10 @@ public class MapDB {
 				boolean is_active = rs.getBoolean("is_active");
 
 				// Clear lists of parameters for the next queries and add the desired parameter
-				params.clear(); params.add(id);
+				cityparam.clear(); cityparam.add(params.get(0)); cityparam.add(id);
 
 				// Get map's list of sites
-				Object mapSites = SiteDB.getInstance().getSitesbyMap(params);
+				Object mapSites = SiteDB.getInstance().getSitesbyMap(cityparam);
 
 				// Set the list of sites as null in case of a prbolem with the database/no sites for this map
 				sites = ((Message)mapSites).getData().get(1) instanceof String ? null : 
@@ -373,7 +373,7 @@ public class MapDB {
 			SQLController.Connect();
 
 			// Prepare SELECT query
-			String sql = "SELECT cityName, COUNT(mapID) as 'numOfMaps' FROM `Maps` where cityname = '?'";
+			String sql = "SELECT cityname, COUNT(mapID) as 'numOfMaps' FROM `Maps` where cityname = ?";
 
 			// Execute sql query, get results
 			rs = SQLController.ExecuteQuery(sql, params);
@@ -388,7 +388,7 @@ public class MapDB {
 			// Reads data
 			while (rs.next())
 			{
-				data.put(rs.getString("cityName"), rs.getInt("numOfMaps"));
+				data.put(rs.getString("cityname"), rs.getInt("numOfMaps"));
 			}
 
 			replyMsg = new Message(null, data);	// Add content of the array list to the message

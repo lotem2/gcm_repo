@@ -182,7 +182,7 @@ public class CityDB {
 			// Connect to DB
 			SQLController.Connect();
 
-			sql = "SELECT id, name, description FROM Cities where name = ?";	// Prepare sql query
+			sql = "SELECT * FROM Cities where name = ?";	// Prepare sql query
 
 			// Get city name from params
 			ArrayList<Object> param = new ArrayList<Object>(params.subList(1, params.size()));
@@ -204,8 +204,8 @@ public class CityDB {
 										rs.getString("description"), 
 										null, 
 										null, 
-										0,
-										0);
+										rs.getInt("purchasecounter"),
+										rs.getFloat("price"));
 			}
 			
 			// Get city's maps by calling MapDB's getMapsByCity
@@ -217,9 +217,10 @@ public class CityDB {
 			current_city.setMaps((ArrayList<Map>)maps.getData().get(1)); // Set city's maps list
 			
 			// Check according to the purchase type if city's routes retrieval is needed
-				if((params.size() > 1 && 
+			// Or when user request a specific city
+				if((params.get(1).getClass().equals(PurchaseType.class) &&
 						PurchaseType.valueOf(params.get(1).toString()) == PurchaseType.LONG_TERM_PURCHASE) ||
-						(params.size() == 1)) {
+					(params.get(0).getClass().equals(Permission.class))) {
 					// Get city's routes by calling RouteDB's getRoutesByCity
 					Message msg = RouteDB.getInstance().getRoutesByCity(params);
 

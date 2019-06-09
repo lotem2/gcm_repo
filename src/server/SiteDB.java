@@ -113,9 +113,9 @@ public class SiteDB {
 			            "FROM Sites s, Routes r "+
 			            "WHERE LOCATE(s.name, r.sites) > 0 AND r.id = ? AND r.is_active = 1";
 			else
-				sql = "SELECT s.name as \"name\", s.cityname as \"cityname\", s.classification as \"classification\", \"+\r\n" + 
-						"\" s.description as \"description\", s.accessible as \"accessible\", \" +\r\n" + 
-						"\"s.visitDuration as \"visitDuration\", s.location as \"location\"" + 
+				sql = "SELECT s.name as \"name\", s.cityname as \"cityname\", s.classification as \"classification\", \n" + 
+						"s.description as \"description\", s.accessible as \"accessible\", \n" + 
+						"s.visitDuration as \"visitDuration\", s.location as \"location\"" + 
 						"FROM Sites s, "
 						+ "(SELECT st.siteID as \"rid\" FROM Sites st, Routes r WHERE LOCATE(st.name, r.sites) > 0 AND r.id = ?) as route_site\r\n" + 
 						"WHERE s.siteID IN \r\n" + 
