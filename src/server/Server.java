@@ -33,15 +33,15 @@ public class Server extends AbstractServer {
 		clients = new HashMap<User, ConnectionToClient>();
 	}
 
-	   /**
-	   * Handles a command sent from one client to the server.
-	   * This method is called by a synchronized method so it is also
-	   * implicitly synchronized.
-	   *
-	   * @param msg   the message sent.
-	   * @param client the connection connected to the client that
-	   *  sent the message.
-	   */
+	/**
+	* Handles a command sent from one client to the server.
+	* This method is called by a synchronized method so it is also
+	* implicitly synchronized.
+	*
+	* @param msg   the message sent.
+	* @param client the connection connected to the client that
+	*  sent the message.
+	*/
 	public void handleMessageFromClient(Object msg, ConnectionToClient client) {
 		// Variables
 		Message currMsg = (Message) msg;
@@ -146,6 +146,10 @@ public class Server extends AbstractServer {
 			case GET_INBOX_MESSAGES:
 				replyMsg = InboxDB.getInstance().getInboxMessagesByReciever((currMsg.getData()));
 				replyMsg.setAction(Action.GET_INBOX_MESSAGES);
+				break;
+			case UPDATE_INBOX_MSG_STATUS:
+				replyMsg = InboxDB.getInstance().getInboxMessagesByReciever((currMsg.getData()));
+				replyMsg.setAction(Action.UPDATE_INBOX_MSG_STATUS);
 				break;
 			default:
 				break;
