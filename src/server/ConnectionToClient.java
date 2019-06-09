@@ -222,13 +222,16 @@ public class ConnectionToClient extends Thread
     }
     catch (Exception exception)
     {
+      exception.printStackTrace();
       if (!readyToStop)
       {
         try
         {
           closeAll();
         }
-        catch (Exception ex) { }
+        catch (Exception ex) {
+        	ex.printStackTrace();
+        }
 
         server.clientException(this, exception);
       }

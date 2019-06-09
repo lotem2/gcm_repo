@@ -8,7 +8,7 @@ import common.Status;
 /**
  * Entity that represents a message between employees and clients
  */
-public class InboxMessage {
+public class InboxMessage implements java.io.Serializable {
 
 	private int m_id;
 	private String m_senderUsername;
@@ -28,6 +28,7 @@ public class InboxMessage {
 	 * @param m_receiverPermission - The reciever's {@link Permission}
 	 * @param m_content - The content of the message
 	 * @param m_status - The {@link Status} of the message
+	 * @param m_receiveDate - The {@link LocalDate} of the message
 	 */
 	public InboxMessage (int id, String senderUsername, Permission senderPermission, 
 			String receiverUsername, Permission receiverPermission, String content, Status status, LocalDate receiveDate)

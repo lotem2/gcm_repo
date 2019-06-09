@@ -82,10 +82,10 @@ public class InboxDB {
 	
 	/**
 	 * Edit inbox message to database
-	 * @param params - Contain the message to be updated
+	 * @param params - Contain the message status and it's id.
 	 * @return {@link Message} - Indicating success/failure with corresponding message
 	 */
-	public Message EditInboxMessage(ArrayList<Object> params) {
+	public Message EditInboxMessageStatus(ArrayList<Object> params) {
 		// Variables
 		ArrayList<Object> data = new ArrayList<Object>();
 
@@ -94,8 +94,7 @@ public class InboxDB {
 			SQLController.Connect();
 
 			// Prepare statement to insert new user
-			String sql = "UPDATE Inbox SET receiverUsername = ?, status = ? " +
-						 "WHERE id = ?";
+			String sql = "UPDATE Inbox SET status = ? WHERE id = ?";
 
 			// Execute sql query, get number of changed rows
 			int changedRows = SQLController.ExecuteUpdate(sql, params);
@@ -122,7 +121,7 @@ public class InboxDB {
 			SQLController.Disconnect(null);
 		}
 
-		return (new Message(null, data));
+		return (new Message(Action.UPDATE_INBOX_MSG_STATUS, data));
 	}
 	
 	/**
@@ -242,6 +241,8 @@ public class InboxDB {
 				throw new Exception();
 			}
 
+			rs.beforeFirst(); // Return cursor to the start of the first row
+
 			// Go through the result set and build the InboxMessage entity
 			while (rs.next())
 			{
@@ -253,7 +254,7 @@ public class InboxDB {
 													Permission.valueOf(rs.getString("receiverPermission").toUpperCase()), 
 													rs.getString("content"), 
 													Status.valueOf(rs.getString("status").toUpperCase()),
-													rs.getDate("recieveDate").toLocalDate());
+													rs.getDate("receiveDate").toLocalDate());
 				InboxMessages.add(msg);
 			}
 

@@ -171,7 +171,9 @@ public abstract class AbstractServer implements Runnable
            ((ConnectionToClient)clientThreadList[i]).close();
          }
          // Ignore all exceptions when closing clients.
-         catch(Exception ex) {}
+         catch(Exception ex) {
+        	 ex.printStackTrace();
+         }
       }
       serverSocket = null;
       serverClosed();

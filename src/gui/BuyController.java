@@ -245,7 +245,9 @@ public class BuyController implements ControllerListener {
 		case BUY:
 			if ((Integer) currMsg.getData().get(0) == 0) {
 				JOptionPane.showMessageDialog(null, "Order Complete!", "", JOptionPane.INFORMATION_MESSAGE);
-				Services.writeCityToFile((City) currMsg.getData().get(1), openSaveMapPrompt());
+				if (rbBuyOnce.isSelected()) {
+					Services.writeCityToFile((City) currMsg.getData().get(1), openSaveMapPrompt());
+				}
 				MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
 			}
 
@@ -254,7 +256,7 @@ public class BuyController implements ControllerListener {
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 			break;
-	
+
 		default:
 		}
 	}
@@ -283,7 +285,7 @@ public class BuyController implements ControllerListener {
 			}
 		}
 		price = Double.parseDouble(new DecimalFormat("##.####").format(price));
-		currPrice = (float)price;
+		currPrice = (float) price;
 		String totalPrice = String.valueOf(price);
 		lblTotalPrice.setText("Total Price: " + totalPrice);
 		return totalPrice;
