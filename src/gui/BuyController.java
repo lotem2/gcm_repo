@@ -2,6 +2,7 @@ package gui;
 
 import java.io.File;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -261,7 +262,7 @@ public class BuyController implements ControllerListener {
 	}
 
 	public String setPrice(boolean isSubscription, String city, String term) {
-		float price;
+		double price;
 		if (city.isBlank()) {
 			city = ChoiceBoxCities.getValue();
 		}
@@ -278,12 +279,13 @@ public class BuyController implements ControllerListener {
 				price *= 2.8;
 				break;
 			case "6 Months":
-				price *= 5.7;
+				price *= 5.5;
 				break;
 			default:
 			}
 		}
-		String totalPrice = Float.toString(price);
+		price =Double.parseDouble(new DecimalFormat("##.####").format(price));
+		String totalPrice = String.valueOf(price);
 		lblTotalPrice.setText("Total Price: " + totalPrice);
 		return totalPrice;
 	}
