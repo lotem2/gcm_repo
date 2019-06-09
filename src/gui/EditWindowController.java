@@ -226,18 +226,20 @@ public class EditWindowController implements ControllerListener {
 		try {
 			Message myMessage;
 			String selection = siteChoser.getSelectionModel().getSelectedItem();
+			String map = mapChoser.getSelectionModel().getSelectedItem();
+			String city = cityChoser.getSelectionModel().getSelectedItem();
 			String name = tfSiteName.getText();
 			String description = tfSiteDescription.getText();
-			String acessible = accessibilityChoser.getSelectionModel().getSelectedItem();
+			String accessible = accessibilityChoser.getSelectionModel().getSelectedItem();
 			String x = tfX.getText();
 			String y = tfY.getText();
 			String visitDuration = tfEstimatedTime.getText();
 			String location = (x+","+y);
 			String classification = categoryChoser.getSelectionModel().getSelectedItem();
 			if (selection.equals("Add New Site"))
-				myMessage = new Message(Action.ADD_SITE,name,classification,description,x,y);
+				myMessage = new Message(Action.ADD_SITE,name,classification,description,accessible,visitDuration,location,0,map,city);
 			else
-				myMessage = new Message(Action.EDIT_SITE,name,classification,description,x,y);
+				myMessage = new Message(Action.EDIT_SITE,name,classification,description,accessible,visitDuration,location,0,map,city);
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
@@ -272,7 +274,7 @@ public class EditWindowController implements ControllerListener {
 //			// if the item of the list is changed
 //			public void changed(ObservableValue ov,Number number1, Number number2) 
 //			{
-//				String currSiteName = sitesChoserForRoutes.getValue();
+//    			String currSiteName = sitesChoserForRoutes.getSelectionModel().getSelectedItem();
 //				
 //				
 //			}
