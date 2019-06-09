@@ -20,85 +20,22 @@
     </Label>
     <Accordion id="Accordion" fx:id="editingAccordion" layoutX="7.0" layoutY="94.0" prefHeight="667.0" prefWidth="686.0">
       <expandedPane>
-        <TitledPane id="paneCities" fx:id="accPaneCities" animated="false" collapsible="true" expanded="true" text="Cities" wrapText="false">
+        <TitledPane fx:id="accPaneMap" animated="false" expanded="true" prefHeight="621.0" prefWidth="686.0" text="Maps">
           <content>
-            <AnchorPane id="Content" fx:id="paneCities" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+            <AnchorPane id="Content" fx:id="paneMap" minHeight="0.0" minWidth="0.0" prefHeight="583.0" prefWidth="677.0">
               <children>
-                <Label fx:id="lblCity" layoutX="19.0" layoutY="54.0" text="City Name:" />
-                <TextField fx:id="tfCityName" disable="true" layoutX="17.0" layoutY="74.0" onAction="#SaveCity" prefWidth="200.0" promptText="City Name" />
-                <Label layoutX="19.0" layoutY="103.0" text="City Description:" />
-                <TextField fx:id="tfCityDescription" alignment="TOP_LEFT" disable="true" layoutX="17.0" layoutY="123.0" onAction="#SaveCity" prefHeight="98.0" prefWidth="200.0" promptText="City Description" />
-                <TextField id="tfDescription" fx:id="tfrouteDescription" alignment="TOP_LEFT" disable="true" layoutX="14.0" layoutY="407.0" onAction="#SaveRoute" prefHeight="98.0" prefWidth="200.0" promptText="Route Description" />
-                <Label fx:id="lblRouteDescription" layoutX="16.0" layoutY="387.0" text="Route Description:" />
-                <Separator layoutX="-4.0" layoutY="315.0" prefWidth="282.0" />
-                <Separator layoutX="278.0" layoutY="0.0" orientation="VERTICAL" prefHeight="562.0" prefWidth="13.0" />
-                <Label id="lblCity" fx:id="lblCityChoose" layoutX="17.0" layoutY="2.0" text="Choose a city:">
+                <Label id="lblMapName" fx:id="lblMapChoose" layoutX="14.0" layoutY="4.0" text="Choose a map:">
                   <font>
                     <Font name="System Bold" size="15.0" fx:id="x1" />
                   </font>
                 </Label>
-                <Label id="lblCity" fx:id="lblRouteChoose" font="$x1" layoutX="16.0" layoutY="319.0" text="Choose a route:" />
-                <TableView fx:id="tableRouteDeatils" layoutX="305.0" layoutY="44.0" prefHeight="492.0" prefWidth="362.0">
-                  <columns>
-                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="29.0" text="" fx:id="col_order" />
-                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="122.0" resizable="true" text="Site Name" fx:id="col_siteName" />
-                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="123.0" text="Site Description" fx:id="col_siteDescription" />
-                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="87.0" text="Est. Time" fx:id="col_estTime" />
-                  </columns>
-                </TableView>
-                <Label fx:id="lblRouteDetails" font="$x1" layoutX="425.0" layoutY="18.0" text="Route Details" />
-                <Button fx:id="btnSaveCity" layoutX="153.0" layoutY="273.0" mnemonicParsing="false" onAction="#SaveCity" prefHeight="27.0" prefWidth="122.0" text="Save City" />
-                <Button fx:id="btnSaveRoute" layoutX="425.0" layoutY="567.0" mnemonicParsing="false" onAction="#SaveRoute" prefHeight="27.0" prefWidth="108.0" text="Save Route" />
-                <Button id="addSiteToRoute" fx:id="btnAddSiteToRoute" layoutX="83.0" layoutY="567.0" mnemonicParsing="false" onAction="#addSiteToRoute" prefHeight="27.0" prefWidth="86.0" text="Add Site" />
-                <ChoiceBox fx:id="cityChoser" layoutX="17.0" layoutY="25.0" prefHeight="25.0" prefWidth="200.0">
-                  <items>
-                    <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
-                    </FXCollections>
-                  </items>
-                </ChoiceBox>
-                <ChoiceBox fx:id="routesChoser" layoutX="12.0" layoutY="352.0" prefWidth="200.0">
-                  <items>
-                    <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
-                    </FXCollections>
-                  </items>
-                </ChoiceBox>
-                <ChoiceBox fx:id="sitesChoserForRoutes" layoutX="12.0" layoutY="523.0" prefHeight="25.0" prefWidth="200.0">
-                  <items>
-                    <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
-                    </FXCollections>
-                  </items>
-                </ChoiceBox>
-                <TextField id="tf" fx:id="tfPrice" layoutX="19.0" layoutY="241.0" onAction="#SaveMap" prefWidth="200.0" promptText="Price" />
-                <Label layoutX="23.0" layoutY="221.0" text="Price:" />
-                <Button id="btnSaveCity" fx:id="btnUpdatePrice" disable="true" layoutX="16.0" layoutY="273.0" mnemonicParsing="false" onAction="#UpdatePrice" prefHeight="27.0" prefWidth="122.0" text="Update Price" />
-              </children>
-            </AnchorPane>
-          </content>
-        </TitledPane>
-      </expandedPane>
-      <panes>
-        <fx:reference source="accPaneCities" />
-        <TitledPane fx:id="accPaneMap" animated="false" expanded="false" prefHeight="621.0" prefWidth="686.0" text="Maps">
-          <content>
-            <AnchorPane id="Content" fx:id="paneMap" minHeight="0.0" minWidth="0.0" prefHeight="583.0" prefWidth="677.0">
-              <children>
-                <Label id="lblMapName" fx:id="lblMapChoose" font="$x1" layoutX="14.0" layoutY="4.0" text="Choose a map:" />
                 <!--                 <ImageView id="mapViewer" fx:id="mapView" fitHeight="297.9998783770137" fitWidth="397.33319091796875" layoutX="11.0" layoutY="93.0" onMouseClicked="#paint" pickOnBounds="true" preserveRatio="true" /> -->
                 <ImageView id="mapViewer" fx:id="mapView" fitHeight="297.9998783770137" fitWidth="397.33319091796875" layoutX="11.0" layoutY="93.0" pickOnBounds="true" preserveRatio="true" />
                 <Label id="lblMapName" fx:id="lblMapView" font="$x1" layoutX="14.0" layoutY="63.0" text="Map View:" />
                 <Label fx:id="lblMapName" layoutX="27.0" layoutY="461.0" text="Map Name:" />
                 <TextField id="tf" fx:id="tfMapName" disable="false" layoutX="24.0" layoutY="482.0" onAction="#SaveMap" prefWidth="200.0" promptText="Map Name" />
                 <Label id="lblMapName" fx:id="lblMapDescription" layoutX="27.0" layoutY="514.0" text="Map Description:" />
-                <TextField id="tf" fx:id="tfMapDescription" alignment="TOP_LEFT" disable="false" layoutX="27.0" layoutY="533.0" onAction="#SaveMap" prefHeight="51.0" prefWidth="200.0" promptText="Map Description" />
+                <TextField id="tf" fx:id="tfMapDescription" alignment="TOP_LEFT" disable="false" layoutX="24.0" layoutY="534.0" onAction="#SaveMap" prefHeight="51.0" prefWidth="200.0" promptText="Map Description" />
                 <Label id="lblMapName" fx:id="lblSiteChoose" font="$x1" layoutX="425.0" layoutY="14.0" text="Choose a site:" />
                 <Label id="lblMapName" fx:id="lblSiteName" layoutX="424.0" layoutY="83.0" text="Site Name:" />
                 <TextField id="tf" fx:id="tfSiteName" layoutX="422.0" layoutY="106.0" onAction="#SaveSite" prefWidth="200.0" promptText="Site Name" />
@@ -159,6 +96,69 @@
             </AnchorPane>
           </content>
         </TitledPane>
+      </expandedPane>
+      <panes>
+        <TitledPane id="paneCities" fx:id="accPaneCities" animated="false" collapsible="true" expanded="false" text="Cities" wrapText="false">
+          <content>
+            <AnchorPane id="Content" fx:id="paneCities" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <Label fx:id="lblCity" layoutX="19.0" layoutY="54.0" text="City Name:" />
+                <TextField fx:id="tfCityName" disable="true" layoutX="17.0" layoutY="74.0" onAction="#SaveCity" prefWidth="200.0" promptText="City Name" />
+                <Label layoutX="19.0" layoutY="103.0" text="City Description:" />
+                <TextField fx:id="tfCityDescription" alignment="TOP_LEFT" disable="true" layoutX="17.0" layoutY="123.0" onAction="#SaveCity" prefHeight="98.0" prefWidth="200.0" promptText="City Description" />
+                <TextField id="tfDescription" fx:id="tfrouteDescription" alignment="TOP_LEFT" disable="true" layoutX="14.0" layoutY="407.0" onAction="#SaveRoute" prefHeight="98.0" prefWidth="200.0" promptText="Route Description" />
+                <Label fx:id="lblRouteDescription" layoutX="16.0" layoutY="387.0" text="Route Description:" />
+                <Separator layoutX="-4.0" layoutY="315.0" prefWidth="282.0" />
+                <Separator layoutX="278.0" layoutY="0.0" orientation="VERTICAL" prefHeight="562.0" prefWidth="13.0" />
+                <Label id="lblCity" fx:id="lblCityChoose" font="$x1" layoutX="17.0" layoutY="2.0" text="Choose a city:" />
+                <Label id="lblCity" fx:id="lblRouteChoose" font="$x1" layoutX="16.0" layoutY="319.0" text="Choose a route:" />
+                <TableView fx:id="tableRouteDeatils" layoutX="305.0" layoutY="44.0" prefHeight="492.0" prefWidth="362.0">
+                  <columns>
+                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="29.0" text="" fx:id="col_order" />
+                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="122.0" resizable="true" text="Site Name" fx:id="col_siteName" />
+                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="123.0" text="Site Description" fx:id="col_siteDescription" />
+                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="87.0" text="Est. Time" fx:id="col_estTime" />
+                  </columns>
+                </TableView>
+                <Label fx:id="lblRouteDetails" font="$x1" layoutX="425.0" layoutY="18.0" text="Route Details" />
+                <Button fx:id="btnSaveCity" layoutX="153.0" layoutY="273.0" mnemonicParsing="false" onAction="#SaveCity" prefHeight="27.0" prefWidth="122.0" text="Save City" />
+                <Button fx:id="btnSaveRoute" layoutX="425.0" layoutY="567.0" mnemonicParsing="false" onAction="#SaveRoute" prefHeight="27.0" prefWidth="108.0" text="Save Route" />
+                <Button id="addSiteToRoute" fx:id="btnAddSiteToRoute" layoutX="83.0" layoutY="567.0" mnemonicParsing="false" onAction="#addSiteToRoute" prefHeight="27.0" prefWidth="86.0" text="Add Site" />
+                <ChoiceBox fx:id="cityChoser" layoutX="17.0" layoutY="25.0" prefHeight="25.0" prefWidth="200.0">
+                  <items>
+                    <FXCollections fx:factory="observableArrayList">
+                      <String fx:value="Item 1" />
+                      <String fx:value="Item 2" />
+                      <String fx:value="Item 3" />
+                    </FXCollections>
+                  </items>
+                </ChoiceBox>
+                <ChoiceBox fx:id="routesChoser" layoutX="12.0" layoutY="352.0" prefWidth="200.0">
+                  <items>
+                    <FXCollections fx:factory="observableArrayList">
+                      <String fx:value="Item 1" />
+                      <String fx:value="Item 2" />
+                      <String fx:value="Item 3" />
+                    </FXCollections>
+                  </items>
+                </ChoiceBox>
+                <ChoiceBox fx:id="sitesChoserForRoutes" layoutX="12.0" layoutY="523.0" prefHeight="25.0" prefWidth="200.0">
+                  <items>
+                    <FXCollections fx:factory="observableArrayList">
+                      <String fx:value="Item 1" />
+                      <String fx:value="Item 2" />
+                      <String fx:value="Item 3" />
+                    </FXCollections>
+                  </items>
+                </ChoiceBox>
+                <TextField id="tf" fx:id="tfPrice" layoutX="19.0" layoutY="241.0" onAction="#SaveMap" prefWidth="200.0" promptText="Price" />
+                <Label layoutX="23.0" layoutY="221.0" text="Price:" />
+                <Button id="btnSaveCity" fx:id="btnUpdatePrice" disable="true" layoutX="16.0" layoutY="273.0" mnemonicParsing="false" onAction="#UpdatePrice" prefHeight="27.0" prefWidth="122.0" text="Update Price" />
+              </children>
+            </AnchorPane>
+          </content>
+        </TitledPane>
+        <fx:reference source="accPaneMap" />
       </panes>
     </Accordion>
   </children>

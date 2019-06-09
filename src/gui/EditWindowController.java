@@ -332,13 +332,21 @@ public class EditWindowController implements ControllerListener {
 		case EDITOR:
 	    	Platform.runLater(() -> {
 			tfPrice.setDisable(true);
+			btnUpdatePrice.setVisible(false);
+			btnUpdateVersion.setVisible(true);
 			});
 			break;
 		case MANAGING_EDITOR:
-
+	    	Platform.runLater(() -> {
+			btnUpdatePrice.setDisable(false);
+			btnUpdateVersion.setDisable(false);
+			});
 			break;
 		case CEO:
-
+	    	Platform.runLater(() -> {
+			btnUpdatePrice.setDisable(false);
+			btnUpdateVersion.setDisable(false);
+			});
 			break;
 		default:
 
@@ -461,6 +469,7 @@ public class EditWindowController implements ControllerListener {
     	tableRouteDeatils.getItems().clear();
     	tfCityName.setDisable(false);
     	tfCityDescription.setDisable(false);
+    	tfPrice.clear();
     }
 
 	/**
@@ -489,6 +498,7 @@ public class EditWindowController implements ControllerListener {
     void addNewRoute() {
     	tfrouteDescription.clear();
     	tableRouteDeatils.getItems().clear();
+    	btnAddSiteToRoute.setDisable(false);
     }
     
 	/**
@@ -503,6 +513,7 @@ public class EditWindowController implements ControllerListener {
     	tfX.clear();
     	tfY.clear();
     	btnDeleteSite.setDisable(true);
+    	tfEstimatedTime.clear();
     }
 	/**
 	 *
@@ -518,6 +529,9 @@ public class EditWindowController implements ControllerListener {
 		btnSaveMap.setVisible(false);
 		btnSaveRoute.setVisible(false);
 		btnSaveSite.setVisible(false);
+		btnDeleteSite.setVisible(false);
+		btnUpdatePrice.setVisible(false);
+		btnUpdateVersion.setVisible(false);
 		sitesChoserForRoutes.setVisible(false);
 		categoryChoser.setDisable(true);
 		accessibilityChoser.setDisable(true);
@@ -709,6 +723,18 @@ public class EditWindowController implements ControllerListener {
 					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
 							JOptionPane.WARNING_MESSAGE);
 			break;
+			case EDIT_CITY_PRICE:
+			{
+				if ((Integer) currMsg.getData().get(0) == 0) 
+				{
+					JOptionPane.showMessageDialog(null, "Your request to update the price was sent!", "Notification",
+							JOptionPane.INFORMATION_MESSAGE);
+				}
+				else 
+					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
+							JOptionPane.WARNING_MESSAGE);
+			}
+			break;
 			default:
 			{
 				if ((Integer) currMsg.getData().get(0) == 0) 
@@ -718,6 +744,7 @@ public class EditWindowController implements ControllerListener {
 					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
 							JOptionPane.WARNING_MESSAGE);
 			}
+
 		}
 	}
 	
@@ -1061,7 +1088,7 @@ public class EditWindowController implements ControllerListener {
 		}
     }
 	
-  //@param params - Contains city name, a new city price and the sender's user entity
+
     @FXML
     void UpdatePrice(ActionEvent event) {
     	float newPrice = Float.valueOf(tfPrice.getText());
