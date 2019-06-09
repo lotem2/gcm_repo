@@ -8,7 +8,7 @@ import common.Status;
 /**
  * Entity that represents a message between employees and clients
  */
-public class InboxMessage {
+public class InboxMessage implements java.io.Serializable {
 
 	private int m_id;
 	private String m_senderUsername;

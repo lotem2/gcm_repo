@@ -80,19 +80,21 @@ public class InboxSceneController implements ControllerListener {
 	@FXML
 	public void Approve(ActionEvent event) {
 		sendApprovalOrDeclineMessage(true);
+		getMessagesFromServer();
 	}
 	
 	@FXML
 	public void Decline(ActionEvent event) {
 		sendApprovalOrDeclineMessage(false);
+		getMessagesFromServer();
 	}
 
 	@FXML
 	public void Refresh(ActionEvent event) {
-		CallToServer();
+		getMessagesFromServer();
 	}
 
-	private void CallToServer() {
+	private void getMessagesFromServer() {
 		try {
 			ArrayList<Object> data = new ArrayList<Object>();
 			data.add(MainGUI.currUser.getUserName());
@@ -117,13 +119,14 @@ public class InboxSceneController implements ControllerListener {
 					updateTable((List<InboxMessage>) currMsg.getData().get(1));
 				}
 				break;
+			default:
+				System.out.println("Error - got unsupported action - " + currMsg.getAction());
 		}
-		System.out.println("Error - got unsupported action - " + currMsg.getAction());
 	}
 	
 	@FXML
 	void initialize() {
-		CallToServer();
+		getMessagesFromServer();
 		//updateTable(m_inboxMessages);
 	}
 	
