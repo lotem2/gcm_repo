@@ -137,7 +137,7 @@ public class MapDB {
 						 " VALUES (?, ?, ?, ?)";
 
 			// Add the conversion of the map's image url to byte array to params object
-			params.add(setImage(params.get(3).toString()));
+			params.set(3, setImage(params.get(3).toString()));
 
 			// Insert new map using private editMap method
 			editMap(sql, params);
@@ -174,15 +174,18 @@ public class MapDB {
 				sql = "UPDATE Maps SET description = ?, url = ? WHERE mapID = ?";
 
 				// prepare parameters to sql
-				map_params = new ArrayList<Object>(params.subList(3, 4)); 
+				map_params = new ArrayList<Object>(params.subList(3, 5)); 
 				// Add the conversion of the map's image url to byte array to params object
-				map_params.add(setImage(params.get(4).toString()));
+				map_params.set(1, setImage(params.get(4).toString()));
 				map_params.add(params.get(0));
 			}
 			else {
 				// Prepare statement to insert new record with updated details
 				sql = "INSERT INTO Maps (`mapname`, cityname`, `description`, `url`) VALUES"
 						+ "(?, ?, ?, ?)";
+				
+				// Convert the map's image path to byte array
+				params.set(4, setImage(params.get(4).toString()));
 
 				// prepare parameters to sql
 				map_params = new ArrayList<Object>(params.subList(1, 4)); 
