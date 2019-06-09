@@ -260,14 +260,15 @@ public AbstractClient() {
     }
     catch (Exception exception) 
     {
-    	exception.printStackTrace();
       if(!readyToStop)
       {
         try
         {
           closeAll();
         }
-        catch (Exception ex) { }
+        catch (Exception ex) {
+        	ex.printStackTrace();
+        }
     	
         connectionException(exception);
       }

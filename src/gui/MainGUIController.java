@@ -134,7 +134,8 @@ public class MainGUIController implements ControllerListener {
 			myMessage = new Message(Action.SEARCH, data);
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Could not send message to server. Terminating client.",
 					"Error", JOptionPane.WARNING_MESSAGE);
 			MainGUI.GUIclient.quit();
 		}
@@ -163,9 +164,11 @@ public class MainGUIController implements ControllerListener {
 			myMessage = new Message(Action.LOGIN, data);
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (IOException e) {
+			e.printStackTrace();
 			JOptionPane.showMessageDialog(null,
-					e.toString() + " Could not send message to server.  Terminating client.", "Error",
+					"Could not send message to server.  Terminating client.", "Error",
 					JOptionPane.WARNING_MESSAGE);
+			MainGUI.GUIclient.quit();
 		}
 	}
 	
@@ -376,7 +379,7 @@ public class MainGUIController implements ControllerListener {
 
 	@FXML
     void EditMaps(ActionEvent event) {
-		Permission permission = (MainGUI.currClient.getPermission());
+		Permission permission = (MainGUI.currEmployee.getPermission());
 		switch(permission) 
 		{
 			case CLIENT:
