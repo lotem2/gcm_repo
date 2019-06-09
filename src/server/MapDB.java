@@ -122,6 +122,11 @@ public class MapDB {
 		ArrayList<Object> data = new ArrayList<Object>();
 
 		try {
+			// Check if the collections of maps of the city the new map belongs is under approval
+			if(SQLController.DoesRecordExist("Inbox","content", "status", 
+					"Approve " + params.get(1).toString() + " new version", "New"))
+				throw new Exception("New version is under approval, cannot save new changes.");
+			
 			// Check if the map to add is already in the database
 			if(SQLController.DoesRecordExist("Maps", "mapname", "cityname", "description", 
 					params.get(0), params.get(1), params.get(2)))
@@ -152,27 +157,41 @@ public class MapDB {
 	
 	/**
 	 * Edit map details in database
-	 * @param params - Contain map's details to update
+	 * @param params - Contains map's details to update (map id, map name, city name, description, url, is_active)
 	 * @return {@link Message} - Indicating success/failure with corresponding message 
 	 */
 	public Message editMapDetails(ArrayList<Object> params){
 		// Variables
 		ArrayList<Object> data = new ArrayList<Object>();
+		String 			  sql  = "";
+		ArrayList<Object> map_params;
 
 		try {
 			// Check if the map to add is already in the database
-			if(SQLController.DoesRecordExist("Maps", "mapname", "cityname", "description", 
-					params.get(0), params.get(1), params.get(2)))
-				throw new Exception("Map already exists.");
+			if(SQLController.DoesRecordExist("Maps", "mapname", "cityname", "is_active", 
+					params.get(1), params.get(2), 0)) {
+				// Prepare statement to update map
+				sql = "UPDATE Maps SET description = ?, url = ? WHERE mapID = ?";
 
-			// Prepare statement to insert new map
-			String sql = "UPDATE Maps SET mapname = ?, description = ?, url = ? WHERE id = ?";
+				// prepare parameters to sql
+				map_params = new ArrayList<Object>(params.subList(3, 4)); 
+				// Add the conversion of the map's image url to byte array to params object
+				map_params.add(setImage(params.get(4).toString()));
+				map_params.add(params.get(0));
+			}
+			else {
+				// Prepare statement to insert new record with updated details
+				sql = "INSERT INTO Maps (`mapname`, cityname`, `description`, `url`) VALUES"
+						+ "(?, ?, ?, ?)";
 
-			// Add the conversion of the map's image url to byte array to params object
-			params.add(setImage(params.get(3).toString()));
+				// prepare parameters to sql
+				map_params = new ArrayList<Object>(params.subList(1, 4)); 
+				// Add the conversion of the map's image url to byte array to params object
+				map_params.add(setImage(params.get(4).toString()));
+			}
 
 			// Update map details using private editMap method
-			editMap(sql, params);
+			editMap(sql, map_params);
 
 			// Create data to match the success pattern
 			data.add(new Integer(0)); data.add(new String("Map was added successfully."));
@@ -189,54 +208,59 @@ public class MapDB {
 	
 	/**
 	 * Add a new site to the requested map
-	 * @param params - Contain new site's details and map and city name
+	 * @param params - Contains requested map entity that we want to connect the site and new site's details 
+	 * OR requested map entity, and site name
 	 * @return {@link Message} - Indicating success/failure with corresponding message
 	 */
 	public Message AddSiteToMap(ArrayList<Object> params){
 		// Variables
 		ArrayList<Object> data 		  = new ArrayList<Object>();
-		int 			  changedRows = 0;
 		String 			  sql 		  = "";
+		int 			  id 		  = -1;
+		String			  site		  = params.get(1).toString();
+		Map 			  currentMap  = (Map)params.get(0);
 
 		try {
 			// Check if a new map version is currently under management approval
 			if(SQLController.DoesRecordExist("Inbox","content", "status", 
-					"Approve " + params.get(0).toString() + " new version", "New"))
+					"Approve " + currentMap.getCityName() + " new version", "New"))
 				throw new Exception("New version is under approval, cannot save new changes.");
 
 			// Check if number of parameters is higher than 3 - indicating a new site is been added
 			if (params.size() > 3) {
-				ArrayList<Object> sitedetails = new ArrayList<Object>(params.subList(3, params.size()));
+				ArrayList<Object> sitedetails = new ArrayList<Object>(params.subList(1, params.size()));
 
-				// Adding name, location and is_active to the parameters for the WHERE clause
-				sitedetails.add(params.get(3)); sitedetails.add(params.get(8));
+				// Adding name, location to the parameters for the WHERE clause
+				sitedetails.add(sitedetails.get(0)); sitedetails.add(sitedetails.get(6));
 				
 				// Throwing exception in case the site's addition to Sites table was unsuccessful
 				if (SiteDB.getInstance().AddSite(sitedetails) == 0) throw new Exception("Unable to add the site.");
 			}
 
+			// Get the displayed map's id if current map is under edit - to make sure the map who is
+			// getting updated every time will display the site
+			if((!currentMap.getIsActive()) && (!
+					SQLController.DoesRecordExist("Maps","mapname", "cityname", "is_active", 
+					currentMap.getName(), currentMap.getCityName(), 1))) {
+				ArrayList<Object> tosql = new ArrayList<Object>();
+				tosql.add(currentMap.getName()); tosql.add(currentMap.getCityName());
+				id = getActiveMap(params);
+			}
+			else id = currentMap.getID();
+
 			// Prepare insert statement
 			sql = "INSERT INTO BridgeMSC (`mapID`, `siteID`, `cityID`) "
-					+ "VALUES ((SELECT id FROM Maps WHERE mapname = ?), "
+					+ "VALUES (?, "
 					+ 		  "(SELECT id FROM Cities WHERE name = ?), "
-					+ 		  "(SELECT id FROM Sites WHERE name = ?))";
-
-			// Get the correct parameters for the map-site relation query
-			params = new ArrayList<Object>(params.subList(0, 3));
-
-			// Connect to DB
-			SQLController.Connect();
-
-			// Execute sql query, get number of changed rows
-			changedRows = SQLController.ExecuteUpdate(sql, params);
-
-			// Check if update was successful - result should be greater than zero
-			if (changedRows == 0)
-				 throw new Exception("Site was not added successfully.");
-
-			data.add(new Integer(0));	// Add 0 to indicate success
+					+ 		  "(SELECT id FROM Sites WHERE name = ? LIMIT 1))";
 			
-			}
+			// Get the correct parameters for the map-site relation query
+			params.clear(); params.add(id); params.add(currentMap.getCityName()); params.add(site);
+
+			// Insert the relation between the site and map using private editMap method
+			editMap(sql, params);
+			data.add(new Integer(0), "Site added successfuly to map.");
+		}
 		catch (SQLException e) {
 			data.add(new Integer(1));
 			data.add("There was a problem with the SQL service.");
@@ -245,17 +269,13 @@ public class MapDB {
 			data.add(new Integer(1));
 			data.add(e.getMessage());
 		}
-		finally {
-			// Disconnect DB
-			SQLController.Disconnect(null);
-		}
 
 		return new Message(null, data);
 	}
 	
 	/**
 	 * Get maps list according to the requested city
-	 * @param params - Contain city name
+	 * @param params - Contain user's permission and requested city name
 	 * @return {@link Message} - Contain {@link ArrayList} of type {@link Map} if retrieval succeeded, 
 	 * else failure message
 	 */
@@ -265,15 +285,29 @@ public class MapDB {
 		ArrayList<Site> sites;
 		Message 		replyMsg = null;
 		ResultSet 		rs 		 = null;
+		String sql				 = "";
 
 		try {
 			// Connect to DB
 			SQLController.Connect();
-
-			String sql = "SELECT * FROM Maps WHERE cityname = ?"; // Prepare SELECT query
 			
+			// Check permission of the requested user
+			if(params.get(0).toString().equals(Permission.CLIENT.toString()))
+				sql = "SELECT * FROM Maps WHERE cityname = ? AND is_active = 1"; // Prepare SELECT query
+			else
+				sql = "SELECT *" + 
+					  "FROM Maps m1 \n" + 
+					  "WHERE m1.cityname = \"Jerusalem\" AND m1.mapID IN \r\n" + 
+					  "(SELECT a.mapID as \"id\" FROM Maps a \r\n" + 
+					  "WHERE m1.mapname = a.mapname AND m1.cityname = a.cityname AND \r\n" + 
+					  "NOT EXISTS"
+					  + "(SELECT 1 FROM Maps b WHERE b.mapname = a.mapname AND b.cityname = a.cityname AND "
+					  + "b.is_active = 0 AND a.is_active = 1))";
+
+			ArrayList<Object> cityparam = new ArrayList<Object>(params.subList(1, params.size()));
+
 			// Execute sql query, get results
-			rs = SQLController.ExecuteQuery(sql, params);
+			rs = SQLController.ExecuteQuery(sql, cityparam);
 
 			// check if query succeeded
 			if(!rs.next()) {
@@ -290,6 +324,7 @@ public class MapDB {
 				String description = rs.getString("description");
 				String cityname = rs.getString("cityname");
 				byte[] image = rs.getBytes("url");
+				boolean is_active = rs.getBoolean("is_active");
 
 				// Clear lists of parameters for the next queries and add the desired parameter
 				params.clear(); params.add(id);
@@ -302,7 +337,7 @@ public class MapDB {
 					(ArrayList<Site>)((Message)mapSites).getData().get(1);
 
 				// Add current instance of Map to the array list
-				maps.add(new Map(id, mapname, description, cityname, sites, image));
+				maps.add(new Map(id, mapname, description, cityname, sites, image, is_active));
 			}
 
 			replyMsg = new Message(null, new Integer(0), maps);	// Add content of the array list to the message
@@ -374,110 +409,178 @@ public class MapDB {
 	
 	/**
 	 * Update details in database of the current map's new version, set current version as active
-	 * @param params - Contain the user entity of the manager, response - approve/decline, map name and id
+	 * @param params - response - approve/decline of publishing new version, map id
 	 * @return {@link Message} - Indicating success/failure with corresponding message
+	 * @throws Exception 
 	 */
-	public Message publishNewVersion(ArrayList<Object> params){
+	public void publishNewVersion(ArrayList<Object> params) throws Exception{
 		// Variables
-		ArrayList<Object> map_sities = new ArrayList<Object>();
-		Message 		  replyMsg   = null;
-		ResultSet 		  rs 	     = null;
+		ArrayList<Object> map_sities;
 
 		try {
 			// Add is_active = false to get the new sites add to database and to the map to display them on this version
 			// Get the id of sites that belong to the map using private getMapSitesID method
 			params.add(0); 
-			ArrayList<Object> input = new ArrayList<Object>(params.subList(3, params.size()));
-			ArrayList<Object> sites = getMapSitesID(input);
+			ArrayList<Object> input = new ArrayList<Object>(params.subList(1, params.size()));
+			ArrayList<Object> sitesID = getMapSitesID(input);
 
 			// Add response of management to publishing new version and the map id
-			map_sities.add(params.get(1)); map_sities.add(params.get(3));
+			map_sities = new ArrayList<Object>(params.subList(0, params.size()));
 
-			// Delete sites related to the map which was approved, using map id given
+			// Delete sites related to the map according to the response, using map id given
 			updateSitesOfMap(map_sities);
 
 			map_sities.remove(1); // remove map id 
 			
 			// Enter each site into the array list for query
-			for (Object site : sites)
+			for (Object site : sitesID)
 				map_sities.add(site);
 
-			SiteDB.getInstance().approveNewSites(map_sities); // Approve new sites added for this new version
+			SiteDB.getInstance().approveNewSites(map_sities); // Update new sites added according to the response
 
 			// Add is_active = true to get the existing sites already in map to display their new details in map 
-			input.remove(2); input.add(1); map_sities.clear(); map_sities.add(params.get(1));
-			sites = getMapSitesID(input);
+			input.remove(1); input.add(1); map_sities.clear(); map_sities.add(params.get(0));
+			sitesID = getMapSitesID(input);
 
 			// Enter each site into the array list for query
-			for (Object site : sites)
+			for (Object site : sitesID)
 				map_sities.add(site);
 
 			// Approve editing of sites for this new version
 			SiteDB.getInstance().approveEditedSites(map_sities);
-
-			String content = "Got an update for map " + params.get(2).toString();
- 			// Insert new Inbox message to clients letting them know there is a new version for the map
-			Message msg = InboxDB.getInstance().AddInboxMessage(
-					((User)params.get(0)).getUserName(), 
-					((User)params.get(0)).getPermission().toString(),
-					Permission.CLIENT.toString(),
-					content,
-					new String("New"),
-					LocalDate.now());
 		}
 		catch (SQLException e) {
-			replyMsg = new Message(null, new Integer(1), e.getMessage());
+			throw e;
 		}
 		catch(Exception e) {
-			replyMsg = new Message(null, new Integer(1), e.getMessage());
+			throw e;
 		}
-		finally {
-			// Disconnect DB
-			SQLController.Disconnect(rs);	
-		}
-
-		return replyMsg;
 	}
 
 	/**
 	 * Delete sites from map - set as to delete in the future when new version is approved or 
 	 * delete sites when new version is approved
-	 * @param params - Contain map's id where the sites should be deleted, and site id in case of future deletion
+	 * @param params - contains map id and site id in case manager decides to remove the site from the map,
+	 * or manager's response to publishing city's maps collection and map id of current city's map
 	 * @throws Exception 
 	 */
 	public void updateSitesOfMap(ArrayList<Object> params) throws Exception{
 		// Variables
-		ArrayList<Object> data 		  = new ArrayList<Object>();
-		int 			  changedRows = 0;
-		String 			  sql		  = "";
+		String sql = "";
 		
 		try {
 			// Build query according to the removal action - after new version's publishing or on delete
 			// from site from map - management's action
-			if(params.size() == 2) {
+			if(params.get(0) instanceof Integer) {
 				sql = "UPDATE BridgeMSC SET to_delete = 1 " +
 					  "WHERE mapID = ? AND siteID = ? AND is_active = ?";
 				params.add(1);
+
+				editMap(sql, params); // Execute sql query using private editMap method
 			}
 			// Check if the method was called as from the publishNewVersion method
-			else if(params.size() > 2) {
+			else{
+				// Get map id parameter for the next queries
+				params = new ArrayList<Object>(params.subList(1, params.size()));
+
 				// If new version was approved - update is_active of new sites to true
 				if(params.get(0).toString() == "Approve") {
 					// Add another query after the update to delete the sites in map where to_delete = true
 					sql = " DELETE FROM BridgeMSC " + 
-							" WHERE mapID = ? AND to_delete = 1 AND is_active = 1;"
-							+ " UPDATE BridgeMSC SET is_active = 1 WHERE mapID = ? AND is_active = 0;";
+							" WHERE mapID = ? AND to_delete = 1 AND is_active = 1";
 
-					params.add(params.get(1));
-					params = new ArrayList<Object>(params.subList(1, params.size())); // prepare parameters to query
+					editMap(sql, params); // Execute sql query using private editMap method
+
+					// Update new maps to display the sites
+					sql = " UPDATE BridgeMSC SET is_active = 1 WHERE mapID = ? AND is_active = 0";
+
+					editMap(sql, params); // Execute sql query using private editMap method
 				}
 				else{
-					sql = "DELETE FROM BridgeMSC WHERE mapID = ? AND is_active = 0;" +
-						  " UPDATE BridgeMSC SET to_delete = 0 WHERE mapID = ? AND is_active = 1;";
-					params.add(params.get(1));
-					params = new ArrayList<Object>(params.subList(1, params.size())); // prepare parameters to query
+					// The update was declined - delete the sites which where related to a new map
+					// or added to an existing map
+					sql = "DELETE FROM BridgeMSC WHERE mapID = ? AND is_active = 0";
+					
+					editMap(sql, params); // Execute sql query using private editMap method
+					
+					// Update sites that where set to be deleted to be displayed after the new version was declined
+					sql =  " UPDATE BridgeMSC SET to_delete = 0 WHERE mapID = ? AND is_active = 1";
+
+					editMap(sql, params); // Execute sql query using private editMap method
 				}
 			}
+		}
+		catch (SQLException e) {
+			throw e;
+		}
+		catch(Exception e) {
+			throw new Exception("Editing the current map was unsuccessful");
+		}
+	}
+
+	/**
+	 * Responsible to update Maps table according to the management response
+	 * @param params - Contains management response - approve/decline and city name
+	 * @throws Exception 
+	 */
+	public void updateMapDetailsAfterApproval(ArrayList<Object> params) throws Exception{
+		// Variables
+		String sql 		= "";
+		String response = params.get(0).toString();
+
+		// Get the needed parameters for the queries ahead
+		params = new ArrayList<Object>(params.subList(1, params.size()));
+
+		try {
+			// If new version was approved - update details of existing maps to the changes made
+			if(response.equals("Approve")) {
+				// Update exisiting map's details to display the changes
+				sql = "UPDATE  Maps m1 \n" + 
+						"CROSS JOIN Maps m2 \n" + 
+						"SET     m1.mapname = m2.mapname, \n" + 
+						"		m1.cityname = m2.cityname, \n" + 
+						"	 	m1.description = m2.description, \n" + 
+						"		m1.url = m2.url \n" + 
+						"WHERE   m1.mapname = m2.mapname AND \n" + 
+						"		m1.cityname = m2.cityname AND \n" + 
+						"		m1.is_active = 1 AND \n" + 
+						"		m2.is_active = 0 AND \n" + 
+						"        m1.cityname = ?";
+
+				// Execute sql query using private editMap method
+				editMap(sql, params);
+
+				// Update new maps to be displayed to users
+				sql = "UPDATE Maps SET Maps.is_active = 1 \n" + 
+					  "WHERE Maps.cityname = ? AND \n" + 
+					  "Maps.is_active = 0 AND \n" + 
+					  "NOT EXISTS(SELECT 1 FROM (SELECT * FROM Maps) as T1 "
+					  + "WHERE T1.mapname = Maps.mapname AND T1.cityname = Maps.cityname AND T1.is_active = 1)";
+
+				// Execute sql query using private editMap method
+				editMap(sql, params);
+			}
+			else{
+				// Delete new maps which were added during editing process
+				sql = "DELETE FROM Maps \n" + 
+					  "WHERE Maps.cityname = ? AND \n" + 
+					  "Maps.is_active = 0 AND \n" + 
+					  "NOT EXISTS(SELECT 1 FROM (SELECT * FROM Maps) as T1 "
+					  + "WHERE T1.mapname = Maps.mapname AND T1.cityname = Maps.cityname AND T1.is_active = 1)";
+
+				// Execute sql query using private editMap method
+				editMap(sql, params);
+			}
+			
+			// After update was made to existing/new maps, need to delete rows which handled
+			// the changes to the existing maps
+			sql = "DELETE FROM Maps WHERE Maps.cityname = ? AND "
+					+ "mapID IN (SELECT T1.mapID as \"mapID\"\n" + 
+					"			 FROM (SELECT * FROM Maps) as T1, (SELECT * FROM Maps) T2 \n" + 
+					"			 WHERE T1.mapID <> T2.mapID AND \r\n" + 
+					"				   T1.mapname = T2.mapname AND\r\n" + 
+					"                  T1.cityname = T2.cityname AND\r\n" + 
+					"				   T1.is_active = 0)";
 
 			// Execute sql query using private editMap method
 			editMap(sql, params);
@@ -486,14 +589,10 @@ public class MapDB {
 			throw e;
 		}
 		catch(Exception e) {
-			throw new Exception("Map's update after management response was unsuccessful");
-		}
-		finally {
-			// Disconnect DB
-			SQLController.Disconnect(null);
+			throw new Exception("Maps' update after management response was unsuccessful");
 		}
 	}
-
+	
 	/**
 	 * Providing the sql search query according to the search criteria
 	 * @param params - {@link ArrayList} of the search parameters
@@ -551,22 +650,22 @@ public class MapDB {
 					"			WHERE b.mapID IN (SELECT b.mapID as \"mapID\" " + 
 					"						      FROM Sites s, Maps m, BridgeMSC b, Cities c " + 
 					"						      WHERE m.mapID = b.mapID AND s.siteID = b.siteID " +
-					" AND c.id = b.cityID AND " + sql.split(":")[1] + ")) as search, Sites s, Maps m " + 
-					"	  WHERE search.mapID = m.mapID AND search.siteID = s.siteID " + 
+					" AND c.id = b.cityID AND " + sql.split(":")[1] + " AND b.is_active = 1)) as search, Sites s, Maps m " + 
+					"	  WHERE search.mapID = m.mapID AND search.siteID = s.siteID AND s.is_active = 1" + 
 					"	  GROUP BY search.mapID";
 		else
 			sql = "Site:SELECT b.mapID as \"mapID\", s.cityname as \"cityname\", " +
 								"m.description as \"mapDescription\" " + 
 								"FROM Sites s, Maps m, BridgeMSC b, Cities c " +
 								"WHERE m.mapID = b.mapID AND s.siteID = b.siteID AND c.id = b.cityID " + 
-								"AND " + sql.split(":")[1];
+								"AND " + sql.split(":")[1] + " AND b.is_active = 1 AND s.is_active = 1";
 
 		return sql;
 	}
 
 	/**
 	 * Private method to get the id of the sites of a specific map
-	 * @param params - {@link ArrayList} contain map id, is_active type - current displayed or for future display
+	 * @param params - {@link ArrayList} contains map id, is_active type - current displayed or for future display
 	 * @return {@link ArrayList} - an {@link ArrayList} of type int representing the map's sites' id
 	 */
 	private ArrayList<Object> getMapSitesID(ArrayList<Object> params){
@@ -593,7 +692,7 @@ public class MapDB {
 			
 			// Read data
 			while (rs.next())
-				sites.add(new Integer(rs.getInt("siteiD")));
+				sites.add(new Integer(rs.getInt("siteID")));
 		}
 		catch (SQLException e) {
 			return null;
@@ -607,6 +706,51 @@ public class MapDB {
 		}
 
 		return sites;
+	}
+
+	/**
+	 * Private method to get the currently displayed map's id when this is under editing
+	 * @param params - {@link ArrayList} contains map name, city name 
+	 * @return int - id of the currently displayed map
+	 * @throws SQLException 
+	 */
+	private int getActiveMap(ArrayList<Object> params) throws SQLException{
+		// Variables
+		ResultSet rs   		= null;
+		int	 	  activemap = 0;
+
+		try {
+			// Connect to DB
+			SQLController.Connect();
+
+			// Prepare SELECT query
+			String sql = "SELECT mapID FROM Maps WHERE mapname = ? AND cityname = ? AND is_active = 1";
+
+			// Execute sql query, get results
+			rs = SQLController.ExecuteQuery(sql, params);
+
+			// check if query succeeded
+			if(!rs.next()) {
+				throw new Exception();
+			}
+
+			rs.beforeFirst(); // Return cursor to the start of the first row
+			
+			// Read data
+			while (rs.next())
+				activemap = rs.getInt("mapID");
+		}
+		catch (SQLException e) {
+			throw e;
+		}
+		catch(Exception e) {
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(rs);	
+		}
+
+		return activemap;
 	}
 
 	/**
@@ -625,7 +769,7 @@ public class MapDB {
 
 			// Check if update was successful - result should be greater than zero
 			if (changedRows == 0)
-				 throw new Exception("Operation on sites was unsuccessful.");
+				 throw new Exception("Operation on maps was unsuccessful.");
 			}
 		catch (SQLException e) {
 			throw e;

@@ -20,6 +20,7 @@ public class Map implements java.io.Serializable{
 	private String cityname;
 	private String mapname;
 	private byte[] image;
+	private boolean is_active;
 	private ArrayList<Site> sites = new ArrayList<Site>() ;
 
 	/**
@@ -29,15 +30,18 @@ public class Map implements java.io.Serializable{
 	 * @param description - map's description
 	 * @param cityname - the city the map belongs to
 	 * @param sites - {@link ArrayList} of type {@link Site} list of sites that appear in the map
+	 * @param is_active - boolean representing if current map is displayed or not
 	 * @param image - a byte array that represents the map's image
 	 */
-	public Map(int id, String mapname, String description, String cityname, ArrayList<Site> sites, byte[] image) {
+	public Map(int id, String mapname, String description, 
+			String cityname, ArrayList<Site> sites, byte[] image, boolean is_active) {
 		this.id = id;
 		this.mapname = mapname;
 		this.description = description;
 		this.cityname = cityname;
 		this.sites = sites;
 		this.image = image;
+		this.is_active = is_active;
 	}
 
 	/**
@@ -49,7 +53,7 @@ public class Map implements java.io.Serializable{
 	}
 
 	/**
-	 * Get map's idname
+	 * Get map's name
 	 * @return String
 	 */
 	public String getName() {
@@ -112,6 +116,14 @@ public class Map implements java.io.Serializable{
 		this.sites = sites;
 	}
 
+	/**
+	 * Get is_active status of the map
+	 * @return boolean
+	 */
+	public boolean getIsActive() {
+		return is_active;
+	}
+	
 	/**
 	 * Get map's image as byte array
 	 * @return byte array
