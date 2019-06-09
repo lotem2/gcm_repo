@@ -227,11 +227,11 @@ public class SiteDB {
 			if(SQLController.DoesRecordExist("Sites","name", "location","is_active", 
 					params.get(0), params.get(5), 0)) {
 				// Prepare statement to insert new site
-				sql = "UPDATE Sites SET name = ?, classification = ?, description = ?, accessible = ?, " +
+				sql = "UPDATE Sites SET name = ?, cityname = ?, classification = ?, description = ?, accessible = ?, " +
 							 "visitDuration = ?, location = ? " +
-							 "WHERE name = ?, location = ?, is_active = ?";	
+							 "WHERE name = ?, location = ?, is_active = 0";	
 				// Adding parameters for the WHERE clause
-				params.add(params.get(0)); params.add(params.get(5)); params.add(0);
+				params.add(params.get(0)); params.add(params.get(5));
 				
 				// Edit site's details using private editSite method
 				editSite(sql, params);
@@ -239,7 +239,7 @@ public class SiteDB {
 			else {
 				// Adding parameters for the WHERE clause and call AddSite 
 				// to add new record with updated value of a site that already exists but record that is not displayed yet
-				params.add(0); params.add(params.get(0)); params.add(params.get(5));
+				params.add(params.get(0)); params.add(params.get(5));
 				AddSite(params);
 			}
 
@@ -279,9 +279,9 @@ public class SiteDB {
 			SQLController.Connect();
 			
 			// Prepare statement to insert new site
-			String sql = "INSERT INTO Sites (`name`, `classification`, `description`, `accessible`, " +
+			String sql = "INSERT INTO Sites (`name`, `cityname`, `classification`, `description`, `accessible`, " +
 						 "`visitDuration`, `location`, `is_active`)" +
-						 "VALUES (?, ?, ?, ?, ?, ?, ?) " +
+						 "VALUES (?, ?, ?, ?, ?, ?, 0) " +
 						 "WHERE name = ?, location = ?";
 
 			// Execute sql query, get number of changed rows
@@ -317,7 +317,7 @@ public class SiteDB {
 
 		try {
 			// If version is approved need to update exisiting sites with new details
-			if(params.get(0) == "Approve") {
+			if(params.get(0).toString().equals("Approve")) {
 				// Prepare statement to insert new site
 				sql = "UPDATE  Sites s1\n" + 
 						"        CROSS JOIN Sites s2\n" + 
