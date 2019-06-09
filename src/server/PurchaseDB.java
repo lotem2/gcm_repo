@@ -47,7 +47,7 @@ public class PurchaseDB {
 			SQLController.Connect();
 			
 			// Prepare statement to get current client's purchase
-			String sql = "INSERT INTO Purchases (`userame`, `cityName`, `purchaseType`, `purchaseDate`," +
+			String sql = "INSERT INTO Purchases (`username`, `cityName`, `purchaseType`, `purchaseDate`," +
 						 " `expiryDate`, `renew`, `views`, `downloads`, `price`)" +
 						 " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			
@@ -61,7 +61,7 @@ public class PurchaseDB {
 
 			// Add 0 to indicate success
 			data.add(new Integer(0));
-			if(params.get(2) == PurchaseType.SHORT_TERM_PURCHASE)
+			if(params.get(2).toString().equals(PurchaseType.SHORT_TERM_PURCHASE.toString()))
 			{
 				// Get city entity by the city's name using getCity method
 				ArrayList<Object> input = new ArrayList<Object>(params.subList(1, 2));

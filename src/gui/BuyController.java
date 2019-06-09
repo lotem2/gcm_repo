@@ -38,6 +38,7 @@ public class BuyController implements ControllerListener {
 	static HashMap<String, Float> citiesAndPrices;
 	static ArrayList<String> citiesList;
 	static ArrayList<String> terms;
+	static float currPrice;
 
 	@FXML
 	private ResourceBundle resources;
@@ -150,13 +151,12 @@ public class BuyController implements ControllerListener {
 		try {
 			Message myMessage;
 			String m_cityName = "";
-			PurchaseType m_purchaseType = null;
+			String m_purchaseType = "";
 			LocalDate m_purchaseDate = LocalDate.now();
 			LocalDate m_expirationDate = null;
 			int m_renewCounter = 0;
 			int m_Views = 0;
 			int m_Downloads = 0;
-			float m_price = 0;
 
 			ArrayList<Object> data = new ArrayList<Object>();
 
@@ -164,10 +164,10 @@ public class BuyController implements ControllerListener {
 				m_cityName = ChoiceBoxCities.getSelectionModel().getSelectedItem();
 
 				if (rbBuyOnce.isSelected()) {
-					m_purchaseType = Purchase.PurchaseType.SHORT_TERM_PURCHASE;
+					m_purchaseType = Purchase.PurchaseType.SHORT_TERM_PURCHASE.toString();
 					m_expirationDate = LocalDate.now();
 				} else if (rbSubscription.isSelected()) {
-					m_purchaseType = Purchase.PurchaseType.LONG_TERM_PURCHASE;
+					m_purchaseType = Purchase.PurchaseType.LONG_TERM_PURCHASE.toString();
 					m_expirationDate = LocalDate.now().plusDays(10);
 				}
 
@@ -187,7 +187,7 @@ public class BuyController implements ControllerListener {
 				data.add(m_renewCounter);
 				data.add(m_Views);
 				data.add(m_Downloads);
-				data.add(m_price);
+				data.add(currPrice);
 
 				if (rbBuyOnce.isSelected()) {
 					Message myTempMessage;
@@ -254,9 +254,7 @@ public class BuyController implements ControllerListener {
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 			break;
-		case DOWNLOAD_PURCHASE:
-
-			break;
+	
 		default:
 		}
 	}
@@ -285,6 +283,7 @@ public class BuyController implements ControllerListener {
 			}
 		}
 		price = Double.parseDouble(new DecimalFormat("##.####").format(price));
+		currPrice = (float)price;
 		String totalPrice = String.valueOf(price);
 		lblTotalPrice.setText("Total Price: " + totalPrice);
 		return totalPrice;

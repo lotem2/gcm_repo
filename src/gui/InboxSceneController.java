@@ -67,10 +67,10 @@ public class InboxSceneController implements ControllerListener {
 			);
 	
 	private void sendApprovalOrDeclineMessage(boolean isApproved) {
-		ArrayList<Object> arrList = new ArrayList<Object>();
-		arrList.add(new Boolean(isApproved));
+		ArrayList<Object> data = new ArrayList<Object>();
+		data.add(new Boolean(isApproved));
 		try {
-			MainGUI.GUIclient.sendToServer(new Message(Action.UPDATE_MESSAGE_APPROVAL, arrList));
+			MainGUI.GUIclient.sendToServer(new Message(Action.UPDATE_MESSAGE_APPROVAL, data));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -88,8 +88,14 @@ public class InboxSceneController implements ControllerListener {
 
 	@FXML
 	public void Refresh(ActionEvent event) {
+		CallToServer();
+	}
+
+	private void CallToServer() {
 		try {
-			MainGUI.GUIclient.sendToServer(new Message(Action.GET_INBOX_MESSAGES));
+			ArrayList<Object> data = new ArrayList<Object>();
+			data.add(MainGUI.currUser.getUserName());
+			MainGUI.GUIclient.sendToServer(new Message(Action.GET_INBOX_MESSAGES, data));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -106,7 +112,7 @@ public class InboxSceneController implements ControllerListener {
 		switch (currMsg.getAction()) 
 		{
 			case GET_INBOX_MESSAGES:
-				updateTable((List<InboxMessage>) currMsg.getData().get(0));
+				updateTable((List<InboxMessage>) currMsg.getData().get(1));
 				break;
 		}
 		System.out.println("Error - got unsupported action - " + currMsg.getAction());
@@ -114,6 +120,7 @@ public class InboxSceneController implements ControllerListener {
 	
 	@FXML
 	void initialize() {
+		CallToServer();
 		updateTable(m_inboxMessages);
 	}
 	
