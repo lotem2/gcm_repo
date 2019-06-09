@@ -1,6 +1,7 @@
 package gui;
 
 import client.*;
+
 import entity.*;
 import gui.MainGUI.SceneType;
 import common.*;
@@ -99,9 +100,10 @@ public class MainGUIController implements ControllerListener {
 	@FXML
 	private Text txtMapsCatalog;
 	@FXML
-	private Label lblWelcome;
-	@FXML
     private Button btnInbox;
+	@FXML
+	private Label lblWelcome;
+
 
 	/**
 	 * @param event making the data to send to the server
@@ -226,14 +228,17 @@ public class MainGUIController implements ControllerListener {
 						switch (permission) {
 						case CLIENT:
 							MainGUI.currClient = (Client) currMsg.getData().get(1);
+							Platform.runLater(() -> {
 							btnMyProfile.setVisible(true);
 							btnEditMaps.setText("Show Maps");
 							btnEditMaps.setVisible(true);
 							btnBuy.setVisible(true);
 							btnInbox.setVisible(true);
+							});
 							break;
 						case EDITOR:
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
+							Platform.runLater(() -> {
 							btnEditMaps.setVisible(true);
 							btnBuy.setVisible(false);
 							btnManage.setVisible(true);
@@ -241,9 +246,11 @@ public class MainGUIController implements ControllerListener {
 							btnEditMaps.setVisible(true);
 							btnBuy.setVisible(false);
 							btnInbox.setVisible(true);
+							});
 							break;
 						case MANAGING_EDITOR:
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
+							Platform.runLater(() -> {
 							btnEditMaps.setVisible(true);
 							btnBuy.setVisible(false);
 							btnManage.setVisible(true);
@@ -251,14 +258,17 @@ public class MainGUIController implements ControllerListener {
 							btnEditMaps.setVisible(true);
 							btnBuy.setVisible(false);
 							btnInbox.setVisible(true);
+							});
 							break;
 						case CEO:
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
+							Platform.runLater(() -> {
 							btnManage.setVisible(true);
 							btnEditMaps.setText("Edit Maps");
 							btnEditMaps.setVisible(true);
 							btnBuy.setVisible(false);
 							btnInbox.setVisible(true);
+						});
 							break;
 						default:
 						}
