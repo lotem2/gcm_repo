@@ -148,7 +148,7 @@ public class Server extends AbstractServer {
 				replyMsg.setAction(Action.GET_INBOX_MESSAGES);
 				break;
 			case UPDATE_INBOX_MSG_STATUS:
-				replyMsg = InboxDB.getInstance().getInboxMessagesByReciever((currMsg.getData()));
+				replyMsg = InboxDB.getInstance().EditInboxMessageStatus((currMsg.getData()));
 				replyMsg.setAction(Action.UPDATE_INBOX_MSG_STATUS);
 				break;
 			default:
