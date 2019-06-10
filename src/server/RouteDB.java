@@ -199,7 +199,7 @@ public class RouteDB {
             {
             	// Prepare statement to insert new route
     			sql = "INSERT INTO Routes (`name`, `cityname`, `description`, `sites`, `is_active`)" +
-    						 "VALUES (?, ?, ?, ?, ?) ";
+    						 "VALUES (?, ?, ?, ?, 0) ";
             }
 
 			// Insert update to routes using private editRoute method

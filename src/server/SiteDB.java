@@ -50,7 +50,7 @@ public class SiteDB {
 						 " s.description as \"description\", s.accessible as \"accessible\", " +
 						 " s.visitDuration as \"visitDuration\", s.location as \"location\" " +
 						 " FROM Sites s, Maps m, BridgeMSC b" +
-						 " WHERE b.mapID = ? AND is_active = 1 AND m.mapID = b.mapID AND s.siteID = b.siteID";
+						 " WHERE b.mapID = ? AND b.is_active = 1 AND m.mapID = b.mapID AND s.siteID = b.siteID";
 			}
 			else {
 				sql = "SELECT s.name as \"name\", s.cityname as \"cityname\", s.classification as \"classification\", " + 
