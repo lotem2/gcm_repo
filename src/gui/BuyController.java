@@ -5,6 +5,7 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
@@ -160,7 +161,8 @@ public class BuyController implements ControllerListener {
 			int m_renewCounter = 0;
 			int m_Views = 0;
 			int m_Downloads = 0;
-
+			
+			
 			ArrayList<Object> data = new ArrayList<Object>();
 
 			try {
@@ -171,7 +173,19 @@ public class BuyController implements ControllerListener {
 					m_expirationDate = LocalDate.now();
 				} else if (rbSubscription.isSelected()) {
 					m_purchaseType = Purchase.PurchaseType.LONG_TERM_PURCHASE.toString();
-					m_expirationDate = LocalDate.now().plusDays(10);
+					String term = ChoiceBoxTerms.getValue();
+					switch (term) {
+					case "1 Month":
+						m_expirationDate = LocalDate.now().plusDays(30);
+						break;
+					case "3 Months":
+						m_expirationDate = LocalDate.now().plusDays(90);
+						break;
+					case "6 Months":
+						m_expirationDate = LocalDate.now().plusDays(180);
+						break;
+					default:
+					}
 				}
 
 			} catch (Exception e) {
