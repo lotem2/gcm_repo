@@ -4,7 +4,6 @@ import java.awt.Point;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
 import common.*;
 import entity.InboxMessage;
 
@@ -50,7 +49,7 @@ public class InboxDB {
 
 			// Prepare statement to insert new user
 			String sql = "INSERT INTO Inbox (`senderUsername`, `senderPermission`, `receiverUsername`, `receiverPermission`, " +
-						 "`content`, `status`, `receiveDate`) VALUES (?, ?, NULL, ?, ?, ?, ?)";
+						 "`content`, `status`, `receiveDate`) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 			// Execute sql query, get number of changed rows
 			int changedRows = SQLController.ExecuteUpdate(sql, params);
@@ -79,13 +78,13 @@ public class InboxDB {
 
 		return (new Message(null, data));
 	}
-	
+
 	/**
-	 * Edit inbox message to database
+	 * Edit inbox message status to database
 	 * @param params - Contain the message status and it's id.
 	 * @return {@link Message} - Indicating success/failure with corresponding message
 	 */
-	public Message EditInboxMessageStatus(ArrayList<Object> params) {
+	public static Message EditInboxMessageStatus(ArrayList<Object> params) {
 		// Variables
 		ArrayList<Object> data = new ArrayList<Object>();
 
@@ -121,7 +120,51 @@ public class InboxDB {
 			SQLController.Disconnect(null);
 		}
 
-		return (new Message(Action.UPDATE_INBOX_MSG_STATUS, data));
+		return (new Message(null, data));
+	}
+	
+	/**
+	 * Edit inbox message status and receiver user name to database
+	 * @param params - Contain the message status and it's id.
+	 * @return {@link Message} - Indicating success/failure with corresponding message
+	 */
+	public Message EditInboxMessageReceiverAndStatus(ArrayList<Object> params) {
+		// Variables
+		ArrayList<Object> data = new ArrayList<Object>();
+
+		try {
+			// Connect to DB
+			SQLController.Connect();
+
+			// Prepare statement to insert new user
+			String sql = "UPDATE Inbox SET receiverUsername = ? and status = ? WHERE id = ?";
+
+			// Execute sql query, get number of changed rows
+			int changedRows = SQLController.ExecuteUpdate(sql, params);
+
+			// Check if update was successful - result should be greater than zero
+			if (changedRows == 0) {
+				 throw new Exception("Inbox message was not added successfully.");
+			}
+
+			// Add 0 to indicate success
+			data.add(new Integer(0));
+
+			}
+		catch (SQLException e) {
+			data.add(new Integer(1));
+			data.add("There was a problem with the SQL service.");
+		}
+		catch(Exception e) {
+			data.add(new Integer(1));
+			data.add(e.getMessage());
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(null);
+		}
+
+		return (new Message(null, data));
 	}
 	
 	/**
@@ -139,7 +182,7 @@ public class InboxDB {
 			String sql = "SELECT * FROM Inbox WHERE senderUsername = ?";
 
 			// Get messages from private method, add results into the data array list
-			messages = getInboxMessages(sql, params);
+			messages = getInboxMessagesGeneric(sql, params);
 			data.add(new Integer(0)); data.add(messages);
 
 			}
@@ -170,7 +213,7 @@ public class InboxDB {
 			String sql = "SELECT * FROM Inbox WHERE receiverUsername = ?";
 
 			// Get messages from private method, add results into the data array list
-			messages = getInboxMessages(sql, params);
+			messages = getInboxMessagesGeneric(sql, params);
 			data.add(new Integer(0)); data.add(messages);
 
 			}
@@ -180,7 +223,7 @@ public class InboxDB {
 		}
 		catch(Exception e) {
 			data.add(new Integer(1));
-			data.add("No Inbox Messages were found.");
+			data.add("No Inbox Messages were found by receiver.");
 		}
 
 		return (new Message(null, data));
@@ -198,10 +241,10 @@ public class InboxDB {
 
 		try {
 			// Prepare statement to insert new user
-			String sql = "SELECT * FROM Inbox WHERE receiverPermission = ?";
+			String sql = "SELECT * FROM Inbox WHERE receiverPermission = ? OR senderPermission = ?";
 
 			// Get messages from private method, add results into the data array list
-			messages = getInboxMessages(sql, params);
+			messages = getInboxMessagesGeneric(sql, params);
 			data.add(new Integer(0)); data.add(messages);
 
 			}
@@ -211,20 +254,53 @@ public class InboxDB {
 		}
 		catch(Exception e) {
 			data.add(new Integer(1));
-			data.add("No Inbox Messages were found.");
+			data.add("No Inbox Messages were found by permission.");
 		}
 
 		return (new Message(null, data));
 	}
 	
 	/**
+	 * get inbox messages from database according to user permissions and username.
+	 * @param params - Contains the Receiver username and it's permission.
+	 * @return {@link Message} - contains {@link ArrayList} of type {@link Inbox} messages or a failure message
+	 */
+	public Message getInboxMessages(ArrayList<Object> params) {
+		// Variables
+		ArrayList<Object> 		data  	 = new ArrayList<Object>();
+		//ArrayList<InboxMessage> messages = new ArrayList<InboxMessage>();
+		Message replyMsg = null;
+		try {
+			switch((String)params.get(1))
+			{
+				case "CEO":
+				case "CLIENT":
+					data.add(params.get(0));
+					replyMsg = getInboxMessagesByReciever(data);
+					break;
+				case "EDITOR":
+				case "MANAGING_EDITOR":
+					data.add(params.get(1)); data.add(params.get(1));
+					replyMsg = getInboxMessagesByPermission(data);
+					break;
+				default:
+					break;
+			}
+		}
+		catch(Exception e) {
+			return replyMsg;
+		}
+
+		return replyMsg;
+	}
+
+	/**
 	 * Generic get Inbox Messages
 	 * @param sql - SELECT query to be executed
 	 * @param params - Contain parameters to the complete the query
 	 * @return {@link ArrayList} of type {@link InboxMessage} - result of the SELECT query
-	 * @throws Exception 
 	 */
-	private ArrayList<InboxMessage> getInboxMessages(String sql, ArrayList<Object> params) throws Exception {
+	private ArrayList<InboxMessage> getInboxMessagesGeneric(String sql, ArrayList<Object> params) throws Exception {
 		// Variables
 		ArrayList<InboxMessage> InboxMessages  = new ArrayList<InboxMessage>();
 		ResultSet		rs		  	  = null;

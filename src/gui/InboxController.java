@@ -52,8 +52,24 @@ public class InboxController implements ControllerListener {
 		ArrayList<Object> data = new ArrayList<Object>();
 		data.add(isApproved ? Status.APPROVED.toString() : Status.DECLINED.toString());
 		data.add(m_selectedMessage);
+		Action action;
+		if(m_selectedMessage.getContent().contains("price"))
+		{
+			action = Action.HANDLE_PRICE_CHANGE_REQ;
+			data.add(isApproved ? Status.APPROVED.toString() : Status.DECLINED.toString());
+			data.add(m_selectedMessage);
+			data.add(m_selectedMessage.getContent().split("to ")[1]);
+		}
+		else // m_selectedMessage.getContent().contains("version"))
+		{
+			action = Action.HANDLE_NEW_VER_REQ;
+			data.add(isApproved ? Status.APPROVED.toString() : Status.DECLINED.toString());
+			data.add(m_selectedMessage);
+			data.add(m_selectedMessage.getContent().split("city of ")[1]);
+			data.add(MainGUI.currUser);
+		}
 		try {
-			MainGUI.GUIclient.sendToServer(new Message(Action.UPDATE_INBOX_MSG_STATUS, data));
+			MainGUI.GUIclient.sendToServer(new Message(action, data));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -80,6 +96,7 @@ public class InboxController implements ControllerListener {
 		try {
 			ArrayList<Object> data = new ArrayList<Object>();
 			data.add(MainGUI.currUser.getUserName());
+			data.add(MainGUI.currUser.getPermission().toString());
 			MainGUI.GUIclient.sendToServer(new Message(Action.GET_INBOX_MESSAGES, data));
 		} catch (IOException e) {
 			e.printStackTrace();

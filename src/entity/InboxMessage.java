@@ -30,8 +30,8 @@ public class InboxMessage implements java.io.Serializable {
 	 * @param m_status - The {@link Status} of the message
 	 * @param m_receiveDate - The {@link LocalDate} of the message
 	 */
-	public InboxMessage (int id, String senderUsername, Permission senderPermission, 
-			String receiverUsername, Permission receiverPermission, String content, Status status, LocalDate receiveDate)
+	public InboxMessage (int id, String senderUsername, Permission senderPermission, String receiverUsername,
+			Permission receiverPermission, String content, Status status, LocalDate receiveDate)
 	{
 		m_id = id;
 		m_senderUsername = senderUsername;
@@ -49,7 +49,7 @@ public class InboxMessage implements java.io.Serializable {
 	 * Get the the message's identifier
 	 * @return Integer
 	 */
-	public int getId() { return m_id; }
+	public int getID() { return m_id; }
 
 	/**
 	 * Get the sender's user name
@@ -92,4 +92,5 @@ public class InboxMessage implements java.io.Serializable {
 	 * @return {@link LocalDate}
 	 */
 	public LocalDate getReceiveDate() { return m_receiveDate; }
+
 }
