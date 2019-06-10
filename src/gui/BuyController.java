@@ -111,6 +111,9 @@ public class BuyController implements ControllerListener {
 
 	@FXML
 	private TextField tfTo;
+	
+	@FXML
+	private Label lblWelcome;
 
 //	@FXML
 //	void ShowPrice(ActionEvent event) {
@@ -222,6 +225,7 @@ public class BuyController implements ControllerListener {
 
 	@FXML
 	void backToMainGUI(ActionEvent event) {
+		MainGUI.MainStage.setTitle("Global City Map");
 		MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
 	}
 
@@ -246,7 +250,7 @@ public class BuyController implements ControllerListener {
 			if ((Integer) currMsg.getData().get(0) == 0) {
 				JOptionPane.showMessageDialog(null, "Order Complete!", "", JOptionPane.INFORMATION_MESSAGE);
 				if (rbBuyOnce.isSelected()) {
-					Services.writeCityToFile((City) currMsg.getData().get(1), openSaveMapPrompt());
+					Services.writeCityToFile((City) (currMsg.getData().get(1)), openSaveMapPrompt());
 				}
 				MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
 			}
@@ -293,6 +297,7 @@ public class BuyController implements ControllerListener {
 
 	@FXML
 	void initialize() {
+		lblWelcome.setText("Welcome " + MainGUI.currUser.getUserName() + "!");
 		ChoiceBoxCities.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 
 			public void changed(ObservableValue ov, Number value, Number new_value) {

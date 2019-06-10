@@ -150,6 +150,7 @@ public class RegisterController implements ControllerListener {
 	
 	@FXML
 	void Cancel(ActionEvent event) {
+		MainGUI.MainStage.setTitle("Global City Map");
 		MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
 	}
 	

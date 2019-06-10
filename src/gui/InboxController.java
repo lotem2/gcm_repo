@@ -13,6 +13,7 @@ import entity.*;
 import javafx.fxml.FXML;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -42,6 +43,8 @@ public class InboxController implements ControllerListener {
 	private Button btnClose;
 	@FXML
 	private Button btnRefresh;
+	@FXML
+	private Label lblWelcome;
 	
 	InboxMessage m_selectedMessage;
 	
@@ -85,6 +88,7 @@ public class InboxController implements ControllerListener {
 	
 	@FXML
 	public void Close(ActionEvent event) {
+		MainGUI.MainStage.setTitle("Global City Map");
 		MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
 	}
 
@@ -105,6 +109,7 @@ public class InboxController implements ControllerListener {
 	
 	@FXML
 	void initialize() {
+		lblWelcome.setText("Welcome " + MainGUI.currUser.getUserName() + "!");
 		getMessagesFromServer();
 	}
 	
