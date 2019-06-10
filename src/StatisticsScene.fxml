@@ -32,7 +32,8 @@
                         <Label fx:id="lblNumOfRenewals" layoutX="435.0" layoutY="244.0" text="Total number of renewals: " />
                         <Label fx:id="lblLTS" layoutX="442.0" layoutY="365.0" text="long term subscription: " />
                         <Separator layoutX="379.0" layoutY="150.0" orientation="VERTICAL" prefHeight="447.0" prefWidth="8.0" />
-                        <Button fx:id="btnbackToMainGUI" layoutX="593.0" layoutY="37.0" mnemonicParsing="false" onAction="#backToMainGUI" text="Catalog" />
+                        <Button fx:id="btnbackToMainGUI" layoutX="582.0" layoutY="62.0" mnemonicParsing="false" onAction="#backToMainGUI" text="Catalog" />
+                        <Label fx:id="lblWelcome" layoutX="576.0" layoutY="33.0" text="Welcome" />
                      </children>
                   </AnchorPane>
             </content>

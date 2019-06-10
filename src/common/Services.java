@@ -31,6 +31,8 @@ import javax.mail.internet.MimeMessage;
 
 import entity.*;
 import entity.Purchase.PurchaseType;
+import javafx.scene.chart.PieChart.Data;
+import server.CityDB;
 import server.InboxDB;
 import server.PurchaseDB;
 import server.SQLController;
@@ -187,6 +189,91 @@ public final class Services extends TimerTask {
 	}
 
 	/**
+	 * handle a request for approval of a new city price.
+	 * Approval is granted by the CEO.
+	 * @param params - Contains a string which contains if request was approved and
+	 * false otherwise,the inbox message and the new price.
+	 * @return {@link Message} - Indicating success/failure with corresponding message
+	 */
+	public static common.Message handleCityPriceRequest(ArrayList<Object> params){
+		// Variables
+		ArrayList<Object> data        = new ArrayList<Object>();
+		common.Message    replyMsg    = null;
+		String            msgContent  = "";
+		String            content     = "";
+		String            status      = "";
+
+		try {
+			// Check if a new price change message is currently under management approval
+			if(SQLController.DoesRecordExist("Inbox","content", "status",
+						"Approved " + ((InboxMessage)params.get(1)).getSenderUserName() + "'s new city price to" +
+						params.get(2).toString(), "APPROVED"))
+				throw new Exception("New version is under approval, cannot create publish request.");
+
+			msgContent  = ((InboxMessage)params.get(1)).getSenderUserName() + "'s new city price to" + params.get(2).toString();
+
+			// Update success to message's data
+			data.add(new Integer(0));
+
+			// Edit content according to the CEO's decision
+			if(params.get(0).equals("APPROVED"))
+			{
+				//Get city name from content
+				String cityName =(((InboxMessage)params.get(1)).getSenderUserName().split("for")[1]).split("to")[0];
+				//Insert city name and new price to update the new city price
+				data.add(cityName); data.add(params.get(2).toString());
+				replyMsg = CityDB.getInstance().UpdateCityPriceAfterApproval(data);
+				content = "Approved ".concat(msgContent);
+				status  = "APPROVED";
+			}
+			else
+			{
+				content = "Declined ".concat(msgContent);
+				status  = "DECLINED";
+			}
+
+			// Insert new Inbox message to managers with the approval request of a city's new price
+			common.Message msg = InboxDB.getInstance().AddInboxMessage(
+					"DanA",
+					Permission.CEO.toString(),
+					((User)params.get(2)).getUserName(),
+					//((User)params.get(2)).getPermission().toString(),
+					Permission.MANAGING_EDITOR.toString(),
+					content,
+					status,
+					LocalDate.now());
+
+			// Check if insertion was successful
+			if((Integer)msg.getData().get(0) == 1) throw new Exception("Request for approval was not successful");
+			try
+			{
+				//Change the sender's message status
+				data.clear(); data.add(status); data.add(((InboxMessage)params.get(1)).getID());
+				common.Message message;
+				message = InboxDB.EditInboxMessageStatus(data);
+			}
+			catch (Exception e)
+			{
+				throw new Exception(e);
+			}
+		}
+		catch (SQLException e) {
+			data.clear(); data.add(new Integer(1)); data.add(new String("There was a problem with the SQL service."));
+			return new common.Message(Action.HANDLE_PRICE_CHANGE_REQ, data);
+		}
+		catch(Exception e) {
+			data.clear(); data.add(new Integer(1)); data.add(e.getMessage());
+			return new common.Message(Action.HANDLE_PRICE_CHANGE_REQ, data);
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(null);
+		}
+
+		return replyMsg;
+	}
+
+	/**
 	 * Create a request for approval of a new city price.
 	 * Approval is granted by the CEO.
 	 * @param params - Contains city name, a new city price and the sender's user entity
@@ -197,7 +284,7 @@ public final class Services extends TimerTask {
 		ArrayList<Object> data  = new ArrayList<Object>();
 
 		try {
-			// Check if a new map version is currently under management approval
+			// Check if a new price change message is currently under management approval
 			if(SQLController.DoesRecordExist("Inbox","content", "status",
 						"Approve " + params.get(0).toString() + "'s new city price to" + params.get(1).toString(), "New"))
 				throw new Exception("New version is under approval, cannot create publish request.");
@@ -205,11 +292,13 @@ public final class Services extends TimerTask {
 			// Prepare statement to insert new map
 			String content = "Approve " + params.get(0).toString() + "'s new city price to" + params.get(1).toString();
 
-			// Insert new Inbox message to managers with the approval request of map's new version
+			// Insert new Inbox message to managers with the approval request of a city's new price
 			common.Message msg = InboxDB.getInstance().AddInboxMessage(
 					((User)params.get(2)).getUserName(),
-					((User)params.get(2)).getPermission().toString(),
+					//((User)params.get(2)).getPermission().toString(),
 					Permission.MANAGING_EDITOR.toString(),
+					"DanA",
+					Permission.CEO.toString(),
 					content,
 					new String("New"),
 					LocalDate.now());
@@ -233,35 +322,182 @@ public final class Services extends TimerTask {
 
 		return new common.Message(null, data);
 	}
-	
+
 	@Override
 	public void run() {
 		// Daily functions - reminder to clients which expiry date of their purchases is 3 days from today
 		PurchaseDB.getInstance().sendReminders(LocalDate.now().plusDays(3)); 
 	}
-	
+
 	/**
 	 * Private method to set the timer variables to run at the start of every day - 12am
 	 */
 	public static void setTimer() {
 		Calendar current_time = Calendar.getInstance();
-		
+
 		// Set current time to 12am
 		current_time.set(Calendar.HOUR_OF_DAY, 24);
 		current_time.set(Calendar.MINUTE, 0);
 		current_time.set(Calendar.SECOND, 0);
-		
+
 		// Set new task to the timer to run at the start of every day
 		Tasks_timer.scheduleAtFixedRate(new Services(), current_time.getTime(), 
 				TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS));
 	}
+
 	
 	/**
-	 * Create a request for approval of a map's new version
-	 * @param params - Contain map's name, the sender's user entity 
-	 * @return {@link Message} - Indicating success/failure with corresponding message 
+	 * Notify registered clients on a new version of their subscriptions.
+	 * @param params - Contains the approver's User entity and city name
+	 * @return {@link Message} - Indicating success/failure with corresponding message
 	 */
-	public common.Message createNewVersionRequest(ArrayList<Object> params){
+
+	public static common.Message notifyClientsOnNewVersion(ArrayList<Object> params){
+		// Variables
+		ArrayList<Object> data           = new ArrayList<Object>();
+		ArrayList<Object> param          = new ArrayList<Object>();
+		common.Message    replyMsg       = null;
+		User 			  currentManager = (User)params.get(0);
+
+		try
+		{
+		// Get list of purchases of users who purchased the city
+		param = new ArrayList<Object>(params.subList(1, params.size()));
+		data = PurchaseDB.getInstance().getPurchasesByCity(param).getData();
+
+		if((Integer)data.get(0) != 1) {
+			ArrayList<Purchase> cityPurchases = (ArrayList<Purchase>)data.get(1);
+
+			// Write message to user who purchases city's map
+			String content = "Got an update for city " + params.get(2).toString();
+
+			// Go through each user's purchase and send them a message about a map's update
+			for (Purchase purchase : cityPurchases) {
+				// Insert new Inbox message to clients letting them know there is a new version for the map
+				common.Message msg = InboxDB.getInstance().AddInboxMessage(
+						currentManager.getUserName(),
+						currentManager.getPermission().toString(),
+						purchase.getUserName(),
+						Permission.CLIENT.toString(),
+						content,
+						new String("INFO"),
+						LocalDate.now());
+				// Check if we got an error while notifying users
+				if((Integer)msg.getData().get(1) == 1)
+					throw new Exception("Error while updating users about the map's version");
+			}
+			data.clear(); data.add(new Integer(0));
+		}
+		else
+			throw new Exception("Error while updating users about the map's version");
+		}
+		catch(Exception e)
+		{
+			data.clear(); data.add(new Integer(1));
+			return new common.Message (null, data);
+		}
+	return new common.Message (null, data);
+}
+
+	/**
+	 * handle a new version request from the editors to the managing editors for approval.
+	 * @param params - Contains a String which represents if a new version was approved 
+	 * and false otherwise, the inbox message, the city's name and approver's User entity
+	 * @return {@link Message} - Indicating success/failure with corresponding message
+	 */
+	public static common.Message handleNewVersionRequest(ArrayList<Object> params){
+		// Variables
+		ArrayList<Object> data        = new ArrayList<Object>();
+		common.Message    replyMsg    = null;
+		String            msgContent  = "New version of " + params.get(2).toString() + "requested by " +
+										((InboxMessage)params.get(1)).getReceiverUserName() + "was ";
+		String            content     = "";
+		String            status      = "";
+
+		try {
+			// Check if a new map version is currently under management approval
+			if(SQLController.DoesRecordExist("Inbox","content", "status",
+						"Approve " + params.get(0).toString() + " new version", "APPROVED"))
+				throw new Exception("New version is under approval, cannot create publish request.");
+
+			// Update success to message's data
+			data.add(new Integer(0));
+
+			// Edit content according to the CEO's decision
+			if(params.get(0).equals("APPROVED"))
+			{
+				content = msgContent.concat("Approved");
+				status  = "APPROVED";
+				//params- user entity, APPROVE/DECLINE, city name
+				data.add(params.get(0)); data.add(params.get(0)); data.add(params.get(2));
+				replyMsg = CityDB.getInstance().publishMapsCollection(data);
+			}
+			else
+			{
+				content = msgContent.concat("Declined");
+				status  = "DECLINED";
+			}
+
+			// Insert new Inbox message to managers with the approval request of a city's new price
+			common.Message msg = InboxDB.getInstance().AddInboxMessage(
+					((InboxMessage)params.get(1)).getReceiverUserName(),
+					Permission.MANAGING_EDITOR.toString(),
+					((InboxMessage)params.get(1)).getSenderUserName(),
+					Permission.EDITOR.toString(),
+					content,
+					status,
+					LocalDate.now());
+
+			//Update the sender's message status
+			try
+			{
+				data.clear(); data.add(status); data.add(((InboxMessage)params.get(1)).getID());
+				common.Message message;
+				message = InboxDB.EditInboxMessageStatus(data);
+				if((Integer)message.getData().get(0) == 1) throw new Exception((String)message.getData().get(1));
+			}
+			catch (Exception e)
+			{
+				throw new Exception(e);
+			}
+
+			// Check if insertion was successful
+			if((Integer)msg.getData().get(0) == 1) throw new Exception("Request for approval was not successful");
+			try
+			{
+				// Add user entity and city name to data
+				data.clear(); data.add((User)params.get(3));data.add(params.get(2).toString()); 
+				common.Message message;
+				message = notifyClientsOnNewVersion(data);
+				if((Integer)message.getData().get(0) == 1) throw new Exception((String)message.getData().get(1));
+			}
+			catch (Exception e)
+			{
+				throw new Exception(e);
+			}
+		}
+		catch (SQLException e) {
+			data.clear(); data.add(new Integer(1)); data.add(new String("There was a problem with the SQL service."));
+			return new common.Message(Action.HANDLE_PRICE_CHANGE_REQ, data);
+		}
+		catch(Exception e) {
+			data.clear(); data.add(new Integer(1)); data.add(e.getMessage());
+			return new common.Message(Action.HANDLE_PRICE_CHANGE_REQ, data);
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(null);
+		}
+
+		return replyMsg;
+	}
+
+	/**
+	* Create a request for approval of a city's new version
+	* @param params - Contain city's name, the sender's username
+	* @return {@link Message} - Indicating success/failure with corresponding message
+	*/
+	public static common.Message createNewVersionRequest(ArrayList<Object> params){
 		// Variables
 		ArrayList<Object> data  = new ArrayList<Object>();
 
@@ -272,12 +508,13 @@ public final class Services extends TimerTask {
 				throw new Exception("New version is under approval, cannot create publish request.");
 
 			// Prepare statement to insert new map
-			String content = "Approve " + params.get(0).toString() + " new version";
+			String content = "Approve " + params.get(0).toString() + "'s new version";
 
 			// Insert new Inbox message to managers with the approval request of map's new version
 			common.Message msg = InboxDB.getInstance().AddInboxMessage(
-					((User)params.get(1)).getUserName(), 
-					((User)params.get(1)).getPermission().toString(),
+					((User)params.get(1)).getUserName(),
+					Permission.EDITOR.toString(),
+					"BROADCAST_EDITORS",
 					Permission.MANAGING_EDITOR.toString(),
 					content,
 					new String("New"),

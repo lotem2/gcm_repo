@@ -26,7 +26,8 @@
             <Button fx:id="btnDecline" layoutY="40.0" mnemonicParsing="false" onAction="#Decline" text="Decline" />
          </children>
       </Pane>
-      <Button fx:id="btnClose" layoutX="580.0" layoutY="598.0" mnemonicParsing="false" onAction="#Close" text="Close" />
+      <Button fx:id="btnClose" layoutX="575.0" layoutY="66.0" mnemonicParsing="false" onAction="#Close" text="Catalog" />
       <Button fx:id="btnRefresh" layoutX="6.0" layoutY="146.0" mnemonicParsing="false" onAction="#Refresh" prefHeight="25.0" prefWidth="63.0" text="Refresh" />
+      <Label fx:id="lblWelcome" layoutX="566.0" layoutY="34.0" text="Welcome" />
    </children>
 </AnchorPane>

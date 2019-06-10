@@ -24,8 +24,8 @@
         <Font size="60.0" />
       </font>
     </Label>
-    <Label id="lblWelcome" layoutX="515.0" layoutY="16.0" text="Welcome" />
-    <Button id="btnMain" fx:id="btnBackToMain" layoutX="513.0" layoutY="60.0" mnemonicParsing="false" onAction="#backToMainGUI" prefHeight="27.0" prefWidth="80.0" text="Catalog" />
+    <Label id="lblWelcome" fx:id="lblWelcome" layoutX="559.0" layoutY="34.0" text="Welcome" />
+    <Button id="btnMain" fx:id="btnBackToMain" layoutX="559.0" layoutY="65.0" mnemonicParsing="false" onAction="#backToMainGUI" prefHeight="27.0" prefWidth="80.0" text="Catalog" />
     <Label fx:id="lblTerm" layoutX="362.0" layoutY="338.0" text="Choose subscription's term:" />
     <Label fx:id="lblTotalPrice" layoutX="111.0" layoutY="618.0" text="Total Price:">
       <font>

@@ -301,7 +301,6 @@ public class CityDB {
 	 */
 	public Message publishMapsCollection(ArrayList<Object> params) {
 		// Variables 
-		User 	currentManager = (User)params.get(0);
 		Message replyMsg;
 		
 		try {
@@ -321,36 +320,7 @@ public class CityDB {
 			
 			// Update the details of the city's routes collection using RouteDB's publishRoutes method
 			RouteDB.getInstance().publishRoutes(params);
-			
-			// Get list of purchases of users who purchased the city
-			param = new ArrayList<Object>(params.subList(2, params.size()));
-			ArrayList<Object> data = PurchaseDB.getInstance().getPurchasesByCity(param).getData();
 
-			if((Integer)data.get(0) != 1) {
-				ArrayList<Purchase> cityPurchases = (ArrayList<Purchase>)data.get(1);
-
-				// Write message to user who purchases city's map
-				String content = "Got an update for city " + params.get(2).toString();
-				// Go through each user's purchase and sending them message of map's update
-				for (Purchase purchase : cityPurchases) {
-		 			// Insert new Inbox message to clients letting them know there is a new version for the map
-					Message msg = InboxDB.getInstance().AddInboxMessage(
-							currentManager.getUserName(), 
-							currentManager.getPermission().toString(),
-							purchase.getUserName(),
-							Permission.CLIENT.toString(),
-							content,
-							new String("New"),
-							LocalDate.now());
-
-					// Check if we got an error while notifying users
-					if((Integer)msg.getData().get(1) == 1)
-						throw new Exception("Error while updating users about the map's version");
-				}
-			}
-			else
-				throw new Exception("Error while updating users about the map's version");
-			
 			replyMsg = new Message(null, new Integer(0));
 		}
 		catch (SQLException e) {
@@ -413,5 +383,39 @@ public class CityDB {
 		}
 
 		return maps;
+	}
+	
+	/**
+	 * Update purchase counter of city when there is a new purchase of the city
+	 * @param params - contains the city name to update
+	 * @return {@link Message} - contains result of action - success/failure and failure message in case of failure
+	 */
+	public Message updateCityPurchaseCounter(ArrayList<Object> params) {
+		// Variables
+		int 			  changedRows = 0;
+		Message 		  replyMsg;
+		
+		try {
+			// Prepare statement to get current client's purchase
+			String sql = "UPDATE Cities SET purchasecounter = purchasecounter + 1" +
+					 	 "WHERE name = ?";
+
+			// Execute sql query, get number of changed rows
+			changedRows = SQLController.ExecuteUpdate(sql, params);
+
+			// Check if update was successful - result should be greater than zero
+			if (changedRows == 0)
+				 throw new Exception("Update of purchases counter of the city was not successful.");
+
+			replyMsg = new Message(null, new Integer(0), "Update of purchases counter of the city was successful");
+		}
+		catch (SQLException e) {
+			replyMsg = new Message(null, new Integer(1), "There was a problem with the SQL service.");
+		}
+		catch(Exception e) {
+			replyMsg = new Message(null, new Integer(1), e.getMessage());
+		}
+
+		return replyMsg;
 	}
 }

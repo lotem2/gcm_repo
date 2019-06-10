@@ -144,12 +144,24 @@ public class Server extends AbstractServer {
 				replyMsg.setAction(Action.CITY_ACTIVITY_REPORT);
 				break;
 			case GET_INBOX_MESSAGES:
-				replyMsg = InboxDB.getInstance().getInboxMessagesByReciever((currMsg.getData()));
+				replyMsg = InboxDB.getInstance().getInboxMessages((currMsg.getData()));
 				replyMsg.setAction(Action.GET_INBOX_MESSAGES);
 				break;
-			case UPDATE_INBOX_MSG_STATUS:
-				replyMsg = InboxDB.getInstance().EditInboxMessageStatus((currMsg.getData()));
-				replyMsg.setAction(Action.UPDATE_INBOX_MSG_STATUS);
+			case REQUEST_PRICE_CHANGE:
+				replyMsg = Services.changeCityPriceRequest((currMsg.getData()));
+				replyMsg.setAction(Action.REQUEST_PRICE_CHANGE);
+				break;
+			case HANDLE_PRICE_CHANGE_REQ:
+				replyMsg = Services.handleCityPriceRequest((currMsg.getData()));
+				replyMsg.setAction(Action.HANDLE_PRICE_CHANGE_REQ);
+				break;
+			case REQUEST_NEW_VER_APPROVAL:
+				replyMsg = Services.createNewVersionRequest((currMsg.getData()));
+				replyMsg.setAction(Action.REQUEST_NEW_VER_APPROVAL);
+				break;
+			case HANDLE_NEW_VER_REQ:
+				replyMsg = Services.handleNewVersionRequest((currMsg.getData()));
+				replyMsg.setAction(Action.HANDLE_NEW_VER_REQ);
 				break;
 			default:
 				break;

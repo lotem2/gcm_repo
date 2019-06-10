@@ -110,6 +110,9 @@ public class StatisticsController implements ControllerListener {
 
 	@FXML
 	private Label lblLtsPerCity;
+	
+	@FXML
+	private Label lblWelcome;
 
 	@FXML
 	private Label lblDownloads;
@@ -324,6 +327,7 @@ public class StatisticsController implements ControllerListener {
 
 	@FXML
 	void initialize() {
+		lblWelcome.setText("Welcome " + MainGUI.currUser.getUserName() + "!");
 		ArrayList<Object> data = new ArrayList<Object>();
 		Message myMessage = new Message(Action.DAILY_REPORT, data);
 		try {

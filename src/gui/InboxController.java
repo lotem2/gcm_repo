@@ -13,6 +13,7 @@ import entity.*;
 import javafx.fxml.FXML;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -42,6 +43,8 @@ public class InboxController implements ControllerListener {
 	private Button btnClose;
 	@FXML
 	private Button btnRefresh;
+	@FXML
+	private Label lblWelcome;
 	
 	InboxMessage m_selectedMessage;
 	
@@ -49,8 +52,24 @@ public class InboxController implements ControllerListener {
 		ArrayList<Object> data = new ArrayList<Object>();
 		data.add(isApproved ? Status.APPROVED.toString() : Status.DECLINED.toString());
 		data.add(m_selectedMessage);
+		Action action;
+		if(m_selectedMessage.getContent().contains("price"))
+		{
+			action = Action.HANDLE_PRICE_CHANGE_REQ;
+			data.add(isApproved ? Status.APPROVED.toString() : Status.DECLINED.toString());
+			data.add(m_selectedMessage);
+			data.add(m_selectedMessage.getContent().split("to ")[1]);
+		}
+		else // m_selectedMessage.getContent().contains("version"))
+		{
+			action = Action.HANDLE_NEW_VER_REQ;
+			data.add(isApproved ? Status.APPROVED.toString() : Status.DECLINED.toString());
+			data.add(m_selectedMessage);
+			data.add(m_selectedMessage.getContent().split("city of ")[1]);
+			data.add(MainGUI.currUser);
+		}
 		try {
-			MainGUI.GUIclient.sendToServer(new Message(Action.UPDATE_INBOX_MSG_STATUS, data));
+			MainGUI.GUIclient.sendToServer(new Message(action, data));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -77,6 +96,7 @@ public class InboxController implements ControllerListener {
 		try {
 			ArrayList<Object> data = new ArrayList<Object>();
 			data.add(MainGUI.currUser.getUserName());
+			data.add(MainGUI.currUser.getPermission().toString());
 			MainGUI.GUIclient.sendToServer(new Message(Action.GET_INBOX_MESSAGES, data));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -85,6 +105,7 @@ public class InboxController implements ControllerListener {
 	
 	@FXML
 	public void Close(ActionEvent event) {
+		MainGUI.MainStage.setTitle("Global City Map");
 		MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
 	}
 
@@ -105,6 +126,7 @@ public class InboxController implements ControllerListener {
 	
 	@FXML
 	void initialize() {
+		lblWelcome.setText("Welcome " + MainGUI.currUser.getUserName() + "!");
 		getMessagesFromServer();
 	}
 	
