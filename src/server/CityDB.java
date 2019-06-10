@@ -397,8 +397,8 @@ public class CityDB {
 		
 		try {
 			// Prepare statement to get current client's purchase
-			String sql = "UPDATE Cities SET purchasecounter = purchasecounter + 1 " +
-					 	 "WHERE name = ?";
+			String sql = "UPDATE Cities SET purchasecounter = purchasecounter + 1" +
+					 	 " WHERE name = ?";
 
 			// Execute sql query, get number of changed rows
 			changedRows = SQLController.ExecuteUpdate(sql, params);
