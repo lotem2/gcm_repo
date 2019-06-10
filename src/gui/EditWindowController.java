@@ -247,9 +247,9 @@ public class EditWindowController implements ControllerListener {
 			String location = (x+","+y);
 			String classification = categoryChoser.getSelectionModel().getSelectedItem();
 			if (selection.equals("Add New Site"))
-				myMessage = new Message(Action.ADD_SITE,name,classification,description,accessible,visitDuration,location,0,map,city);
+				myMessage = new Message(Action.ADD_SITE,name,classification,description,accessible,visitDuration,location,map,city);
 			else
-				myMessage = new Message(Action.EDIT_SITE,name,classification,description,accessible,visitDuration,location,0,map,city);
+				myMessage = new Message(Action.EDIT_SITE,name,classification,description,accessible,visitDuration,location,map,city);
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
@@ -316,8 +316,7 @@ public class EditWindowController implements ControllerListener {
         btnBrowse.setOnAction(btnLoadEventListener);
         setButtonsBooleanBinding();
 		GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
-        //setAllChoiceBoxes();
-        //setCityChoiceBox();
+		//cityChoiceBoxListener(); 
         setLists();
 		Permission permission = MainGUI.currUser.getPermission();
 		switch (permission) {
@@ -328,23 +327,23 @@ public class EditWindowController implements ControllerListener {
 			});
 			break;
 		case EDITOR:
-	    	Platform.runLater(() -> {
-			tfPrice.setDisable(true);
-			btnUpdatePrice.setVisible(false);
-			btnUpdateVersion.setVisible(true);
-			});
+//	    	Platform.runLater(() -> {
+//			tfPrice.setDisable(true);
+//			btnUpdatePrice.setVisible(false);
+//			//btnUpdateVersion.setVisible(true);
+//			});
 			break;
 		case MANAGING_EDITOR:
-	    	Platform.runLater(() -> {
-			btnUpdatePrice.setDisable(false);
-			btnUpdateVersion.setDisable(false);
-			});
+//	    	Platform.runLater(() -> {
+//			btnUpdatePrice.setDisable(false);
+//			//btnUpdateVersion.setDisable(false);
+//			});
 			break;
 		case CEO:
-	    	Platform.runLater(() -> {
-			btnUpdatePrice.setDisable(false);
-			btnUpdateVersion.setDisable(false);
-			});
+//	    	Platform.runLater(() -> {
+//			//btnUpdatePrice.setDisable(false);
+//			//btnUpdateVersion.setDisable(false);
+//			});
 			break;
 		default:
 
@@ -401,6 +400,7 @@ public class EditWindowController implements ControllerListener {
 	 */ 
    void setMapInfo(Map map) {
 	   setSitesChoiceBox(map);
+	   sitesChoiceBoxListener(map);
 	   tfMapName.setText(map.getName());
 	   tfMapDescription.setText(map.getDescription());
 	   loadImage(map.getImageAsByte());
@@ -445,7 +445,7 @@ public class EditWindowController implements ControllerListener {
 	   tfPrice.setText(Float.toString(city.getPrice()));
 	   setMapsChoiceBox(city);//loading the maps in the city to a choice box
 	   setRoutesChoiceBox(city);//loading the routes in the city to a choice box
-	   GUIClient.sendActionToServer(Action.GET_ALL_SITES_LIST);//requests the list of the sites in the city
+	   //GUIClient.sendActionToServer(Action.GET_ALL_SITES_LIST);//requests the list of the sites in the city
    }
     
 
@@ -701,8 +701,8 @@ public class EditWindowController implements ControllerListener {
 				else 
 					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
 							JOptionPane.WARNING_MESSAGE);
+			break;	
 			}
-			break;
 			case GET_ALL_SITES_LIST:
 				if ((Integer) currMsg.getData().get(0) == 0) 
 				{
@@ -753,7 +753,6 @@ public class EditWindowController implements ControllerListener {
 		      @Override
 		      public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
 		    	  String currCityName = (cityChoser.getItems().get((Integer) number2));
-		    	  System.out.println(currCityName);
 		    	  setCityChoiceBox(currCityName);
 
 			}
@@ -767,7 +766,6 @@ public class EditWindowController implements ControllerListener {
 		    	  String currMapName = (mapChoser.getItems().get((Integer) number2));
 					if (currMapName.equals("Add New Map"))
 					{
-						//System.out.print(currMapName);
 						addNewMap();
 					}
 					else
@@ -792,7 +790,7 @@ public class EditWindowController implements ControllerListener {
 		    	  String currSiteName = (siteChoser.getItems().get((Integer) number2));
 					if (currSiteName.equals("Add New Site"))
 					{
-						//System.out.print(currSiteName);
+						System.out.print(currSiteName);
 						addNewSite();
 					}
 					else
@@ -857,7 +855,6 @@ public class EditWindowController implements ControllerListener {
 //			@SuppressWarnings("unchecked")
 //			@Override
 //			public void run() {
-				//String currCityName = cityChoser.getValue();
 				if (currCityName.equals("Add New City"))
 				{
 					System.out.print(currCityName);
@@ -865,9 +862,7 @@ public class EditWindowController implements ControllerListener {
 				}
 				else
 				{
-					//ArrayList<Object> data = new ArrayList<Object>();
-					//data.add(currCityName);
-					Message myMessage = new Message(Action.GET_CITY,currCityName);					
+					Message myMessage = new Message(Action.GET_CITY,MainGUI.currUser.getPermission(),currCityName);					
 					try {
 						MainGUI.GUIclient.sendToServer(myMessage);
 					}
@@ -896,7 +891,8 @@ public class EditWindowController implements ControllerListener {
 		if (maps != null) {
 		      Iterator<Map> itr = maps.iterator();
 		      while(itr.hasNext()) {
-		    	  mapsList.add(maps.get(0).getName());
+		    	  int  currMapIndex = maps.indexOf(itr.next());
+		    	  mapsList.add(maps.get(currMapIndex).getName());
 		      }
 		}
 		mapsList.add(0, "Add New Map");
@@ -917,14 +913,14 @@ public class EditWindowController implements ControllerListener {
 		if (routes != null) {
 		      Iterator<Route> itr = routes.iterator();
 		      while(itr.hasNext()) {
-		    	  routesList.add(routes.get(0).getDescription());
+		    	  int  currRouteIndex = routes.indexOf(itr.next());
+		    	  routesList.add(routes.get(currRouteIndex).getName());
 		      }
 		}
 		routesList.add(0, "Add New Route");
 		ObservableList<String> currRoutesList = FXCollections.observableArrayList(routesList);
 		routesChoser.setItems(currRoutesList);
- 
-	}
+ 	}
 	
 	/**
 	 *
@@ -939,7 +935,8 @@ public class EditWindowController implements ControllerListener {
 		if (sites != null) {
 		      Iterator<Site> itr = sites.iterator();
 		      while(itr.hasNext()) {
-		    	  sitesList.add(sites.get(0).getName());
+		    	  int  currSiteIndex = sites.indexOf(itr.next());
+		    	  sitesList.add(sites.get(currSiteIndex).getName());
 		      }
 		}
 		sitesList.add(0, "Add New Site");
@@ -959,7 +956,8 @@ public class EditWindowController implements ControllerListener {
 		if (sites != null) {
 		      Iterator<Site> itr = sites.iterator();
 		      while(itr.hasNext()) {
-		    	  sitesList.add(sites.get(0).getName());
+		    	  int  currSiteIndex = sites.indexOf(itr.next());
+		    	  sitesList.add(sites.get(currSiteIndex).getName());
 		      }
 		}
 		ObservableList<String> currSitesList = FXCollections.observableArrayList(sitesList);
