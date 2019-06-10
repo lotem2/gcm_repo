@@ -409,7 +409,7 @@ public class MapDB {
 				// If current map's is_active = false and there is a record with same name and city name -
 				// represents map's details change - get the id of the currently displayed map
 				// for further connections of sites to map
-				if(!is_active && SQLController.DoesRecordExist("Maps", "name", "cityname", "is_active",
+				if(!is_active && SQLController.DoesRecordExist("Maps", "mapname", "cityname", "is_active",
 						mapname, cityname, 1)) {
 					ArrayList<Object> tosql = new ArrayList<Object>();
 					tosql.add(mapname); tosql.add(cityname);
