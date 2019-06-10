@@ -75,7 +75,9 @@ public class PurchaseDB {
 				input.add(Permission.CLIENT);
 				input.add(params.get(1));
 				Message city = CityDB.getInstance().getCity(input);
-				data.add(city);
+				if((Integer)city.getData().get(0) == 1)
+					throw new Exception("Could not retrieve city for download");
+				data.add(city.getData().get(1));
 			}
 		}
 		catch (SQLException e) {

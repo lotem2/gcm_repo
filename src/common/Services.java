@@ -56,7 +56,7 @@ public final class Services extends TimerTask {
 
 		try {
 			// Create a folder that match the city' name
-			File directory = new File(path + "\\" + cityToDownload.getName());
+			File directory = new File(path);
 
 			// Check if directory already exists - delete it and create it again
 			if(directory.exists()) directory.delete();
@@ -66,28 +66,21 @@ public final class Services extends TimerTask {
 			// Go through each map and create the image
 			for (entity.Map city_map : cityToDownload.getMaps()) {
 				// Read image from byte array
-				BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(city_map.getImageAsByte()));
-				File newImage = new File(directory.getPath() + "\\" + city_map.getName()); // Create output file				
-			    ImageIO.write(bImage, "jpg", newImage); // Write image to the specified path
+				if(city_map.getImageAsByte() != null) {
+					BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(city_map.getImageAsByte()));
+					File newImage = new File(directory.getPath() + "\\" + city_map.getName().replace(" ", "_") + ".jpg"); // Create output file				
+				    ImageIO.write(bImage, "jpg", newImage); // Write image to the specified path	
+				}
 			}
 
 		    // Go through each map and write its toString method to the file
 		    try (FileWriter file = new FileWriter(directory.getPath() + 
 		    		"\\" + cityToDownload.getName() + "_Maps.txt", false)) {
 		        for (entity.Map currentMap : cityToDownload.getMaps()) {
-					file.write(currentMap.toString());
-					System.getProperty("line.separator");
-				}
-		    } catch (Exception e) {
-		        throw new Exception("There was a problem downloading the city.");
-		    }
-
-		    // Go through each route and write its toString method to the file
-		    try (FileWriter file = new FileWriter(directory.getPath() + 
-		    		"\\" + cityToDownload.getName() + "_Routes.txt", false)) {
-		        for (Route currentRoute : cityToDownload.getRoutes()) {
-					file.write(currentRoute.toString());
-					System.getProperty("line.separator");
+		        	if(!currentMap.toString().equals("")) {
+						file.write(currentMap.toString());
+						file.write(System.getProperty("line.separator"));
+		        	}
 				}
 		    } catch (Exception e) {
 		        throw new Exception("There was a problem downloading the city.");
