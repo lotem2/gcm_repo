@@ -132,9 +132,10 @@ public class CityDB {
 		Message           replyMsg    = null;
 		ResultSet      	  rs 		  = null;
 		String 		      sql		  = null;
+		int result = 0;
 
 		//Insert params at the following order: city name, new price.
-		data.add(params.get(1));data.add(params.get(0));
+		data.add(params.get(1)); data.add(params.get(0));
 		try {
 			// Connect to DB
 			SQLController.Connect();
@@ -142,10 +143,10 @@ public class CityDB {
 			sql = "UPDATE `Cities` SET price = ? WHERE Cities.name = ?"; // Prepare sql query
 
 			// Execute sql query, get results
-			rs = SQLController.ExecuteQuery(sql, data);
+			result = SQLController.ExecuteUpdate(sql, data);
 
 			// check if query succeeded
-			if(!rs.next())
+			if((Integer)result == 0)
 				throw new Exception("City price was not updated succesfully.");
 
 			// Create success message with the city's instance

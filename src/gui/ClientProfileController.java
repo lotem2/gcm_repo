@@ -419,7 +419,7 @@ GUIClient client;
 		ArrayList<Object> data = new ArrayList<Object>();
 		data.add(purchase.getUserName());
 		data.add(purchase.getCityName());
-		GUIClient.sendActionToServer(Action.WATCH,data);
+		GUIClient.sendActionToServer(Action.WATCH_MAP,data);
 		Permission permission = (MainGUI.currUser.getPermission());
 		switch(permission) 
 		{
