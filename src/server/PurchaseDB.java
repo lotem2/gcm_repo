@@ -62,7 +62,7 @@ public class PurchaseDB {
 			}
 
 			// Update the purchased city counter on the database
-			data.add(params.get(2));
+			data.add(params.get(1));
 			msg = CityDB.getInstance().updateCityPurchaseCounter(data);
 			if(msg.getData().equals(new Integer(1))) throw new Exception("Could not update city counter");
 
