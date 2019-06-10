@@ -40,7 +40,9 @@ public class PurchaseDB {
 	public Message addPurchase(ArrayList<Object> params) {
 		// Variables
 		ArrayList<Object> data = new ArrayList<Object>();
+		ArrayList<Object> input = new ArrayList<Object>();
 		ResultSet 		  rs   = null;
+		Message			  msg  = null;
 		
 		try {
 			// Connect to DB
@@ -59,12 +61,19 @@ public class PurchaseDB {
 				 throw new Exception("Purchase was not completed successfully.");
 			}
 
+			// Update the purchased city counter on the database
+			data.add(params.get(2));
+			msg = CityDB.getInstance().updateCityPurchaseCounter(data);
+			if(msg.getData().equals(new Integer(1))) throw new Exception("Could not update city counter");
+
+			data.clear();
 			// Add 0 to indicate success
 			data.add(new Integer(0));
 			if(params.get(2).toString().equals(PurchaseType.SHORT_TERM_PURCHASE.toString()))
 			{
 				// Get city entity by the city's name using getCity method
-				ArrayList<Object> input = new ArrayList<Object>(params.subList(1, 2));
+				input.add(Permission.CLIENT);
+				input.add(params.subList(1, 2));
 				Message city = CityDB.getInstance().getCity(input);
 				data.add(city);
 			}
