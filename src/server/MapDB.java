@@ -267,6 +267,93 @@ public class MapDB {
 	}
 	
 	/**
+	 * Get instance of map according to the user's permission
+	 * @param params - Contains user's permission and map id
+	 * @return {@link Message} - Indicating success/failure with corresponding message 
+	 */
+	public Message getMap(ArrayList<Object> params){
+		// Variables
+		Map currentMap			 = null;
+		ArrayList<Site> sites;
+		Message 		replyMsg = null;
+		ResultSet 		rs 		 = null;
+		String sql				 = "";
+
+		try {
+			// Connect to DB
+			SQLController.Connect();
+			
+			// Check permission of the requested user
+			if(params.get(0).toString().equals(Permission.CLIENT.toString()))
+				sql = "SELECT * FROM Maps WHERE mapID = ? AND is_active = 1"; // Prepare SELECT query
+			else
+				sql = "SELECT m2.mapname as \"name\", m2.cityname as \"cityname\", "
+						+ "m2.description as \"description\", m2.url as \"url\" \r\n" + 
+						"FROM (SELECT m.mapID as \"id\", m.mapname as \"name\", m.cityname as \"cityname\", "
+						+ "m.is_active as \"is_active\" FROM Maps m WHERE m.mapID = ?) as map, Maps m2\r\n" + 
+						"WHERE m2.mapID = (SELECT m.mapID as \"id\" FROM Maps m "
+						+ "WHERE NOT EXISTS(SELECT 1 FROM Maps "
+						+ "					WHERE Maps.mapname = m.mapname AND Maps.cityname = m.cityname AND "
+						+ "Maps.is_active = 0) AND map.id = m.mapID \r\n" + 
+						"                  UNION \r\n" + 
+						"                 SELECT m.mapID as \"id\" FROM Maps m "
+						+ "WHERE EXISTS(SELECT 1 FROM Maps WHERE Maps.mapname = m.mapname AND "
+						+ "Maps.cityname = m.cityname AND Maps.is_active = 1 "
+						+ "AND m.is_active = 0 AND Maps.mapID = map.id))";
+
+			// Prepare parameters for query
+			ArrayList<Object> cityparam = new ArrayList<Object>(params.subList(1, params.size()));
+
+			// Execute sql query, get results
+			rs = SQLController.ExecuteQuery(sql, cityparam);
+
+			// check if query succeeded
+			if(!rs.next()) {
+				throw new Exception("No map was found.");
+			}
+
+			rs.beforeFirst(); // Return cursor to the start of the first row
+
+			// Reads data
+			while (rs.next())
+			{
+				String mapname = rs.getString("mapname");
+				String description = rs.getString("description");
+				String cityname = rs.getString("cityname");
+				byte[] image = rs.getBytes("url");
+				boolean is_active = rs.getBoolean("is_active");
+
+				// Clear lists of parameters for the next queries and add the desired parameter
+				cityparam.clear(); cityparam.addAll(params);
+
+				// Get map's list of sites
+				Object mapSites = SiteDB.getInstance().getSitesbyMap(cityparam);
+
+				// Set the list of sites as null in case of a prbolem with the database/no sites for this map
+				sites = ((Message)mapSites).getData().get(1) instanceof String ? null : 
+					(ArrayList<Site>)((Message)mapSites).getData().get(1);
+				
+				currentMap = new Map(Integer.parseInt(params.get(1).toString()), mapname, description, 
+						cityname, sites, image, is_active);
+			}
+			
+			replyMsg = new Message(null, new Integer(0), currentMap);	// Add content of the array list to the message
+		}
+		catch (SQLException e) {
+			replyMsg = new Message(null, new Integer(1), e.getMessage());
+		}
+		catch(Exception e) {
+			replyMsg = new Message(null, new Integer(1), e.getMessage());
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(rs);	
+		}
+
+		return replyMsg;
+	}
+	
+	/**
 	 * Get maps list according to the requested city
 	 * @param params - Contain user's permission and requested city name
 	 * @return {@link Message} - Contain {@link ArrayList} of type {@link Map} if retrieval succeeded, 
