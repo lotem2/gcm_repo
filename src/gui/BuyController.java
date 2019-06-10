@@ -18,6 +18,7 @@ import common.Services;
 import entity.City;
 import entity.Purchase;
 import entity.Purchase.PurchaseType;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -34,6 +35,10 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 
+/**
+ * @author vadim
+ *
+ */
 public class BuyController implements ControllerListener {
 
 	static HashMap<String, Float> citiesAndPrices;
@@ -112,7 +117,7 @@ public class BuyController implements ControllerListener {
 
 	@FXML
 	private TextField tfTo;
-	
+
 	@FXML
 	private Label lblWelcome;
 
@@ -122,6 +127,9 @@ public class BuyController implements ControllerListener {
 //
 //	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void OneTimeTerm(ActionEvent event) {
 		lblTotalPrice.setText("Total Price: ");
@@ -130,6 +138,9 @@ public class BuyController implements ControllerListener {
 
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void Subscription(ActionEvent event) {
 		lblTotalPrice.setText("Total Price: ");
@@ -146,10 +157,9 @@ public class BuyController implements ControllerListener {
 
 	}
 
-	@FXML
-	void Download(ActionEvent event) {
-	}
-
+	/**
+	 * @param event
+	 */
 	@FXML
 	void Buy(ActionEvent event) {
 		try {
@@ -161,8 +171,7 @@ public class BuyController implements ControllerListener {
 			int m_renewCounter = 0;
 			int m_Views = 0;
 			int m_Downloads = 0;
-			
-			
+
 			ArrayList<Object> data = new ArrayList<Object>();
 
 			try {
@@ -229,20 +238,18 @@ public class BuyController implements ControllerListener {
 		}
 	}
 
-	private String openSaveMapPrompt() {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Save Image");
-		fileChooser.setInitialFileName("citymap.png");
-		File file = fileChooser.showSaveDialog(MainGUI.MainStage);
-		return file.getAbsolutePath();
-	}
-
+	/**
+	 * @param event
+	 */
 	@FXML
 	void backToMainGUI(ActionEvent event) {
 		MainGUI.MainStage.setTitle("Global City Map");
 		MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
 	}
 
+	/**
+	 * Get an Object
+	 */
 	@Override
 	public void handleMessageFromServer(Object msg) {
 		Message currMsg = (Message) msg;
@@ -262,9 +269,17 @@ public class BuyController implements ControllerListener {
 			break;
 		case BUY:
 			if ((Integer) currMsg.getData().get(0) == 0) {
-				JOptionPane.showMessageDialog(null, "Order Complete!", "", JOptionPane.INFORMATION_MESSAGE);
 				if (rbBuyOnce.isSelected()) {
-					Services.writeCityToFile((City) (currMsg.getData().get(1)), openSaveMapPrompt());
+					Platform.runLater(() -> {
+						FileChooser fileChooser = new FileChooser();
+						fileChooser.setTitle("Save Image");
+						fileChooser.setInitialFileName("citymap.png");
+						File file = fileChooser.showSaveDialog(MainGUI.MainStage);
+						Services.writeCityToFile((City) (currMsg.getData().get(1)), file.getAbsolutePath());
+					});
+				} else {
+					JOptionPane.showMessageDialog(null, "Order Complete!", "", JOptionPane.INFORMATION_MESSAGE);
+
 				}
 				MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
 			}
@@ -279,6 +294,12 @@ public class BuyController implements ControllerListener {
 		}
 	}
 
+	/**
+	 * @param isSubscription
+	 * @param city
+	 * @param term
+	 * @return String - updated price
+	 */
 	public String setPrice(boolean isSubscription, String city, String term) {
 		double price;
 		if (city.isBlank()) {

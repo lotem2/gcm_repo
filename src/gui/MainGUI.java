@@ -98,10 +98,17 @@ public class MainGUI extends Application {
 	}
 
 
+	/**
+	 * @param sceneType
+	 */
 	public static void openScene(SceneType sceneType) {
 		openScene(sceneType, false);
 	}
 
+	/**
+	 * @param sceneType
+	 * @param restorePreviousScene
+	 */
 	public static void openScene(SceneType sceneType, boolean restorePreviousScene) {
 		Platform.runLater(() -> {
 			try {

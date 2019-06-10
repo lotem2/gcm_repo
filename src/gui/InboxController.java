@@ -48,6 +48,9 @@ public class InboxController implements ControllerListener {
 	
 	InboxMessage m_selectedMessage;
 	
+	/**
+	 * @param isApproved
+	 */
 	private void sendApprovalOrDeclineMessage(boolean isApproved) {
 		ArrayList<Object> data = new ArrayList<Object>();
 		data.add(isApproved ? Status.APPROVED.toString() : Status.DECLINED.toString());
@@ -75,18 +78,27 @@ public class InboxController implements ControllerListener {
 		}
 	}
 	
+	/**
+	 * @param event
+	 */
 	@FXML
 	public void Approve(ActionEvent event) {
 		sendApprovalOrDeclineMessage(true);
 		getMessagesFromServer();
 	}
 	
+	/**
+	 * @param event
+	 */
 	@FXML
 	public void Decline(ActionEvent event) {
 		sendApprovalOrDeclineMessage(false);
 		getMessagesFromServer();
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	public void Refresh(ActionEvent event) {
 		getMessagesFromServer();
@@ -103,6 +115,9 @@ public class InboxController implements ControllerListener {
 		}
 	}
 	
+	/**
+	 * @param event
+	 */
 	@FXML
 	public void Close(ActionEvent event) {
 		MainGUI.MainStage.setTitle("Global City Map");
