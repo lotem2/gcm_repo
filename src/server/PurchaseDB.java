@@ -73,7 +73,7 @@ public class PurchaseDB {
 			{
 				// Get city entity by the city's name using getCity method
 				input.add(Permission.CLIENT);
-				input.add(params.subList(1, 2));
+				input.add(params.get(1));
 				Message city = CityDB.getInstance().getCity(input);
 				data.add(city);
 			}
