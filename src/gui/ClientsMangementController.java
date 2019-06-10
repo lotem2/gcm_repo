@@ -71,6 +71,7 @@ GUIClient client;
     
 	@FXML
 	void Statistics(ActionEvent event) {
+		MainGUI.MainStage.setTitle("Global City Map - Statistics");
 		MainGUI.openScene(MainGUI.SceneType.Statistics);
 	}
 
@@ -101,7 +102,6 @@ GUIClient client;
 	 */
 	@Override
 	public void handleMessageFromServer(Object msg) {
-		// TODO Auto-generated method stub
 		Message currMsg = (Message) msg;
 		switch (currMsg.getAction()) {
 		case SHOW_ALL_CLIENTS:
@@ -121,7 +121,7 @@ GUIClient client;
 	 *
 	 *Setting the table for the client list
 	 *
-	 * @param textField - textField.
+	 * 
 	 */
 	public void setTableViewForClients(ArrayList<Client> clients) {
 		Platform.runLater(new Runnable() {
