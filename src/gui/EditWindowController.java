@@ -200,8 +200,9 @@ public class EditWindowController implements ControllerListener {
 		Message myMessage;
 		String cityName = tfCityName.getText();
 		String cityDescription = tfCityDescription.getText();
+		String price = tfPrice.getText();
 		if (selection.equals("Add New City"))
-			myMessage = new Message(Action.ADD_CITY,cityName,cityDescription);
+			myMessage = new Message(Action.ADD_CITY,cityName,cityDescription,0,price);
 		else
 			myMessage = new Message(Action.EDIT_CITY,cityName,cityDescription);
 		MainGUI.GUIclient.sendToServer(myMessage);
@@ -217,12 +218,13 @@ public class EditWindowController implements ControllerListener {
 		try {
 			Message myMessage;
 			String selection = mapChoser.getSelectionModel().getSelectedItem();
-			//String mapName = tfMapName.getText();
+			String cityName = cityChoser.getSelectionModel().getSelectedItem();
+			String mapName = tfMapName.getText();
 			String mapDescription = tfMapDescription.getText();
 			if (selection.equals("Add New Map"))
-				myMessage = new Message(Action.ADD_MAP,/*mapName,*/mapDescription,URLImage);
+				myMessage = new Message(Action.ADD_MAP,mapName,cityName,mapDescription,URLImage);
 			else
-				myMessage = new Message(Action.EDIT_MAP,/*mapName,*/mapDescription,URLImage);
+				myMessage = new Message(Action.EDIT_MAP,mapName,cityName,mapDescription,URLImage);
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
@@ -247,9 +249,9 @@ public class EditWindowController implements ControllerListener {
 			String location = (x+","+y);
 			String classification = categoryChoser.getSelectionModel().getSelectedItem();
 			if (selection.equals("Add New Site"))
-				myMessage = new Message(Action.ADD_SITE,name,classification,description,accessible,visitDuration,location,map,city);
+				myMessage = new Message(Action.ADD_SITE,name,city,classification,description,accessible,visitDuration,location,map,city);
 			else
-				myMessage = new Message(Action.EDIT_SITE,name,classification,description,accessible,visitDuration,location,map,city);
+				myMessage = new Message(Action.EDIT_SITE,name,city,classification,description,accessible,visitDuration,location,map,city);
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
@@ -268,9 +270,9 @@ public class EditWindowController implements ControllerListener {
 			String description = tfCityDescription.getText();
 			
 			if (selection.equals("Add New Route"))
-				myMessage = new Message(Action.ADD_ROUTE,selection,cityName,description,routeList,0);
+				myMessage = new Message(Action.ADD_ROUTE,selection,cityName,description,routeList);
 			else
-				myMessage = new Message(Action.EDIT_ROUTE,selection,cityName,description,routeList,0);
+				myMessage = new Message(Action.EDIT_ROUTE,selection,cityName,description,routeList);
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
@@ -386,7 +388,7 @@ public class EditWindowController implements ControllerListener {
 	   tfEstimatedTime.setText(Float.toString(site.getVisitTime()));
 	   tfX.setText(Double.toString(site.getLocation().getX()));
 	   tfY.setText(Double.toString(site.getLocation().getY()));
-	   categoryChoser.setValue(site.getClassification().toString());
+	   categoryChoser.getSelectionModel().getSelectedItem();
 	   if(site.isAccessible())
 		   accessibilityChoser.setValue("Yes");
 	   else
@@ -678,7 +680,6 @@ public class EditWindowController implements ControllerListener {
 				{
 					HashMap<String, Float> citiesAndPrices = new HashMap<String, Float>();
 					citiesAndPrices = (HashMap<String, Float>) currMsg.getData().get(1);
-					//ArrayList<String> citiesList = null;
 					if (citiesAndPrices != null) {
 						citiesList = new ArrayList<String>(citiesAndPrices.keySet());
 					}

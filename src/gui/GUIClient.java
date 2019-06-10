@@ -57,6 +57,7 @@ public class GUIClient extends AbstractClient {
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message to Server", "Error",
 					JOptionPane.WARNING_MESSAGE);
+			MainGUI.GUIclient.quit();
 		}
 	}
 
