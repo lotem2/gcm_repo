@@ -109,7 +109,7 @@ public class RouteDB {
 			if((params.get(0).toString().equals(Permission.CLIENT.toString())))
 			{
 				// Prepare SELECT query for client
-				sql = "SELECT * FROM Routes WHERE name = ? and cityname = ? and is_active = 1";
+				sql = "SELECT * FROM Routes WHERE cityname = ? and is_active = 1";
 			}
 			else
 			{
