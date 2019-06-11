@@ -7,6 +7,8 @@ import java.util.ArrayList;
 
 import com.sun.glass.ui.Size;
 
+import javafx.scene.image.Image;
+
 /**
  * Entity that represents a Map object in the GCM system
  */
@@ -133,6 +135,34 @@ public class Map implements java.io.Serializable{
 	}
 
 	/**
+	 * Method to turn image to byte array to be saved in database
+	 * @param path - image's path
+	 * @return byte array representing image
+	 */
+	public byte[] setImage(String path) {
+		if (path == null)
+			return null;
+		else {
+			File file = new File(path); // try to open the file in path
+			try {
+					return Files.readAllBytes(file.toPath()); // reads content of image as byte
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+		return null;
+	}
+	
+	/**
+	 * Get the Map's image
+	 * @return Image - map's image that was read from a file
+	 */
+	public Image getMapImage() {
+		return (new Image(new ByteArrayInputStream(image)));
+	}
+	
+	/**
 	 * Override of {@link Object}'s toString method
 	 */
 	@Override
@@ -140,7 +170,7 @@ public class Map implements java.io.Serializable{
 		if(sites != null) {
 			String str = "=========================================================================" + 
 					System.getProperty("line.separator") +
-					"						  " + mapname +"						 		  \n" +
+					"						  " + mapname +"						 		  " + System.getProperty("line.separator") +
 					"	Description: " + description + System.getProperty("line.separator") +
 					"	City: " + cityname + System.getProperty("line.separator") + 
 					"	List of sites:" + "\n=========================================" 
