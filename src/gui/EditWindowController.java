@@ -1069,7 +1069,7 @@ public class EditWindowController implements ControllerListener {
 				//col_order.setCellValueFactory(new PropertyValueFactory<Site, String>(" "));
 				col_siteName.setCellValueFactory(new PropertyValueFactory<Site, String>("name"));
 				col_siteDescription.setCellValueFactory(new PropertyValueFactory<Site, String>("description"));
-				//col_estTime.setCellValueFactory(new PropertyValueFactory<Site, String>();
+				col_estTime.setCellValueFactory(new PropertyValueFactory<Site, String>("visitTime"));
 
 				tableRouteDeatils.setItems(currSitesList);
 			}
