@@ -3,6 +3,7 @@ package gui;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.io.File;
@@ -16,6 +17,8 @@ import javax.swing.JRadioButton;
 import common.Action;
 import common.Message;
 import common.Permission;
+import common.Services;
+import entity.City;
 import entity.Client;
 import entity.User;
 import entity.Purchase.PurchaseType;
@@ -35,6 +38,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
@@ -44,6 +48,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.text.Text;
@@ -114,8 +119,6 @@ GUIClient client;
     @FXML
     private TextField tfEmail;
     @FXML
-    private TextField tfExpiryDate;
-    @FXML
     private TextField tfFirstName;
     @FXML
     private TextField tfIDNumber;
@@ -129,6 +132,8 @@ GUIClient client;
     private TextField tfphone;
     @FXML
     private Button btnWatchMap;
+	@FXML
+	private DatePicker dpExpiryDate;
     @FXML
     private TableColumn<Purchase, String> col_cityName;
     @FXML
@@ -169,10 +174,12 @@ GUIClient client;
 			long id =MainGUI.currClient.getID(); 
 			LocalDate expiryDate = MainGUI.currClient.getExpiryDate() ;
 			String fullCardString;
+			String newExpiryDate = getDate();
 			firstName = tfFirstName.getText();
 			lastName = tfLastName.getText();
 			userName = tfUserName.getText();
 			password = tfPassword.getText();
+			listenerForOnlyDigitsInput(tfphone);
 			if (password == null)
 				password = MainGUI.currClient.getPassword();
 			email = tfEmail.getText();
@@ -186,7 +193,7 @@ GUIClient client;
 			if(rbChangeCreditNumber.isSelected())
 			{
 				//setCreditCardBooleanBinding();
-				setInputVerification();
+				//setInputVerification();
 				id = (tfIDNumber.getText().length() <= 9) ?
 						Long.parseLong(tfIDNumber.getText()) : 0L;
 				fullCardString = tfCreditCard1.getText() + tfCreditCard2.getText() + tfCreditCard3.getText()
@@ -195,19 +202,8 @@ GUIClient client;
 						? 0L : Long.parseLong(fullCardString);	
 			}
 				//cardNumber =  Long.parseLong(fullCardString);
-//				try 
-//				{
-//					expiryDate = tfExpiryDate.getText();
-//					// Validate date is a valid string
-//					LocalDate.parse(expiryDate);
-//				} catch (Exception e) {
-//					JOptionPane.showMessageDialog(null, "Date invalid - " + tfExpiryDate.getText(), "Update Information error",
-//							JOptionPane.INFORMATION_MESSAGE);
-//					return;
-//			}
-		
 				myMessage = new Message(Action.EDIT_USER_DETAILS, firstName,lastName,userName,password,salt,email,permission,
-						telephone,cardNumber,id,expiryDate,userName);
+						telephone,cardNumber,id,newExpiryDate,userName);
 				client.sendToServer(myMessage);
 			//}
 		//}
@@ -229,7 +225,7 @@ GUIClient client;
     	rbtnPreviousCreditCard.setSelected(true);
     	setCreditCardBooleanBinding();
     	tfIDNumber.setDisable(true);
-    	tfExpiryDate.setDisable(true);
+    	dpExpiryDate.setDisable(true);
     	tfCreditCard1.setDisable(true);
     	tfCreditCard2.setDisable(true);
     	tfCreditCard3.setDisable(true);
@@ -246,7 +242,7 @@ GUIClient client;
     	rbChangeCreditNumber.setSelected(true);
     	setCreditCardBooleanBinding();
     	tfIDNumber.setDisable(false);
-    	tfExpiryDate.setDisable(false);
+    	dpExpiryDate.setDisable(false);
     	tfCreditCard1.setDisable(false);
     	tfCreditCard2.setDisable(false);
     	tfCreditCard3.setDisable(false);
@@ -298,7 +294,7 @@ GUIClient client;
 						tfCurrLastNumbers.setText(LastFourDigitsString);
 						break;
 					}
-					case CEO:
+					default:
 					{
 						//lblMyProfile.setText(MainGUI.currClient.getUserName() + "'s Profile");
 						tfUserName.setEditable(false);
@@ -309,7 +305,6 @@ GUIClient client;
 						btnSave.setVisible(false);
 						break;
 					}
-					default:
 				}
 	}
 	
@@ -386,6 +381,21 @@ GUIClient client;
 				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
 						JOptionPane.WARNING_MESSAGE);
 		break;
+		case DOWNLOAD_PURCHASE:
+			if ((Integer) currMsg.getData().get(0) == 0) {
+					Services.writeCityToFile((City) currMsg.getData().get(1), openSaveMapPrompt());
+			}
+
+			else {
+				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
+						JOptionPane.INFORMATION_MESSAGE);
+				purchasesTable.getItems().clear();
+				Label purchaseMsg = new Label("There are no purchases for the current user");
+				purchaseMsg.setTextFill(Color.web("#ba2c2c"));
+				purchaseMsg.setStyle("-fx-font-size: 15pt");
+				purchasesTable.setPlaceholder(purchaseMsg);
+			}
+			break;
 		default:
 		}
 	}
@@ -417,9 +427,9 @@ GUIClient client;
 		String city = purchase.getCityName();
 		//sending the name of the city to the show Window
 		ArrayList<Object> data = new ArrayList<Object>();
-		data.add(purchase.getUserName());
+		data.add(MainGUI.currUser.getPermission());
 		data.add(purchase.getCityName());
-		GUIClient.sendActionToServer(Action.WATCH,data);
+		GUIClient.sendActionToServer(Action.WATCH_MAP,data);
 		Permission permission = (MainGUI.currUser.getPermission());
 		switch(permission) 
 		{
@@ -435,50 +445,37 @@ GUIClient client;
 
     }
 	
+    @FXML
+    void Download(ActionEvent event) {
+		Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
+		String city = purchase.getCityName();
+		if (purchase.getPurchaseType().toString().equals("SHORT_TERM_PURCHASE"))
+			JOptionPane.showMessageDialog(null, "You can't download a short term purchase more than once\n You should purchase it again.", "Error",
+					JOptionPane.WARNING_MESSAGE);
+		else {
+			ArrayList<Object> data = new ArrayList<Object>();
+			data.add(city);
+			data.add(purchase.getPurchaseType());
+			GUIClient.sendActionToServer(Action.DOWNLOAD_PURCHASE, data);
+		}
+    }
     
-//    EventHandler<ActionEvent> btnLoadEventListener
-//    = new EventHandler<ActionEvent>(){
-//     	  
-//        @Override
-//        public void handle(ActionEvent event) {
-//            FileChooser fileChooser = new FileChooser();
-//
-//            //Set extension filter
-//            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
-//            fileChooser.getExtensionFilters().add(extFilter);
-//            
-//            //Show save file dialog
-//            File file = fileChooser.showSaveDialog(null);
-//            SaveFile(content,file);
-//            
-//            if(file != null){
-//				JOptionPane.showMessageDialog(null, "The file couldn't be downloaded", "Error",
-//						JOptionPane.WARNING_MESSAGE);
-//            }
-//        }
-//    };
-//    
-//    private void SaveFile(String content, File file){
-//        try {
-//            FileWriter fileWriter = null;
-//             
-//            fileWriter = new FileWriter(file);
-//            fileWriter.write(content);
-//            fileWriter.close();
-//        } catch (IOException ex) {
-//			JOptionPane.showMessageDialog(null, "The file couldn't be downloaded", "Error",
-//					JOptionPane.WARNING_MESSAGE);
-//        }
-//    }
+ 
     
+	private String openSaveMapPrompt() {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Save Image");
+		fileChooser.setInitialFileName("citymap.png");
+		File file = fileChooser.showSaveDialog(MainGUI.MainStage);
+		return file.getAbsolutePath();
+	}
     
-//	private String openSaveMapPrompt() {
-//		FileChooser fileChooser = new FileChooser();
-//		fileChooser.setTitle("Save Image");
-//		fileChooser.setInitialFileName("citymap.png");
-//		File file = fileChooser.showSaveDialog(MainGUI.MainStage);
-//		return file.getAbsolutePath();
-//	}
+	@FXML
+	String getDate() {
+			LocalDate expiryDate = dpExpiryDate.getValue();
+			DateTimeFormatter formattedExpiryDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			return formattedExpiryDate.format(expiryDate);
+	}
 	/**
 	 *
 	 *Sends the server a request to renew the purchase for the same period of time with a 10% discount.
@@ -491,12 +488,12 @@ GUIClient client;
     @FXML
     void Renew(ActionEvent event) 
     {
-//		Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
-//		float price = (float) (purchase.getPrice()*0.9);
-//		
-//		ArrayList<Object> data = new ArrayList<Object>();
-//		data.add(purchase);
-//		GUIClient.sendActionToServer(Action.RENEW,data);
+		Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
+		float price = (float) (purchase.getPrice()*0.9);
+		
+		ArrayList<Object> data = new ArrayList<Object>();
+		data.add(purchase);
+		GUIClient.sendActionToServer(Action.RENEW,data);
     }
 	/**
 	 *
@@ -508,7 +505,7 @@ GUIClient client;
 	 */
 	void setCreditCardBooleanBinding() {
 		BooleanBinding booleanBind;
-		booleanBind = (tfIDNumber.textProperty().isEmpty()).or(tfExpiryDate.textProperty().isEmpty()).or(tfCreditCard1.textProperty().isEmpty()).or(tfCreditCard2.textProperty().isEmpty()).or(tfCreditCard3.textProperty().isEmpty()).or(tfCreditCard4.textProperty().isEmpty());
+		booleanBind = (tfIDNumber.textProperty().isEmpty()).or(tfCreditCard1.textProperty().isEmpty()).or(tfCreditCard2.textProperty().isEmpty()).or(tfCreditCard3.textProperty().isEmpty()).or(tfCreditCard4.textProperty().isEmpty());
 		btnSave.disableProperty().bind(booleanBind);
 		if(rbtnPreviousCreditCard.isSelected())
 			btnSave.disableProperty().unbind();
