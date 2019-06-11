@@ -141,7 +141,7 @@ public class SQLController {
 			
 			for (int i = 1; i <= data.size()/2; i++) {
 				if (data.get(i).equals("description"))
-					sql += data.get(i) + " LIKE ?";
+					sql += data.get(i) + " LIKE ? AND ";
 				else	
 					sql += data.get(i) + " = ? AND ";
 			}
