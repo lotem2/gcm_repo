@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.io.File;
 import java.io.FileWriter;
+
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
@@ -384,9 +386,14 @@ GUIClient client;
 		break;
 		case DOWNLOAD_PURCHASE:
 			if ((Integer) currMsg.getData().get(0) == 0) {
-					Services.writeCityToFile((City) currMsg.getData().get(1), openSaveMapPrompt());
+					Platform.runLater(() -> {
+						DirectoryChooser directoryChooser = new DirectoryChooser ();
+						directoryChooser.setTitle("Save To Folder");
+						File file = directoryChooser.showDialog(MainGUI.MainStage);
+						Message newMsg = (Message) (currMsg.getData().get(1));
+						Services.writeCityToFile((City) (newMsg.getData().get(1)), file.getAbsolutePath());
+					});
 			}
-
 			else {
 				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Notification",
 						JOptionPane.INFORMATION_MESSAGE);
@@ -410,7 +417,7 @@ GUIClient client;
 				col_cityName.setCellValueFactory(new PropertyValueFactory<Purchase,String>("cityName"));
 				col_purchaseType.setCellValueFactory(new PropertyValueFactory<Purchase,String>("purchaseType"));
 				col_purchaseDate.setCellValueFactory(new PropertyValueFactory<Purchase,String>("purchaseDate"));
-				//col_expiryDate.setCellValueFactory(new PropertyValueFactory<Purchase,String>("expiryDate"));
+				col_expiryDate.setCellValueFactory(new PropertyValueFactory<Purchase,String>("expirationDate"));
 				col_price.setCellValueFactory(new PropertyValueFactory<Purchase,String>("price"));
 
 				purchasesTable.setItems(currPurchasesList);
@@ -425,7 +432,7 @@ GUIClient client;
 		//sending the name of the city to the show Window
 		ArrayList<Object> data = new ArrayList<Object>();
 		data.add(MainGUI.currUser.getPermission());
-		data.add(purchase.getCityName());
+		data.add(purchase.getID());
 		Permission permission = (MainGUI.currUser.getPermission());
 		switch(permission) 
 		{
@@ -493,7 +500,7 @@ GUIClient client;
     {
 		Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
 		float newprice = (float) (purchase.getPrice()*0.9);
-		Period period = Period.between( purchase.getPurchaseDate() , purchase.getExpirationDate() );
+		Period period = Period.between(purchase.getPurchaseDate() , purchase.getExpirationDate());
 		Integer daysElapsed = period.getDays();
 		LocalDate purchaseDate=LocalDate.now();
 		LocalDate expiryDate=LocalDate.now().plusDays(daysElapsed);
