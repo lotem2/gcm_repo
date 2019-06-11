@@ -266,9 +266,9 @@ public class EditWindowController implements ControllerListener {
 			String cityName = cityChoser.getSelectionModel().getSelectedItem();
 			String description = tfCityDescription.getText();
 			if (selection.equals("Add New Route"))
-				myMessage = new Message(Action.ADD_ROUTE,selection,cityName,description,routeList);
+				myMessage = new Message(Action.ADD_ROUTE,selection,cityName,description,getNewRouteFromTableView());
 			else
-				myMessage = new Message(Action.EDIT_ROUTE,selection,cityName,description,routeList);
+				myMessage = new Message(Action.EDIT_ROUTE,selection,cityName,description,getNewRouteFromTableView());
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
@@ -279,22 +279,15 @@ public class EditWindowController implements ControllerListener {
     
     
     
-    @FXML
-    void addSiteToRoute(ActionEvent event) {
-//    	sitesChoserForRoutes.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() 
-//		{
-//			// if the item of the list is changed
-//			public void changed(ObservableValue ov,Number number1, Number number2) 
-//			{
-//    			String currSiteName = sitesChoserForRoutes.getSelectionModel().getSelectedItem();
-//    			routeList.add(currSiteName);
-//    			Site newSite;
-//    			newSite.setName(currSiteName);
-//				
-//			}
-//		});
-//
-//    	tableRouteDeatils.getItems().add(newSite);
+    String getNewRouteFromTableView() {
+    	ObservableList<Site> currSitesList = tableRouteDeatils.getItems();
+	    StringBuilder sb = new StringBuilder();
+	    String routeListString= "";
+	    for(Site currSite : currSitesList){
+	        if(currSite.getName() != null)
+	        	routeListString = sb.append(currSite.getName()).append(",").toString();
+	    }
+	    return routeListString;
     }
     
     
@@ -756,7 +749,6 @@ public class EditWindowController implements ControllerListener {
 		      public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
 		    	  String currCityName = (cityChoser.getItems().get((Integer) number2));
 		    	  setCityChoiceBox(currCityName);
-
 			}
 		});
 	}
@@ -809,7 +801,7 @@ public class EditWindowController implements ControllerListener {
 		});
 
 	}
-		void routesChoiceBoxListener(City currCity/*ObservableList<Site> sitesToAddList*/) 
+		void routesChoiceBoxListener(City currCity) 
 		{
 			routesChoser.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() 
 			{
@@ -828,9 +820,6 @@ public class EditWindowController implements ControllerListener {
 					        if(currRoute.getName() != null && currRoute.getName().contains(currRouteName))
 					        	setRouteInfo(currRoute);
 					    }
-//				    	ArrayList<Site> sites = route.getSites();
-//						ObservableList<Site> currSitesList = FXCollections.observableArrayList(sites);
-//						setTableViewForRouteSites(currSitesList);
 					}
 				}
 			
@@ -864,10 +853,6 @@ public class EditWindowController implements ControllerListener {
 	 *
 	 */  
 	void setCityChoiceBox(String currCityName) {
-//		Platform.runLater(new Runnable() {
-//			@SuppressWarnings("unchecked")
-//			@Override
-//			public void run() {
 				if (currCityName.equals("Add New City"))
 				{
 					System.out.print(currCityName);
@@ -887,8 +872,7 @@ public class EditWindowController implements ControllerListener {
 					
 				}
 			}
-//			});
-		//}
+
 	void setCityChoiceBox(HashMap<String, Float> citiesAndPrices)
 	{
 			if (citiesAndPrices != null) {

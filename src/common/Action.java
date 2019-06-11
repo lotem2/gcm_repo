@@ -12,7 +12,6 @@ public enum Action {
 	SEARCH,
 	EDIT_SITE,
 	EDIT_MAP,
-	EDIT_CITY,
 	EDIT_ROUTE,
 	ADD_SITE,
 	ADD_MAP,
