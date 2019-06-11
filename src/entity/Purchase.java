@@ -20,6 +20,7 @@ public class Purchase implements java.io.Serializable{
 	}
 
 	// Variables
+	private int m_id;
 	private String m_username;
 	private String m_cityName;
 	private PurchaseType m_purchaseType;
@@ -32,6 +33,7 @@ public class Purchase implements java.io.Serializable{
 	
 	/**
 	 * Constructor that builds the Purchase entity
+	 * @param id - the id of the purchase as displayed in database
 	 * @param username - the user who did the purchase
 	 * @param cityname - the city the user purchased
 	 * @param type - type of purchase
@@ -42,8 +44,9 @@ public class Purchase implements java.io.Serializable{
 	 * @param downloads - represents the number of times the user downloaded the collection of maps of this purchase
 	 * @param price - the price the user paid for this purchase
 	 */
-	public Purchase(String username, String cityname, PurchaseType type, LocalDate date, LocalDate expidate, 
+	public Purchase(int id, String username, String cityname, PurchaseType type, LocalDate date, LocalDate expidate, 
 			int renew, int views, int downloads, float price) {
+		m_id = id;
 		m_username = username;
 		m_cityName = cityname;
 		m_purchaseType = type;
@@ -56,6 +59,12 @@ public class Purchase implements java.io.Serializable{
 	}
 	
 	/* Getters */
+	/**
+	 * Get the purchase's id
+	 * @return int
+	 */
+	public int getID() { return m_id; }
+
 	/**
 	 * get user name who did the purchase
 	 * @return String
@@ -130,9 +139,11 @@ public class Purchase implements java.io.Serializable{
 	 */
 	@Override
 	public String toString() {
-		return "Purchase - User name: " + this.getUserName() + "City name: " + this.getCityName() +
-			"Purchase type: " + this.getPurchaseType() + " Purchase date: " + this.getPurchaseDate() +
-			"Expirtaion date: " + this.getExpirationDate() + " renews: " + this.getRenewCounter() +
-			"Views: " +this.getViews() + " Downloads: " +this.getDownloads() + "price: " + this.getPrice();
+		return "User name: " + this.getUserName() + System.getProperty("line.separator") + 
+			   "City name: " + this.getCityName() + System.getProperty("line.separator") +
+			   "Purchase type: " + this.getPurchaseType() + System.getProperty("line.separator") +
+			   "Purchase date: " + this.getPurchaseDate() + System.getProperty("line.separator") +
+			   "Expirtaion date: " + this.getExpirationDate() + System.getProperty("line.separator") +
+			   "Price: " + this.getPrice();
 	}
 }

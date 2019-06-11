@@ -76,12 +76,12 @@ public class SiteDB {
 						+ "								   AND maps_sites.id = a.siteID) ";
 			}
 			// Exclude the permission type for the query
-			params = new ArrayList<Object>(params.subList(1, params.size()));
+			data = new ArrayList<Object>(params.subList(1, params.size()));
 
 			// Execute sql query by calling private method getSites with the requested SELECT query
-			sites = getSites(sql, params);
+			sites = getSites(sql, data);
 			msg = new Message(null, new Integer(0), sites);
-	}
+		}
 		catch (SQLException e) {
 			msg = new Message(null, new Integer(1), new String("There was a problem with the SQL service."));
 		}
@@ -103,6 +103,7 @@ public class SiteDB {
 		ArrayList<Site>   sites = new ArrayList<Site>();
 		ArrayList<Object> data  = new ArrayList<Object>();
 		String sql 				= "";
+		Message 		  msg 	= null;
 
 		try {
 			if(params.get(0).toString().equals(Permission.CLIENT.toString()))
@@ -137,24 +138,20 @@ public class SiteDB {
 						"WHERE NOT EXISTS (SELECT 1 from Sites s WHERE s.name = a.name AND s.location = a.location AND s.is_active = 0) AND route_site.rid = a.siteID))";
 
 			// Remove user's permission from parameters
-			params = new ArrayList<Object>(params.subList(1, params.size()));
+			data = new ArrayList<Object>(params.subList(1, params.size()));
 
 			// Execute sql query by calling private method getSites with the requested SELECT query
-			sites = getSites(sql, params);
-
-			data.add(new Integer(0)); // set query result as success
-			data.add(sites);	// adding sites' array list
+			sites = getSites(sql, data);
+			msg = new Message(null, new Integer(0), sites);
 		}
 		catch (SQLException e) {
-			data.add(new Integer(1));
-			data.add("There was a problem with the SQL service.");
-			}
+			msg = new Message(null, new Integer(1), new String("There was a problem with the SQL service."));
+		}
 		catch(Exception e) {
-			data.add(new Integer(1));
-			data.add("Sites for the current route where not found.");
+			msg = new Message(null, new Integer(1), new String("Sites for the current route where not found."));
 		}
 
-		return new Message(null, data);
+		return msg;
 	}
 
 
@@ -168,6 +165,7 @@ public class SiteDB {
 		ArrayList<Site>   sites = new ArrayList<Site>();
 		ArrayList<Object> data  = new ArrayList<Object>();
 		String sql 				= "";
+		Message msg				= null;
 
 		try {
 			// Prepare statement according to the permission
@@ -192,24 +190,20 @@ public class SiteDB {
 						"(s.name = a.name AND s.location = a.location AND s.is_active = 0) AND a.cityname = s.cityname)))";
 
 			// Remove user's permission from parameters
-			params = new ArrayList<Object>(params.subList(1, params.size()));
+			data = new ArrayList<Object>(params.subList(1, params.size()));
 
 			// Execute sql query by calling private method getSites with the requested SELECT query
-			sites = getSites(sql, params);
-
-			data.add(new Integer(0)); // set query result as success
-			data.add(sites);	// adding sites' array list
+			sites = getSites(sql, data);
+			msg = new Message(null, new Integer(0), sites);
 		}
 		catch (SQLException e) {
-			data.add(new Integer(1));
-			data.add("There was a problem with the SQL service.");
-			}
+			msg = new Message(null, new Integer(1), new String("There was a problem with the SQL service."));
+		}
 		catch(Exception e) {
-			data.add(new Integer(1));
-			data.add("Sites for the current city where not found.");
+			msg = new Message(null, new Integer(1), new String("Sites for the current city where not found."));
 		}
 
-		return new Message(null, data);
+		return msg;
 	}
 	
 	/**

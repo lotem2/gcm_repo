@@ -86,31 +86,38 @@ public class CityDB {
 	
 	/**
 	 * Download requested city's maps and save them in a file
-	 * @param - {@link ArrayList} of type {@link Object} containing city name, purchase type and file's path
+	 * @param - {@link ArrayList} of type {@link Object} user name who requested download, city name to download,
+	 * the user's permission, and the directory path where to save the city's collection of maps
 	 * @return {@link Message} - Contains {@link ArrayList} with success meesage or failure message
 	 */
 	public Message downloadCity(ArrayList<Object> params){
 		// Variables
-		City 	cityToDownload = null;
 		Message replyMsg 	   = null;
 
 		try {
 			// Get city entity by the city's name using getCity method
-			ArrayList<Object> input = new ArrayList<Object>(params.subList(0, 2));
+			ArrayList<Object> input = new ArrayList<Object>(); input.add(params.get(2)); input.add(params.get(1));
 			Message city = getCity(input);
 			
 			// If we encountered a problem during retrieval throwing an exception
 			if (city.getData().get(1) instanceof String) throw new Exception("Download proccess encountered a problem.");
 
-			cityToDownload = (City)city.getData().get(1); // Convert data to City object
-			
 			// Write the city to a file using Services' writeCityToFiles
-			if(!Services.writeCityToFile(cityToDownload, params.get(2).toString()))
+			if(!Services.writeCityToFile((City)city.getData().get(1), params.get(2).toString()))
 				throw new Exception("Download proccess has encountered a problem.");
 			
+			// After the download process was successful, update the user's purchase record in database
+			// add the user name and city name for next request
+			input.clear(); input.add(params.subList(0, 2));
+
+			// Update download column in the user's purchase, if encountered an issue raise exception
+			Message msg = PurchaseDB.getInstance().downloadPurchase(input);
+			if((Integer)(msg.getData().get(0)) == 1)
+				throw new Exception(msg.getData().get(1).toString());
+
 			// Create success message
 			replyMsg = new Message(Action.DOWNLOAD_PURCHASE, 
-					new Integer(0), new String("Download city procces was successful."));
+					new Integer(0), new String("Download compelted."));
 		}
 		catch(Exception e) {
 			// Create failure message
@@ -150,14 +157,14 @@ public class CityDB {
 				throw new Exception("City price was not updated succesfully.");
 
 			// Create success message with the city's instance
-			replyMsg = new Message(Action.EDIT_CITY_PRICE, new Integer(0));
+			replyMsg = new Message(Action.HANDLE_PRICE_CHANGE_REQ, new Integer(0));
 		}
 		catch (SQLException e) {
-			replyMsg = new Message(Action.EDIT_CITY_PRICE, new Integer(1),
+			replyMsg = new Message(Action.HANDLE_PRICE_CHANGE_REQ, new Integer(1),
 					new String("There was a problem with the SQL service."));
 			}
 		catch(Exception e) {
-			replyMsg = new Message(Action.EDIT_CITY_PRICE, new Integer(1), e.getMessage());
+			replyMsg = new Message(Action.HANDLE_PRICE_CHANGE_REQ, new Integer(1), e.getMessage());
 		}
 		finally {
 			SQLController.Disconnect(rs);
@@ -335,6 +342,40 @@ public class CityDB {
 	}
 	
 	/**
+	 * Update purchase counter of city when there is a new purchase of the city
+	 * @param params - contains the city name to update
+	 * @return {@link Message} - contains result of action - success/failure and failure message in case of failure
+	 */
+	public Message updateCityPurchaseCounter(ArrayList<Object> params) {
+		// Variables
+		int 			  changedRows = 0;
+		Message 		  replyMsg;
+		
+		try {
+			// Prepare statement to get current client's purchase
+			String sql = "UPDATE Cities SET purchasecounter = purchasecounter + 1" +
+					 	 " WHERE name = ?";
+
+			// Execute sql query, get number of changed rows
+			changedRows = SQLController.ExecuteUpdate(sql, params);
+
+			// Check if update was successful - result should be greater than zero
+			if (changedRows == 0)
+				 throw new Exception("Update of purchases counter of the city was not successful.");
+
+			replyMsg = new Message(null, new Integer(0), "Update of purchases counter of the city was successful");
+		}
+		catch (SQLException e) {
+			replyMsg = new Message(null, new Integer(1), "There was a problem with the SQL service.");
+		}
+		catch(Exception e) {
+			replyMsg = new Message(null, new Integer(1), e.getMessage());
+		}
+
+		return replyMsg;
+	}
+
+	/**
 	 * Private method to get the id of the maps of specific city
 	 * @param params - {@link ArrayList} contains city name
 	 * @return {@link ArrayList} - an {@link ArrayList} of type int representing the city's maps' id
@@ -384,39 +425,5 @@ public class CityDB {
 		}
 
 		return maps;
-	}
-	
-	/**
-	 * Update purchase counter of city when there is a new purchase of the city
-	 * @param params - contains the city name to update
-	 * @return {@link Message} - contains result of action - success/failure and failure message in case of failure
-	 */
-	public Message updateCityPurchaseCounter(ArrayList<Object> params) {
-		// Variables
-		int 			  changedRows = 0;
-		Message 		  replyMsg;
-		
-		try {
-			// Prepare statement to get current client's purchase
-			String sql = "UPDATE Cities SET purchasecounter = purchasecounter + 1" +
-					 	 " WHERE name = ?";
-
-			// Execute sql query, get number of changed rows
-			changedRows = SQLController.ExecuteUpdate(sql, params);
-
-			// Check if update was successful - result should be greater than zero
-			if (changedRows == 0)
-				 throw new Exception("Update of purchases counter of the city was not successful.");
-
-			replyMsg = new Message(null, new Integer(0), "Update of purchases counter of the city was successful");
-		}
-		catch (SQLException e) {
-			replyMsg = new Message(null, new Integer(1), "There was a problem with the SQL service.");
-		}
-		catch(Exception e) {
-			replyMsg = new Message(null, new Integer(1), e.getMessage());
-		}
-
-		return replyMsg;
 	}
 }

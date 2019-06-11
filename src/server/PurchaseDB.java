@@ -98,41 +98,45 @@ public class PurchaseDB {
 	
 	/**
 	 * Edit renew column of specific purchase when user renews his purchase
-	 * @param params - the purchase entity to renew, user name and city name
-	 * @return {@link Message} - Contain result of action - success/failure and failure message in case of failure
+	 * @param params - the purchase entity to renew
+	 * @return {@link Message} - contains {@link ArrayList} of type {@link Purchase} 
+	 * the updated user's purchases after renewal
 	 */
 	public Message renewPurchase(ArrayList<Object> params) {
 		// Variables
 		ArrayList<Object> data = new ArrayList<Object>();
-		
+		Message msg;
+
 		try {
 			// Get current active purchase
 			Purchase current = (Purchase)params.get(0);
 
 			// Prepare statement to get current client's purchase
 			String sql = "UPDATE Purchases SET purchaseDate = ?, expiryDate = ?, renew = renew + 1, price = ?" +
-					 	 "WHERE username = ? AND cityName = ? purchaseDate = ? AND expiryDate = ?";
-
-			// Add parameters to match the UPDATE query
-			params.add(current.getPurchaseDate()); params.add(current.getExpirationDate());
-			params.add(current.getPrice());
+					 	 "WHERE id = ?";
+			
+			// Add parameters to match the query
+			data.add(current.getPurchaseDate()); data.add(current.getExpirationDate());
+			data.add(current.getPrice()); data.add(current.getID());
 
 			// Execute sql query by calling private method editPurchase with the requested UPDATE query
-			editPurchase(sql, params);
+			editPurchase(sql, data);
+			
+			// After update, get the user's list of purchases to display the updated information
+			data.clear(); data.add(current.getUserName()); Message result = getPurchasesByUser(data);
+			if((Integer)result.getData().get(0) == 1)
+				throw new Exception(result.getData().get(1).toString());
 
-			data.add(new Integer(0)); // set query result as success
-			data.add("Renew purchase was successful");	// write a success message
+			msg = new Message(null, new Integer(0), result.getData().get(1));
 		}
 		catch (SQLException e) {
-			data.add(new Integer(1));
-			data.add("There was a problem with the SQL service.");
+			msg = new Message(null, new Integer(1), "There was a problem with the SQL service.");
 		}
 		catch(Exception e) {
-			data.add(new Integer(1));
-			data.add("Renew purchase encountered a problem.");
+			msg = new Message(null, new Integer(1), e.getMessage());
 		}
 
-		return new Message(null, data);
+		return msg;
 	}
 	
 	/**
@@ -175,7 +179,7 @@ public class PurchaseDB {
 
 	/**
 	 * Edit views column of specific purchase when user views map from the city he bought
-	 * @param params - user name and city name
+	 * @param params - purchase's id
 	 * @return {@link Message} - Contain result of action - success/failure and failure message in case of failure
 	 */
 	public Message viewPurchase(ArrayList<Object> params) {
@@ -183,15 +187,8 @@ public class PurchaseDB {
 		ArrayList<Object> data = new ArrayList<Object>();
 		
 		try {
-			// Get current active purchase
-			Purchase current = ((ArrayList<Purchase>)((Message)getActivePurchase(params)).getData().get(1)).get(0);
-			
 			// Prepare statement to get current client's purchase
-			String sql = "UPDATE Purchases SET views = views + 1" +
-				 	 "WHERE username = ? AND cityName = ? purchaseDate = ? AND expiryDate = ?";
-
-			// Add parameters to match the UPDATE query
-			params.add(current.getPurchaseDate()); params.add(current.getExpirationDate());
+			String sql = "UPDATE Purchases SET views = views + 1 WHERE id = ?";
 
 			// Execute sql query by calling private method editPurchase with the requested UPDATE query
 			editPurchase(sql, params);
@@ -418,10 +415,13 @@ public class PurchaseDB {
 				throw new Exception();
 			}
 
+			rs.beforeFirst(); // Return cursor to start of the first row
+			
 			// Go through the result set and build the Purchase entity
 			while (rs.next()) 
 			{
 				Purchase currPurchase = new Purchase(
+						rs.getInt("id"),
 						rs.getString("username"),
 						rs.getString("cityName"), 
 						PurchaseType.valueOf(rs.getString("purchaseType").toUpperCase()), 
