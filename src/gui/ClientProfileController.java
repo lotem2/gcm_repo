@@ -3,6 +3,7 @@ package gui;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -133,7 +134,7 @@ GUIClient client;
     @FXML
     private Button btnWatchMap;
 	@FXML
-	private DatePicker dpExpiryDate;
+	private DatePicker dpCreditCardExpiryDate;
     @FXML
     private TableColumn<Purchase, String> col_cityName;
     @FXML
@@ -225,7 +226,7 @@ GUIClient client;
     	rbtnPreviousCreditCard.setSelected(true);
     	setCreditCardBooleanBinding();
     	tfIDNumber.setDisable(true);
-    	dpExpiryDate.setDisable(true);
+    	dpCreditCardExpiryDate.setDisable(true);
     	tfCreditCard1.setDisable(true);
     	tfCreditCard2.setDisable(true);
     	tfCreditCard3.setDisable(true);
@@ -242,7 +243,7 @@ GUIClient client;
     	rbChangeCreditNumber.setSelected(true);
     	setCreditCardBooleanBinding();
     	tfIDNumber.setDisable(false);
-    	dpExpiryDate.setDisable(false);
+    	dpCreditCardExpiryDate.setDisable(false);
     	tfCreditCard1.setDisable(false);
     	tfCreditCard2.setDisable(false);
     	tfCreditCard3.setDisable(false);
@@ -374,7 +375,7 @@ GUIClient client;
 		    	ArrayList<Purchase> purchases = (ArrayList<Purchase>) currMsg.getData().get(1);
 				ObservableList<Purchase> currPurchasesList = FXCollections.observableArrayList(purchases);
 				setTableViewForPurchases(currPurchasesList);
-				JOptionPane.showMessageDialog(null,"Automated certificate renewal has succeeded.\n You've got a 10% discount!", "Notification",
+				JOptionPane.showMessageDialog(null,"Automated certificate renewal has succeeded.\nYou've got a 10% discount!", "Notification",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 			else 
@@ -387,13 +388,9 @@ GUIClient client;
 			}
 
 			else {
-				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
+				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Notification",
 						JOptionPane.INFORMATION_MESSAGE);
 				purchasesTable.getItems().clear();
-				Label purchaseMsg = new Label("There are no purchases for the current user");
-				purchaseMsg.setTextFill(Color.web("#ba2c2c"));
-				purchaseMsg.setStyle("-fx-font-size: 15pt");
-				purchasesTable.setPlaceholder(purchaseMsg);
 			}
 			break;
 		default:
@@ -413,7 +410,7 @@ GUIClient client;
 				col_cityName.setCellValueFactory(new PropertyValueFactory<Purchase,String>("cityName"));
 				col_purchaseType.setCellValueFactory(new PropertyValueFactory<Purchase,String>("purchaseType"));
 				col_purchaseDate.setCellValueFactory(new PropertyValueFactory<Purchase,String>("purchaseDate"));
-				col_expiryDate.setCellValueFactory(new PropertyValueFactory<Purchase,String>("expiryDate"));
+				//col_expiryDate.setCellValueFactory(new PropertyValueFactory<Purchase,String>("expiryDate"));
 				col_price.setCellValueFactory(new PropertyValueFactory<Purchase,String>("price"));
 
 				purchasesTable.setItems(currPurchasesList);
@@ -429,20 +426,26 @@ GUIClient client;
 		ArrayList<Object> data = new ArrayList<Object>();
 		data.add(MainGUI.currUser.getPermission());
 		data.add(purchase.getCityName());
-		GUIClient.sendActionToServer(Action.WATCH_MAP,data);
 		Permission permission = (MainGUI.currUser.getPermission());
 		switch(permission) 
 		{
 			case CLIENT:
 			{
-				MainGUI.MainStage.setTitle("Global City Map - View Maps");
+				if ((purchase.getPurchaseType().toString().equals("SHORT_TERM_PURCHASE"))
+					||(purchase.getExpirationDate().isBefore(LocalDate.now())))
+					JOptionPane.showMessageDialog(null, "You can't watch a short term purchase\nYou should purchase it again.", "Error",
+							JOptionPane.WARNING_MESSAGE);
+				else 
+				{
+					MainGUI.MainStage.setTitle("Global City Map - View Maps");
+					GUIClient.sendActionToServer(Action.WATCH_MAP,data);
+				}
 				break;
 			}
 			default:
 				MainGUI.MainStage.setTitle("Global City Map - Edit Maps");
+				MainGUI.openScene(SceneType.Edit);
 		}
-		MainGUI.openScene(SceneType.Edit);
-
     }
 	
     @FXML
@@ -450,7 +453,7 @@ GUIClient client;
 		Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
 		String city = purchase.getCityName();
 		if (purchase.getPurchaseType().toString().equals("SHORT_TERM_PURCHASE"))
-			JOptionPane.showMessageDialog(null, "You can't download a short term purchase more than once\n You should purchase it again.", "Error",
+			JOptionPane.showMessageDialog(null, "You can't download a short term purchase more than once\nYou should purchase it again.", "Error",
 					JOptionPane.WARNING_MESSAGE);
 		else {
 			ArrayList<Object> data = new ArrayList<Object>();
@@ -472,9 +475,9 @@ GUIClient client;
     
 	@FXML
 	String getDate() {
-			LocalDate expiryDate = dpExpiryDate.getValue();
+			LocalDate creditCardExpiryDate = dpCreditCardExpiryDate.getValue();
 			DateTimeFormatter formattedExpiryDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-			return formattedExpiryDate.format(expiryDate);
+			return formattedExpiryDate.format(creditCardExpiryDate);
 	}
 	/**
 	 *
@@ -489,9 +492,15 @@ GUIClient client;
     void Renew(ActionEvent event) 
     {
 		Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
-		float price = (float) (purchase.getPrice()*0.9);
-		
+		float newprice = (float) (purchase.getPrice()*0.9);
+		Period period = Period.between( purchase.getPurchaseDate() , purchase.getExpirationDate() );
+		Integer daysElapsed = period.getDays();
+		LocalDate purchaseDate=LocalDate.now();
+		LocalDate expiryDate=LocalDate.now().plusDays(daysElapsed);
 		ArrayList<Object> data = new ArrayList<Object>();
+		purchase.setPrice(newprice);
+		purchase.setPurchaseDate(purchaseDate);
+		purchase.setExpirationDate(expiryDate);
 		data.add(purchase);
 		GUIClient.sendActionToServer(Action.RENEW,data);
     }

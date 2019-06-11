@@ -53,8 +53,7 @@
                 <Text id="tfIDnumber" fx:id="lblIDnumber" layoutX="65.0" layoutY="261.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ID Number:" />
                 <TextField fx:id="tfIDNumber" disable="true" layoutX="161.0" layoutY="242.0" onAction="#Save" prefWidth="200.0" promptText="ID Number" />
                 <Text fx:id="lblExpiryDate" layoutX="370.0" layoutY="261.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Expiry Date:" />
-                <DatePicker fx:id="dpExpiryDate" disable="true" layoutX="460.0" layoutY="242.0" promptText="Expiry Date" />
-<!--                 <TextField fx:id="tfExpiryDate" disable="true" layoutX="460.0" layoutY="242.0" onAction="#Save" prefWidth="87.0" promptText="Expiry Date" /> -->
+                <DatePicker fx:id="dpCreditCardExpiryDate" disable="true" layoutX="460.0" layoutY="242.0" promptText="Expiry Date" />
               </children>
             </AnchorPane>
           </content>
