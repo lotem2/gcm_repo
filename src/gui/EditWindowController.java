@@ -67,6 +67,7 @@ public class EditWindowController implements ControllerListener {
 	URL URLImage;
 	static ArrayList<String> citiesList;
 	ArrayList<String> routeList;
+	ArrayList<Site> currRouteSites;
 
 	
     @FXML
@@ -445,7 +446,7 @@ public class EditWindowController implements ControllerListener {
 		Permission permission = MainGUI.currUser.getPermission();
 		data.add(userName);
 		data.add(permission);
-	   //GUIClient.sendActionToServer(Action.GET_ALL_SITES_LIST,data);//requests the list of the sites in the city
+	   GUIClient.sendActionToServer(Action.GET_ALL_SITES_LIST,data);//requests the list of the sites in the city
    }
     
 
@@ -701,16 +702,17 @@ public class EditWindowController implements ControllerListener {
 			case GET_ALL_SITES_LIST:
 				if ((Integer) currMsg.getData().get(0) == 0) 
 				{
-			    	ArrayList<Site> sites = (ArrayList<Site>) currMsg.getData().get(1);
-					ObservableList<Site> currSitesList = FXCollections.observableArrayList(sites);
-					setAddSitesToRouteChoiceBox(sites);
+					currRouteSites = (ArrayList<Site>) currMsg.getData().get(1);
+					ObservableList<Site> currSitesList = FXCollections.observableArrayList(currRouteSites);
+					setAddSitesToRouteChoiceBox(currRouteSites);
+					
 					//routesChoiceBoxListener(currSitesList);
 				}
 				else 
 					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
 							JOptionPane.WARNING_MESSAGE);
 			break;
-			case EDIT_CITY_PRICE:
+			case REQUEST_PRICE_CHANGE:
 			{
 				if ((Integer) currMsg.getData().get(0) == 0) 
 				{
@@ -829,15 +831,16 @@ public class EditWindowController implements ControllerListener {
 		 *
 		 *method to add sites to the Route
 		 * 
-		 *
+		 *ArrayList<Site> sites
 		 */  
-		void addSiteToRoute(ArrayList<Site> sites) 
+	    @FXML
+		void addSiteToRoute(ActionEvent event) 
 		{
 			sitesChoserForRoutes.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 		      @Override
 		      public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
 		    	  String currSiteName = (sitesChoserForRoutes.getItems().get((Integer) number2));
-				    for(Site currSite : sites){
+				    for(Site currSite : currRouteSites){
 				        if(currSite.getName() != null && currSite.getName().contains(currSiteName))
 				        	tableRouteDeatils.getItems().add(currSite);
 				    }
@@ -846,6 +849,10 @@ public class EditWindowController implements ControllerListener {
 		});
 
 	}
+		
+	
+		
+		
 	/**
 	 *
 	 *method to initialize the choice box of the cities
