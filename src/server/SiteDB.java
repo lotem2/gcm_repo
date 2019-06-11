@@ -178,7 +178,7 @@ public class SiteDB {
 						"WHERE s.cityname = ? AND s.siteID IN \n" + 
 						"((SELECT b.siteID \n" + 
 						" FROM Sites b \n" + 
-						" WHERE c.is_active = 0) UNION \n" + 
+						" WHERE b.is_active = 0) UNION \n" + 
 						" (SELECT s.siteID \n" + 
 						"  FROM Sites s JOIN Sites as s1 ON s.name = s1.name AND \n" + 
 						"(s.location = s1.location AND s.is_active = 0 AND s1.is_active = 1) \n" + 
