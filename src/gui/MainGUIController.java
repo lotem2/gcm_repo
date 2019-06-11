@@ -164,15 +164,6 @@ public class MainGUIController implements ControllerListener {
 				pfPassword.setText("");
 			}
 			GUIClient.sendActionToServer(Action.LOGIN,data);
-//			myMessage = new Message(Action.LOGIN, data);
-//			MainGUI.GUIclient.sendToServer(myMessage);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			JOptionPane.showMessageDialog(null,
-//					"Could not send message to server.  Terminating client.", "Error",
-//					JOptionPane.WARNING_MESSAGE);
-//			MainGUI.GUIclient.quit();
-//		}
 	}
 	
 	/**
@@ -200,13 +191,6 @@ public class MainGUIController implements ControllerListener {
 		String userName = MainGUI.currUser.getUserName();
 		data.add(userName);
 		GUIClient.sendActionToServer(Action.LOGOUT,data);
-//		Message myMessage = new Message(Action.LOGOUT, data);
-//		try {
-//			MainGUI.GUIclient.sendToServer(myMessage);
-//		} catch (Exception e) {
-//			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message", "Error",
-//					JOptionPane.WARNING_MESSAGE);
-//		}
 	}
 
 	/**
@@ -299,7 +283,6 @@ public class MainGUIController implements ControllerListener {
 							lblWelcome.setText("Welcome " + name + "!");
 						});
 				} else {
-					// System.out.println((currMsg.getData().get(1)).toString());
 					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "",
 					JOptionPane.INFORMATION_MESSAGE);
 					Platform.runLater(() -> {
@@ -339,6 +322,8 @@ public class MainGUIController implements ControllerListener {
 					maps = (HashMap<Integer, String>) currMsg.getData().get(1);
 				 setTableViewForMapsSearchResult(maps);
 			 }
+			 else
+				 setTableViewForEmptySearchResult();
 				break;
      			default:
 					
@@ -364,13 +349,10 @@ public class MainGUIController implements ControllerListener {
 				for  (Integer currmap  :  maps.keySet())  {
 				maps_string.put(maps.get(currmap).split(",")[0], maps.get(currmap).split(",")[1]);
 				}
-				if (maps.isEmpty()) {
-					setTableViewForEmptySearchResult();
-				}
 				// Create ObservableList of type Map
 				ObservableList<Map>  keys  =  FXCollections.observableArrayList();
 				// Insert every pair according to the names of columns
-				if (maps.keySet().size()==2)
+				if (maps.size()==2)
 				{
 					for  (Integer key  :  maps.keySet())  
 					{
