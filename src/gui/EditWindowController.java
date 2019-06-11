@@ -46,6 +46,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Separator;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -85,6 +86,8 @@ public class EditWindowController implements ControllerListener {
     @FXML
     private Button btnAddSiteToRoute;
     @FXML
+    private Button btnAddAnExistingSiteToMap;
+    @FXML
     private Button btnBackToMain;
     @FXML
     private Button btnBrowse;
@@ -119,6 +122,8 @@ public class EditWindowController implements ControllerListener {
     @FXML
     private Accordion editingAccordion;
     @FXML
+    private ChoiceBox<?> existingSiteToMapChoser;
+    @FXML
     private Label lbLocation;
     @FXML
     private Label lblAccessibilty;
@@ -132,6 +137,8 @@ public class EditWindowController implements ControllerListener {
     private Label lblEditorTool;
     @FXML
     private Label lblEstimatedTime;
+    @FXML
+    private Label lblExistingSiteToMapChoser;
     @FXML
     private Label lblMapChoose;
     @FXML
@@ -192,6 +199,8 @@ public class EditWindowController implements ControllerListener {
     private TextField tfY;
     @FXML
     private TextField tfrouteDescription;
+    @FXML
+    private Separator seperator;
 
     
     @FXML
@@ -373,6 +382,10 @@ public class EditWindowController implements ControllerListener {
 	 *
 	 *
 	 */ 
+    @FXML
+    void AddAnExistingSiteToMap(ActionEvent event) {
+    }
+    
    void setSiteInfo(Site site) {
 	   tfSiteName.setText(site.getName());
 	   tfSiteDescription.setText(site.getDescription());
@@ -467,6 +480,8 @@ public class EditWindowController implements ControllerListener {
     	tfPrice.setDisable(false);
     	addNewMap();
     	addNewRoute();
+    	mapChoser.setValue(null);
+    	routesChoser.setValue(null);
     }
 
 	/**
@@ -483,6 +498,7 @@ public class EditWindowController implements ControllerListener {
     	tfPrice.clear();
     	btnUpdateVersion.setDisable(true);
     	addNewSite();
+    	siteChoser.setValue(null);
     }
 
 	/**
@@ -510,6 +526,8 @@ public class EditWindowController implements ControllerListener {
     	tfY.clear();
     	btnDeleteSite.setDisable(true);
     	tfEstimatedTime.clear();
+    	categoryChoser.setValue(null);
+    	accessibilityChoser.setValue(null);
     }
 	/**
 	 *
@@ -543,6 +561,10 @@ public class EditWindowController implements ControllerListener {
 		tfSiteName.setDisable(true);
 		tfrouteDescription.setDisable(true);
 		tfEstimatedTime.setDisable(true);
+		btnAddAnExistingSiteToMap.setVisible(false);
+		existingSiteToMapChoser.setVisible(false);
+		lblExistingSiteToMapChoser.setVisible(false);
+		//seperator.setVisible(false);
 	}
 	/**
 	 *
@@ -993,7 +1015,8 @@ public class EditWindowController implements ControllerListener {
 		if (allSitesList != null) {
 		      Iterator<Site> itr = allSitesList.iterator();
 		      while(itr.hasNext()) {
-		    	  sitesList.add(allSitesList.get(0).getName());
+		    	  int  currSiteIndex = allSitesList.indexOf(itr.next());
+		    	  sitesList.add(allSitesList.get(currSiteIndex).getName());
 		      }
 		}
 		ObservableList<String> currSitesList = FXCollections.observableArrayList(sitesList);
