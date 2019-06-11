@@ -73,6 +73,9 @@ public class RegisterController implements ControllerListener {
 	@FXML
 	private TextField tfphone;
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void Register(ActionEvent event) {
 		// handle the event here
@@ -148,6 +151,9 @@ public class RegisterController implements ControllerListener {
 		return email != null && email.contains("@") && email.lastIndexOf("@") != email.length() - 1;
 	}
 	
+	/**
+	 * @param event
+	 */
 	@FXML
 	void Cancel(ActionEvent event) {
 		MainGUI.MainStage.setTitle("Global City Map");

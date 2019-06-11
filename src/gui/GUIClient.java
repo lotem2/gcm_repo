@@ -18,6 +18,9 @@ public class GUIClient extends AbstractClient {
 
 	ControllerListener currListener;
 
+	/**
+	 * @param contollerListener
+	 */
 	public void setCurrentControllerListener(ControllerListener contollerListener) {
 		currListener = contollerListener;
 	}
@@ -40,6 +43,10 @@ public class GUIClient extends AbstractClient {
 			
 	}
 	
+	/**
+	 * @param action
+	 * @param data
+	 */
 	public static void sendActionToServer(Action action,ArrayList<Object> data) {
 		Message myMessage = new Message(action,data);
 		try {
@@ -50,6 +57,9 @@ public class GUIClient extends AbstractClient {
 		}
 	}
 	
+	/**
+	 * @param action
+	 */
 	public static void sendActionToServer(Action action) {
 		Message myMessage = new Message(action);
 		try {

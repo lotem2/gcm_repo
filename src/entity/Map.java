@@ -137,16 +137,18 @@ public class Map implements java.io.Serializable{
 	 */
 	@Override
 	public String toString() {
-		if(sites != null || sites.size() !=0) {
-			String str = "=========================================================================\n" +
+		if(sites != null) {
+			String str = "=========================================================================" + 
+					System.getProperty("line.separator") +
 					"						  " + mapname +"						 		  \n" +
-					"	Description: " + description + "\n" +
-					"	City: " + cityname + "\n" + 
-					"	List of sites:" + "\n=========================================\n"; 
+					"	Description: " + description + System.getProperty("line.separator") +
+					"	City: " + cityname + System.getProperty("line.separator") + 
+					"	List of sites:" + "\n=========================================" 
+					+ System.getProperty("line.separator"); 
 			
 			for (Site site : sites) {
 				str += site.toString();
-				str += "\n";
+				str += System.getProperty("line.separator");
 			}
 			
 			return str;

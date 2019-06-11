@@ -141,12 +141,12 @@ public class SQLController {
 			
 			for (int i = 1; i <= data.size()/2; i++) {
 				if (data.get(i).equals("description"))
-					sql += data.get(i) + " LIKE ?,";
+					sql += data.get(i) + " LIKE ?";
 				else	
-					sql += data.get(i) + " = ?,";
+					sql += data.get(i) + " = ? AND ";
 			}
 			
-			sql = sql.substring(0, sql.length() - 1);
+			sql = sql.substring(0, sql.length() - (sql.length() - sql.lastIndexOf("AND")));
 
 			// Execute query using the ExecuteQuery method with the input and the above query
 			ResultSet rs = ExecuteQuery(sql, params);

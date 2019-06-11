@@ -135,56 +135,9 @@ public class StatisticsController implements ControllerListener {
     @FXML
     private TableColumn<Report, Integer> clmDownloads;
 
-	@FXML
-	void CityPurchaseTable(ActionEvent event) {
-
-	}
-
-	@FXML
-	void CityDaily(ActionEvent event) {
-
-	}
-
-	@FXML
-	void PurchaseDaily(ActionEvent event) {
-
-	}
-
-	@FXML
-	void LongTermSub(ActionEvent event) {
-
-	}
-
-	@FXML
-	void AllActivityReportTable(ActionEvent event) {
-
-	}
-
-	@FXML
-	void CityReport(ActionEvent event) {
-
-	}
-
-	@FXML
-	void DescriptionReport(ActionEvent event) {
-
-	}
-
-	@FXML
-	void NumReport(ActionEvent event) {
-
-	}
-
-	@FXML
-	void DescriptionPerCity(ActionEvent event) {
-
-	}
-
-	@FXML
-	void NumPerCity(ActionEvent event) {
-
-	}
-
+	/**
+	 * @param event
+	 */
 	@FXML
 	void ShowStatistics(ActionEvent event) {
 		try {
@@ -207,6 +160,9 @@ public class StatisticsController implements ControllerListener {
 		}
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void ShowStatisticsAll(ActionEvent event) {
 		try {
@@ -227,6 +183,9 @@ public class StatisticsController implements ControllerListener {
 		}
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void backToMainGUI(ActionEvent event) {
 		MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);

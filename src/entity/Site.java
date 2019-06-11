@@ -135,9 +135,11 @@ public class Site implements java.io.Serializable{
 	 */
 	@Override
 	public String toString() {
-		return "Site name: " + name + " City name: " + cityname + "\nClassification: " + classification +
-				"\nDescription: " + description + "\niIs accessible: "  + isAccessible +
-				"\nVisit duration: " + visitDuration + "\nLocation: " + location;
+		return "Site name: " + name + System.getProperty("line.separator") +
+				" City name: " + cityname + System.getProperty("line.separator") + "Classification: " + classification +
+				System.getProperty("line.separator") + "Description: " + description + System.getProperty("line.separator") + 
+				"Is accessible: "  + isAccessible + System.getProperty("line.separator") + 
+				"Visit duration: " + visitDuration + System.getProperty("line.separator") + "Location: " + location + System.getProperty("line.separator");
 	}
 
 }

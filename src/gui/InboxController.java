@@ -48,10 +48,13 @@ public class InboxController implements ControllerListener {
 	
 	InboxMessage m_selectedMessage;
 	
+	/**
+	 * @param isApproved
+	 */
 	private void sendApprovalOrDeclineMessage(boolean isApproved) {
 		ArrayList<Object> data = new ArrayList<Object>();
-		data.add(isApproved ? Status.APPROVED.toString() : Status.DECLINED.toString());
-		data.add(m_selectedMessage);
+		//data.add(isApproved ? Status.APPROVED.toString() : Status.DECLINED.toString());
+		//data.add(m_selectedMessage);
 		Action action;
 		if(m_selectedMessage.getContent().contains("price"))
 		{
@@ -59,6 +62,7 @@ public class InboxController implements ControllerListener {
 			data.add(isApproved ? Status.APPROVED.toString() : Status.DECLINED.toString());
 			data.add(m_selectedMessage);
 			data.add(m_selectedMessage.getContent().split("to ")[1]);
+			data.add((m_selectedMessage.getContent().split("for ")[1]).split(" to")[0]); //cityname
 		}
 		else // m_selectedMessage.getContent().contains("version"))
 		{
@@ -75,18 +79,27 @@ public class InboxController implements ControllerListener {
 		}
 	}
 	
+	/**
+	 * @param event
+	 */
 	@FXML
 	public void Approve(ActionEvent event) {
 		sendApprovalOrDeclineMessage(true);
 		getMessagesFromServer();
 	}
 	
+	/**
+	 * @param event
+	 */
 	@FXML
 	public void Decline(ActionEvent event) {
 		sendApprovalOrDeclineMessage(false);
 		getMessagesFromServer();
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	public void Refresh(ActionEvent event) {
 		getMessagesFromServer();
@@ -103,6 +116,9 @@ public class InboxController implements ControllerListener {
 		}
 	}
 	
+	/**
+	 * @param event
+	 */
 	@FXML
 	public void Close(ActionEvent event) {
 		MainGUI.MainStage.setTitle("Global City Map");
@@ -115,6 +131,16 @@ public class InboxController implements ControllerListener {
 		switch (currMsg.getAction()) 
 		{
 			case GET_INBOX_MESSAGES:
+				if ((Integer) currMsg.getData().get(0) == 0) {
+					updateTable((List<InboxMessage>) currMsg.getData().get(1));
+				}
+				break;
+			case HANDLE_PRICE_CHANGE_REQ:
+				if ((Integer) currMsg.getData().get(0) == 0) {
+					updateTable((List<InboxMessage>) currMsg.getData().get(1));
+				}
+				break;
+			case HANDLE_NEW_VER_REQ:
 				if ((Integer) currMsg.getData().get(0) == 0) {
 					updateTable((List<InboxMessage>) currMsg.getData().get(1));
 				}

@@ -5,6 +5,7 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
@@ -17,6 +18,7 @@ import common.Services;
 import entity.City;
 import entity.Purchase;
 import entity.Purchase.PurchaseType;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -31,6 +33,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 public class BuyController implements ControllerListener {
@@ -111,7 +114,7 @@ public class BuyController implements ControllerListener {
 
 	@FXML
 	private TextField tfTo;
-	
+
 	@FXML
 	private Label lblWelcome;
 
@@ -121,6 +124,9 @@ public class BuyController implements ControllerListener {
 //
 //	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void OneTimeTerm(ActionEvent event) {
 		lblTotalPrice.setText("Total Price: ");
@@ -129,6 +135,9 @@ public class BuyController implements ControllerListener {
 
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void Subscription(ActionEvent event) {
 		lblTotalPrice.setText("Total Price: ");
@@ -145,10 +154,9 @@ public class BuyController implements ControllerListener {
 
 	}
 
-	@FXML
-	void Download(ActionEvent event) {
-	}
-
+	/**
+	 * @param event
+	 */
 	@FXML
 	void Buy(ActionEvent event) {
 		try {
@@ -171,7 +179,19 @@ public class BuyController implements ControllerListener {
 					m_expirationDate = LocalDate.now();
 				} else if (rbSubscription.isSelected()) {
 					m_purchaseType = Purchase.PurchaseType.LONG_TERM_PURCHASE.toString();
-					m_expirationDate = LocalDate.now().plusDays(10);
+					String term = ChoiceBoxTerms.getValue();
+					switch (term) {
+					case "1 Month":
+						m_expirationDate = LocalDate.now().plusDays(30);
+						break;
+					case "3 Months":
+						m_expirationDate = LocalDate.now().plusDays(90);
+						break;
+					case "6 Months":
+						m_expirationDate = LocalDate.now().plusDays(180);
+						break;
+					default:
+					}
 				}
 
 			} catch (Exception e) {
@@ -215,20 +235,18 @@ public class BuyController implements ControllerListener {
 		}
 	}
 
-	private String openSaveMapPrompt() {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Save Image");
-		fileChooser.setInitialFileName("citymap.png");
-		File file = fileChooser.showSaveDialog(MainGUI.MainStage);
-		return file.getAbsolutePath();
-	}
-
+	/**
+	 * @param event
+	 */
 	@FXML
 	void backToMainGUI(ActionEvent event) {
 		MainGUI.MainStage.setTitle("Global City Map");
 		MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
 	}
 
+	/**
+	 * Get an Object
+	 */
 	@Override
 	public void handleMessageFromServer(Object msg) {
 		Message currMsg = (Message) msg;
@@ -248,9 +266,17 @@ public class BuyController implements ControllerListener {
 			break;
 		case BUY:
 			if ((Integer) currMsg.getData().get(0) == 0) {
-				JOptionPane.showMessageDialog(null, "Order Complete!", "", JOptionPane.INFORMATION_MESSAGE);
 				if (rbBuyOnce.isSelected()) {
-					Services.writeCityToFile((City) (currMsg.getData().get(1)), openSaveMapPrompt());
+					Platform.runLater(() -> {
+						DirectoryChooser directoryChooser = new DirectoryChooser ();
+						directoryChooser.setTitle("Save To Folder");
+						File file = directoryChooser.showDialog(MainGUI.MainStage);
+						Message newMsg = (Message) (currMsg.getData().get(1));
+						Services.writeCityToFile((City) (newMsg.getData().get(1)), file.getAbsolutePath());
+					});
+				} else {
+					JOptionPane.showMessageDialog(null, "Order Complete!", "", JOptionPane.INFORMATION_MESSAGE);
+
 				}
 				MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
 			}
@@ -265,6 +291,12 @@ public class BuyController implements ControllerListener {
 		}
 	}
 
+	/**
+	 * @param isSubscription
+	 * @param city
+	 * @param term
+	 * @return String - updated price
+	 */
 	public String setPrice(boolean isSubscription, String city, String term) {
 		double price;
 		if (city.isBlank()) {

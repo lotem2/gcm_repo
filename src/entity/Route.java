@@ -100,7 +100,23 @@ public class Route implements java.io.Serializable{
 	 */
 	@Override
 	public String toString() {
-		return "Route - ID: " + this.getID() + "City name: " + this.getCityName() +
-			"Sites: " + this.getSites() + " Description: " + this.getDescription();
+		if(sites != null) {
+			String str = "=========================================================================" + 
+					System.getProperty("line.separator") +
+					"						  " + name +"						 		 " + System.getProperty("line.separator") +
+					"	Description: " + description + System.getProperty("line.separator") +
+					"	City: " + cityname + System.getProperty("line.separator") + 
+					"	List of sites:" + System.getProperty("line.separator") + "=========================================" 
+					+ System.getProperty("line.separator"); 
+			
+			for (Site site : sites) {
+				str += site.toString();
+				str += System.getProperty("line.separator");
+			}
+			
+			return str;
+		}
+
+		return "";
 	}
 }

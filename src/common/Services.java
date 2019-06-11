@@ -56,7 +56,7 @@ public final class Services extends TimerTask {
 
 		try {
 			// Create a folder that match the city' name
-			File directory = new File(path + "\\" + cityToDownload.getName());
+			File directory = new File(path);
 
 			// Check if directory already exists - delete it and create it again
 			if(directory.exists()) directory.delete();
@@ -66,28 +66,21 @@ public final class Services extends TimerTask {
 			// Go through each map and create the image
 			for (entity.Map city_map : cityToDownload.getMaps()) {
 				// Read image from byte array
-				BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(city_map.getImageAsByte()));
-				File newImage = new File(directory.getPath() + "\\" + city_map.getName()); // Create output file				
-			    ImageIO.write(bImage, "jpg", newImage); // Write image to the specified path
+				if(city_map.getImageAsByte() != null) {
+					BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(city_map.getImageAsByte()));
+					File newImage = new File(directory.getPath() + "\\" + city_map.getName().replace(" ", "_") + ".jpg"); // Create output file				
+				    ImageIO.write(bImage, "jpg", newImage); // Write image to the specified path	
+				}
 			}
 
 		    // Go through each map and write its toString method to the file
 		    try (FileWriter file = new FileWriter(directory.getPath() + 
 		    		"\\" + cityToDownload.getName() + "_Maps.txt", false)) {
 		        for (entity.Map currentMap : cityToDownload.getMaps()) {
-					file.write(currentMap.toString());
-					System.getProperty("line.separator");
-				}
-		    } catch (Exception e) {
-		        throw new Exception("There was a problem downloading the city.");
-		    }
-
-		    // Go through each route and write its toString method to the file
-		    try (FileWriter file = new FileWriter(directory.getPath() + 
-		    		"\\" + cityToDownload.getName() + "_Routes.txt", false)) {
-		        for (Route currentRoute : cityToDownload.getRoutes()) {
-					file.write(currentRoute.toString());
-					System.getProperty("line.separator");
+		        	if(!currentMap.toString().equals("")) {
+						file.write(currentMap.toString());
+						file.write(System.getProperty("line.separator"));
+		        	}
 				}
 		    } catch (Exception e) {
 		        throw new Exception("There was a problem downloading the city.");
@@ -192,7 +185,7 @@ public final class Services extends TimerTask {
 	 * handle a request for approval of a new city price.
 	 * Approval is granted by the CEO.
 	 * @param params - Contains a string which contains if request was approved and
-	 * false otherwise,the inbox message and the new price.
+	 * false otherwise,the inbox message, the new price and the requested city name.
 	 * @return {@link Message} - Indicating success/failure with corresponding message
 	 */
 	public static common.Message handleCityPriceRequest(ArrayList<Object> params){
@@ -204,25 +197,34 @@ public final class Services extends TimerTask {
 		String            status      = "";
 
 		try {
+			//Get city name from content
+			String cityName = params.get(3).toString();
+
 			// Check if a new price change message is currently under management approval
 			if(SQLController.DoesRecordExist("Inbox","content", "status",
-						"Approved " + ((InboxMessage)params.get(1)).getSenderUserName() + "'s new city price to" +
-						params.get(2).toString(), "APPROVED"))
+						"Approve " + ((InboxMessage)params.get(1)).getSenderUserName() + "'s new city price for "+
+								cityName + " to "  + params.get(2).toString(), "APPROVED"))
 				throw new Exception("New version is under approval, cannot create publish request.");
 
-			msgContent  = ((InboxMessage)params.get(1)).getSenderUserName() + "'s new city price to" + params.get(2).toString();
-
-			// Update success to message's data
-			data.add(new Integer(0));
+			msgContent  = ((InboxMessage)params.get(1)).getSenderUserName() + "'s new city price for "+
+					cityName + " to "  + params.get(2).toString();
 
 			// Edit content according to the CEO's decision
 			if(params.get(0).equals("APPROVED"))
 			{
-				//Get city name from content
-				String cityName =(((InboxMessage)params.get(1)).getSenderUserName().split("for")[1]).split("to")[0];
+
 				//Insert city name and new price to update the new city price
 				data.add(cityName); data.add(params.get(2).toString());
-				replyMsg = CityDB.getInstance().UpdateCityPriceAfterApproval(data);
+				try
+				{
+					replyMsg = CityDB.getInstance().UpdateCityPriceAfterApproval(data);	
+				}
+				catch (Exception e)
+				{
+					return replyMsg;
+				}
+				// Update success to message's data
+				data.add(new Integer(0));
 				content = "Approved ".concat(msgContent);
 				status  = "APPROVED";
 			}
@@ -236,8 +238,7 @@ public final class Services extends TimerTask {
 			common.Message msg = InboxDB.getInstance().AddInboxMessage(
 					"DanA",
 					Permission.CEO.toString(),
-					((User)params.get(2)).getUserName(),
-					//((User)params.get(2)).getPermission().toString(),
+					((InboxMessage)params.get(1)).getSenderUserName(),
 					Permission.MANAGING_EDITOR.toString(),
 					content,
 					status,

@@ -142,6 +142,9 @@ public class MainGUIController implements ControllerListener {
 	
 	
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void Login(ActionEvent event) {
 		// handle the event here
@@ -172,16 +175,25 @@ public class MainGUIController implements ControllerListener {
 //		}
 	}
 	
+	/**
+	 * @param event
+	 */
 	@FXML
 	void OpenInbox(ActionEvent event) {
 		MainGUI.openScene(MainGUI.SceneType.Inbox);
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void Buy(ActionEvent event) {
 		MainGUI.openScene(MainGUI.SceneType.BUY);
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void Logout(ActionEvent event) {
 		ArrayList<Object> data = new ArrayList<Object>();
@@ -197,12 +209,18 @@ public class MainGUIController implements ControllerListener {
 //		}
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void Register(ActionEvent event) {
 		MainGUI.MainStage.setTitle("Global City Map - Registration");
 		MainGUI.openScene(MainGUI.SceneType.REGISTER);
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void MyProfile(ActionEvent event) {
 		MainGUI.MainStage.setTitle("Global City Map - My Profile");
@@ -332,6 +350,9 @@ public class MainGUIController implements ControllerListener {
 	}
 
 
+	/**
+	 * @param maps
+	 */
 	public void setTableViewForMapsSearchResult(HashMap<Integer, String> maps) 
 	{
 		Platform.runLater(new Runnable() {
@@ -406,12 +427,18 @@ public class MainGUIController implements ControllerListener {
 		});
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
 	void Manage(ActionEvent event) {
 		MainGUI.MainStage.setTitle("Global City Map - Users Management");
 		MainGUI.openScene(SceneType.ClientsManagement);
 	}
 
+	/**
+	 * @param event
+	 */
 	@FXML
     void EditMaps(ActionEvent event) {
 		Permission permission = (MainGUI.currUser.getPermission());
