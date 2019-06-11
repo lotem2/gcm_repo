@@ -172,7 +172,6 @@ public abstract class AbstractServer implements Runnable
          }
          // Ignore all exceptions when closing clients.
          catch(Exception ex) {
-        	 ex.printStackTrace();
          }
       }
       serverSocket = null;
