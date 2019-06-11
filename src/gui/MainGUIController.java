@@ -38,6 +38,7 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
@@ -144,8 +145,8 @@ public class MainGUIController implements ControllerListener {
 	@FXML
 	void Login(ActionEvent event) {
 		// handle the event here
-		try {
-			Message myMessage;
+//		try {
+//			Message myMessage;
 			String userName = "", password;
 			ArrayList<Object> data = new ArrayList<Object>();
 			userName = tfUser.getText();
@@ -159,15 +160,16 @@ public class MainGUIController implements ControllerListener {
 				tfUser.setText("");
 				pfPassword.setText("");
 			}
-			myMessage = new Message(Action.LOGIN, data);
-			MainGUI.GUIclient.sendToServer(myMessage);
-		} catch (IOException e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(null,
-					"Could not send message to server.  Terminating client.", "Error",
-					JOptionPane.WARNING_MESSAGE);
-			MainGUI.GUIclient.quit();
-		}
+			GUIClient.sendActionToServer(Action.LOGIN,data);
+//			myMessage = new Message(Action.LOGIN, data);
+//			MainGUI.GUIclient.sendToServer(myMessage);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//			JOptionPane.showMessageDialog(null,
+//					"Could not send message to server.  Terminating client.", "Error",
+//					JOptionPane.WARNING_MESSAGE);
+//			MainGUI.GUIclient.quit();
+//		}
 	}
 	
 	@FXML
@@ -185,13 +187,14 @@ public class MainGUIController implements ControllerListener {
 		ArrayList<Object> data = new ArrayList<Object>();
 		String userName = MainGUI.currUser.getUserName();
 		data.add(userName);
-		Message myMessage = new Message(Action.LOGOUT, data);
-		try {
-			MainGUI.GUIclient.sendToServer(myMessage);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message", "Error",
-					JOptionPane.WARNING_MESSAGE);
-		}
+		GUIClient.sendActionToServer(Action.LOGOUT,data);
+//		Message myMessage = new Message(Action.LOGOUT, data);
+//		try {
+//			MainGUI.GUIclient.sendToServer(myMessage);
+//		} catch (Exception e) {
+//			JOptionPane.showMessageDialog(null, e.toString() + "Couldn't send message", "Error",
+//					JOptionPane.WARNING_MESSAGE);
+//		}
 	}
 
 	@FXML
@@ -318,10 +321,6 @@ public class MainGUIController implements ControllerListener {
 					maps = (HashMap<Integer, String>) currMsg.getData().get(1);
 				 setTableViewForMapsSearchResult(maps);
 			 }
-//	      	 else {
-//	      		 clientUI.display(currMsg.getData().get(1).toString() + "\n"
-//	      				 + "The message was not sent to the gui.Please retry\"");
-//	      	 }
 				break;
      			default:
 					
@@ -344,39 +343,68 @@ public class MainGUIController implements ControllerListener {
 				for  (Integer currmap  :  maps.keySet())  {
 				maps_string.put(maps.get(currmap).split(",")[0], maps.get(currmap).split(",")[1]);
 				}
+				if (maps.isEmpty()) {
+					setTableViewForEmptySearchResult();
+				}
 				// Create ObservableList of type Map
 				ObservableList<Map>  keys  =  FXCollections.observableArrayList();
 				// Insert every pair according to the names of columns
-				for  (Integer key  :  maps.keySet())  
+				if (maps.keySet().size()==2)
 				{
-				Map<String, String>  m  =  new  HashMap<String, String>();
-				m.put("City Name",  maps.get(key).split(",")[0]);
-				m.put("Description", maps.get(key).split(",")[1]);
-				m.put("Number of Maps", maps.get(key).split(",")[2]);
-				m.put("Number Of Sites", maps.get(key).split(",")[3]);
-				m.put("Number Of Routes", maps.get(key).split(",")[4]);
-				keys.add(m);
+					for  (Integer key  :  maps.keySet())  
+					{
+					Map<String, String>  m  =  new  HashMap<String, String>();
+					m.put("mapDescription",  maps.get(key).split(",")[0]);
+					m.put("sitesNumber", maps.get(key).split(",")[1]);
+					keys.add(m);
+					}
+					SearchResultsTable.setVisible(true);
+					// Create the columns necessary for the current search  of city
+					col_cityName  = new  TableColumn<>("Map Description");
+					col_cityName.setCellValueFactory(new MapValueFactory("mapDescription"));
+					col_description  =  new  TableColumn<>("Sites Number");
+					col_description.setCellValueFactory(new MapValueFactory("sitesNumber"));
 				}
-				// Create the columns necessary for the current search  -  site or city
-				col_cityName  = new  TableColumn<>("City Name");
-				col_cityName.setCellValueFactory(new MapValueFactory( "City Name"));
-				col_description  =  new  TableColumn<>("Description");
-				col_description.setCellValueFactory(new MapValueFactory("Description"));
-				col_mapsNumber  = new  TableColumn<>("Number of Maps");
-				col_mapsNumber.setCellValueFactory(new MapValueFactory( "Number of Maps"));
-				col_sitesNumber  =  new  TableColumn<>("Number Of Sites");
-				col_sitesNumber.setCellValueFactory(new MapValueFactory("Number Of Sites"));
-				col_routesNumber  =  new  TableColumn<>("Number Of Routes");
-				col_routesNumber.setCellValueFactory(new MapValueFactory("Number Of Routes"));
+				else
+				{
+					for  (Integer key  :  maps.keySet())  
+					{
+					Map<String, String>  m  =  new  HashMap<String, String>();
+					m.put("mapDescription",  maps.get(key).split(",")[0]);
+					m.put("cityName", maps.get(key).split(",")[1]);
+					keys.add(m);
+					}
+					SearchResultsTable.setVisible(true);
+					// Create the columns necessary for the current search  of site (or site with other param)
+					col_cityName  =  new  TableColumn<>("City Name");
+					col_cityName.setCellValueFactory(new MapValueFactory("cityName"));
+					col_description  = new  TableColumn<>("Map Description");
+					col_description.setCellValueFactory(new MapValueFactory("mapDescription"));
+
+				}
+
 				// Set columns as children of the table view
-				SearchResultsTable.getColumns().setAll(col_cityName, col_description,col_mapsNumber,col_sitesNumber,col_routesNumber);
+				SearchResultsTable.getColumns().setAll(col_cityName, col_description/*,col_mapsNumber,col_sitesNumber,col_routesNumber*/);
 				// Set the ObservableList<Map> as items
 				SearchResultsTable.setItems(keys);
-			}
+				}
+			//}
 		});
 	}
 
-
+	/**
+	 * Called when there are no search results for maps.
+	 * @param msg
+	 */
+	public void setTableViewForEmptySearchResult() {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				SearchResultsTable.setVisible(true);
+				SearchResultsTable.getItems().clear();
+			}
+		});
+	}
 
 	@FXML
 	void Manage(ActionEvent event) {
