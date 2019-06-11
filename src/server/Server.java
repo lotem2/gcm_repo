@@ -108,20 +108,12 @@ public class Server extends AbstractServer {
 				replyMsg.setAction(Action.RENEW);
 				break;
 			case DOWNLOAD_PURCHASE:
-				replyMsg = PurchaseDB.getInstance().downloadPurchase(currMsg.getData());
+				replyMsg = CityDB.getInstance().downloadCity(currMsg.getData());
 				replyMsg.setAction(Action.DOWNLOAD_PURCHASE);
 				break;
 			case GET_CITY_PRICE:
 				replyMsg = CityDB.getInstance().getCitiesList();
 				replyMsg.setAction(Action.GET_CITY_PRICE);
-				break;
-			case EDIT_CITY_PRICE:
-				replyMsg = Services.changeCityPriceRequest(currMsg.getData());
-				replyMsg.setAction(Action.EDIT_CITY_PRICE);
-				break;
-			case APPROVE_CITY_PRICE:
-				replyMsg = CityDB.getInstance().UpdateCityPriceAfterApproval(currMsg.getData());
-				replyMsg.setAction(Action.APPROVE_CITY_PRICE);
 				break;
 			case SHOW_ALL_CLIENTS:
 				replyMsg = UsersDB.getInstance().getAllUsers();
@@ -162,6 +154,42 @@ public class Server extends AbstractServer {
 			case HANDLE_NEW_VER_REQ:
 				replyMsg = Services.handleNewVersionRequest((currMsg.getData()));
 				replyMsg.setAction(Action.HANDLE_NEW_VER_REQ);
+				break;
+			case REMOVE_SITE:
+				replyMsg = MapDB.getInstance().updateSitesOfMap(currMsg.getData());
+				replyMsg.setAction(Action.REMOVE_SITE);
+				break;
+			case GET_ALL_SITES_LIST:
+				replyMsg = SiteDB.getInstance().getSitesbyCity(currMsg.getData());
+				replyMsg.setAction(Action.GET_ALL_SITES_LIST);
+				break;
+			case EDIT_ROUTE:
+				replyMsg = RouteDB.getInstance().UpdateRoute(currMsg.getData());
+				replyMsg.setAction(Action.EDIT_ROUTE);
+				break;
+			case EDIT_MAP:
+				replyMsg = MapDB.getInstance().editMapDetails(currMsg.getData());
+				replyMsg.setAction(Action.EDIT_MAP);
+				break;
+			case EDIT_SITE:
+				replyMsg = SiteDB.getInstance().updateSiteDetails(currMsg.getData());
+				replyMsg.setAction(Action.EDIT_SITE);
+				break;
+			case ADD_MAP:
+				replyMsg = MapDB.getInstance().AddNewMap(currMsg.getData());
+				replyMsg.setAction(Action.ADD_MAP);
+				break;
+			case ADD_SITE:
+				replyMsg = MapDB.getInstance().AddSiteToMap(currMsg.getData());
+				replyMsg.setAction(Action.ADD_SITE);
+				break;
+			case ADD_ROUTE:
+				replyMsg = RouteDB.getInstance().AddRoute(currMsg.getData());
+				replyMsg.setAction(Action.ADD_ROUTE);
+				break;
+			case WATCH_MAP:
+				replyMsg = PurchaseDB.getInstance().viewPurchase(currMsg.getData());
+				replyMsg.setAction(Action.WATCH_MAP);
 				break;
 			default:
 				break;
