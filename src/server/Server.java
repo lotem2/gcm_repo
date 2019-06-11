@@ -25,11 +25,18 @@ import entity.*;
 */
 public class Server extends AbstractServer {
 	// Variables
-	private static final DateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	private static final DateFormat sdf  = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	final public static int DEFAULT_PORT = 5555;
 	static private HashMap<User, ConnectionToClient> clients;
+	private static ServerController m_ServerController;
+
+	/**
+	 * Public constructor of class Server which handles the client-server process
+	 * @param port
+	 */
 	public Server(int port) {
 		super(port);
+		m_ServerController = new ServerController();
 		clients = new HashMap<User, ConnectionToClient>();
 	}
 
@@ -53,9 +60,6 @@ public class Server extends AbstractServer {
 				// Check if user already connected
 				if (DoesUserExists(currMsg.getData().get(0).toString())) {
 					// Sending a login failure to client
-					ArrayList<Object> input = new ArrayList<Object>();
-					input.add(new Integer(1));
-					input.add(new String("Client already connected."));
 					replyMsg = new Message(Action.LOGIN, new Integer(1), new String("Client already connected."));
 				} else {
 					// Get User's details
@@ -64,9 +68,7 @@ public class Server extends AbstractServer {
 						// Adding the current user to the list of clients connected
 						clients.put((User)replyMsg.getData().get(1), client);
 						client.setName(currMsg.getData().get(0).toString());
-
-						System.out.println("[" + sdf.format(Calendar.getInstance().getTime()) +  "] " + 
-								currMsg.getData().get(0).toString() + " has connected.");
+						m_ServerController.setMsg(currMsg.getData().get(0).toString() + " has connected.");
 					}
 
 					replyMsg.setAction(Action.LOGIN);
@@ -74,16 +76,15 @@ public class Server extends AbstractServer {
 				break;
 			case LOGOUT:
 				// remove client from list of clients and send success message
-				System.out.println("[" + sdf.format(Calendar.getInstance().getTime()) +  "] " + 
-						client.getName() + " has disconnected.");
+				m_ServerController.setMsg(client.getName().equals("") ? 
+						"A client " : client.getName() + " has disconnected.");
 				client.setName("");
 				clients.remove(getKeybyValue(client));
-				ArrayList<Object> input = new ArrayList<Object>();
-				input.add(new Integer(0));
 				replyMsg = new Message(Action.LOGOUT, new Integer(0));
 				break;
 			case REGISTER:
 				replyMsg = UsersDB.getInstance().AddUser(currMsg.getData());
+				m_ServerController.setMsg("New client has registred the system.");
 				break;
 			case EDIT_USER_DETAILS:
 				replyMsg = UsersDB.getInstance().EditUser(currMsg.getData());
@@ -205,9 +206,7 @@ public class Server extends AbstractServer {
 	 * Hook method to handle client's connection
 	 */
 	protected void clientConnected(ConnectionToClient client) {
-		// display on server and clients that the client has connected.
-		String msg = "[" + sdf.format(Calendar.getInstance().getTime()) +  "] A Client has connected";
-		System.out.println(msg);
+		m_ServerController.setMsg("A Client has connected");
 	}
 
 	/**
@@ -217,8 +216,9 @@ public class Server extends AbstractServer {
 	 */
 	protected void clientDisconnected(ConnectionToClient client) {
 		// Remove client from list of clients
-		String msg = "[" + sdf.format(Calendar.getInstance().getTime()) +  "] " + client.getName()+ " has disconnected.";
 		clients.remove(getKeybyValue(client));
+		if(!client.getName().equals(""))
+			m_ServerController.setMsg(client.getName()+ " has disconnected.");
 	}
 
 	/*
@@ -227,21 +227,31 @@ public class Server extends AbstractServer {
 	synchronized protected void clientException(ConnectionToClient client, Throwable exception) {
 		String msg;
 
-		if (!client.getName().startsWith("Thread")) {
-			msg = "[" + sdf.format(Calendar.getInstance().getTime()) +  "] " + client.getName() + " has disconnected.";
+		if (!client.getName().startsWith("Thread") || client.getName().equals("")) {
+			msg = client.getName() + " has disconnected.";
 		} else {
-			msg = "[" + sdf.format(Calendar.getInstance().getTime()) +  "] A Client has disconnected";
+			msg = "A Client has disconnected";
 		}
 		
 		clients.remove(getKeybyValue(client));
-		System.out.println(msg);
+		m_ServerController.setMsg(msg);
 	}
 
    /**
-	* Hook method called when the server starts listening for
+	* Hook method called when the server starts listening for clients
 	*/
 	protected void serverStarted()  {
-			Services.setTimer();
+		Services.setTimer();
+		m_ServerController.serverConnected("Server started to listen on port " + getPort());
+		m_ServerController.setServer(this);
+	}
+
+	/**
+	 * Hook method called when the server stops listening for clients
+	*/
+	protected void serverStopped() {
+		m_ServerController.serverStopped("Server stopped.");
+		m_ServerController.setServer(null);
 	}
 
 	/**
@@ -268,11 +278,16 @@ public class Server extends AbstractServer {
 		return null;
 	}
 
-	public static void main(String[] args) {
+	/**
+	 * Start listening for clients
+	 * @param instance - ServerController instance
+	 * @param currentPort - port to listen on
+	 */
+	public static void runServer(ServerController instance, String currentPort) {
 		int port = 0; // Port to listen on
 
 		try {
-			port = Integer.parseInt(args[0]); // Get port from command line
+			port = Integer.parseInt(currentPort); // Get port from command line
 		} catch (Throwable t) {
 			port = DEFAULT_PORT; // Set port to 5555
 		}
@@ -280,11 +295,11 @@ public class Server extends AbstractServer {
 		Server sv = new Server(port);
 
 		try {
-			while (true) {
-				sv.listen(); // Start listening for connections
-			}
+			m_ServerController = instance;	// set current ServerController instance
+			sv.listen(); // Start listening for connections
 		} catch (Exception ex) {
-			System.out.println("ERROR - Could not listen for clients!");
+			m_ServerController.setMsg("ERROR - Could not listen for clients!");
+			m_ServerController = null;
 		}
 	}
 }
