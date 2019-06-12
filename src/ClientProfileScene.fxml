@@ -72,7 +72,7 @@
                   </columns>
                 </TableView>
                 <Button fx:id="btnWatchMap" layoutX="440.0" layoutY="441.0" mnemonicParsing="false" onAction="#Watch" prefHeight="27.0" prefWidth="103.0" text="Watch Map" />
-                <Button fx:id="btnDownload" layoutX="325.0" layoutY="441.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="103.0" text="Download" />
+                <Button fx:id="btnDownload" layoutX="325.0" layoutY="441.0" mnemonicParsing="false" onAction="#Download" prefHeight="27.0" prefWidth="103.0" text="Download" />
                 <Button fx:id="btnRenew" layoutX="557.0" layoutY="441.0" mnemonicParsing="false" onAction="#Renew" prefHeight="27.0" prefWidth="103.0" text="Renew" />
               </children>
             </AnchorPane>

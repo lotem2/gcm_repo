@@ -2,6 +2,7 @@ package gui;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -291,23 +292,27 @@ public class ClientProfileController implements ControllerListener {
 				{
 					case CLIENT:
 					{
+						Platform.runLater(() -> {
 						tfUserName.setText(MainGUI.currClient.getUserName());
 						tfFirstName.setText(MainGUI.currClient.getFirstName());
 						tfLastName.setText(MainGUI.currClient.getLastName());
 						tfEmail.setText(MainGUI.currClient.getEmail());
 						tfphone.setText(telephoneAsString);
 						tfCurrLastNumbers.setText(LastFourDigitsString);
+						});
 						break;
 					}
 					default:
 					{
 						//lblMyProfile.setText(MainGUI.currClient.getUserName() + "'s Profile");
+						Platform.runLater(() -> {
 						tfUserName.setEditable(false);
 						tfFirstName.setEditable(false);
 						tfLastName.setEditable(false);
 						tfEmail.setEditable(false);
 						tfphone.setEditable(false);
 						btnSave.setVisible(false);
+						});
 						break;
 					}
 				}
@@ -397,11 +402,10 @@ public class ClientProfileController implements ControllerListener {
 					});
 			}
 			else {
-				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Notification",
-						JOptionPane.INFORMATION_MESSAGE);
-				purchasesTable.getItems().clear();
+				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
+						JOptionPane.WARNING_MESSAGE);
 			}
-			break;
+		break;
 		default:
 		}
 	}
@@ -442,7 +446,7 @@ public class ClientProfileController implements ControllerListener {
 				{
 					if ((currentPurchase.getPurchaseType().toString().equals("SHORT_TERM_PURCHASE"))
 						||(currentPurchase.getExpirationDate().isBefore(LocalDate.now())))
-						JOptionPane.showMessageDialog(null, "You can't watch a short term purchase\nYou should purchase it again.", "Error",
+						JOptionPane.showMessageDialog(null, "You can't watch a short term purchase\nPlease purchase it again to watch the city collection.", "Error",
 								JOptionPane.WARNING_MESSAGE);
 					else 
 					{
@@ -464,29 +468,28 @@ public class ClientProfileController implements ControllerListener {
 	
     @FXML
     void Download(ActionEvent event) {
-		Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
-		String city = purchase.getCityName();
-		if (purchase.getPurchaseType().toString().equals("SHORT_TERM_PURCHASE"))
-			JOptionPane.showMessageDialog(null, "You can't download a short term purchase more than once\nYou should purchase it again.", "Error",
-					JOptionPane.WARNING_MESSAGE);
-		else {
-			ArrayList<Object> data = new ArrayList<Object>();
-			data.add(city);
-			data.add(purchase.getPurchaseType());
-			GUIClient.sendActionToServer(Action.DOWNLOAD_PURCHASE, data);
+		currentPurchase = purchasesTable.getSelectionModel().getSelectedItem();
+		if (currentPurchase!=null) 
+		{
+			Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
+			String city = purchase.getCityName();
+			if (currentPurchase.getPurchaseType().toString().equals("SHORT_TERM_PURCHASE")) {
+				JOptionPane.showMessageDialog(null, "You can't download a short term purchase more than once\nPlease purchase it again to download the city collection.", "Error",
+						JOptionPane.WARNING_MESSAGE);
+			}
+			else {
+				ArrayList<Object> data = new ArrayList<Object>();
+				data.add(city);
+				data.add(purchase.getPurchaseType());
+				GUIClient.sendActionToServer(Action.DOWNLOAD_PURCHASE, data);
+			}
 		}
+		else
+			JOptionPane.showMessageDialog(null, "You haven't selected any purchase to download.", "Error",
+					JOptionPane.WARNING_MESSAGE);
     }
     
- 
-    
-	private String openSaveMapPrompt() {
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Save Image");
-		fileChooser.setInitialFileName("citymap.png");
-		File file = fileChooser.showSaveDialog(MainGUI.MainStage);
-		return file.getAbsolutePath();
-	}
-    
+  
 	@FXML
 	String getDate() {
 			LocalDate creditCardExpiryDate = dpCreditCardExpiryDate.getValue();
@@ -505,18 +508,26 @@ public class ClientProfileController implements ControllerListener {
     @FXML
     void Renew(ActionEvent event) 
     {
-		Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
-		float newprice = (float) (purchase.getPrice()*0.9);
-		Period period = Period.between(purchase.getPurchaseDate() , purchase.getExpirationDate());
-		Integer daysElapsed = period.getDays();
-		LocalDate purchaseDate=LocalDate.now();
-		LocalDate expiryDate=LocalDate.now().plusDays(daysElapsed);
-		ArrayList<Object> data = new ArrayList<Object>();
-		purchase.setPrice(newprice);
-		purchase.setPurchaseDate(purchaseDate);
-		purchase.setExpirationDate(expiryDate);
-		data.add(purchase);
-		GUIClient.sendActionToServer(Action.RENEW,data);
+    	Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
+		if (purchase!=null) 
+		{
+			//Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
+			double newprice = (purchase.getPrice()*0.9);
+			newprice = Double.parseDouble(new DecimalFormat("##.##").format(newprice));
+			Period period = Period.between(purchase.getPurchaseDate() , purchase.getExpirationDate());
+			Integer daysElapsed = period.getDays();
+			LocalDate purchaseDate=LocalDate.now();
+			LocalDate expiryDate=LocalDate.now().plusDays(daysElapsed);
+			ArrayList<Object> data = new ArrayList<Object>();
+			purchase.setPrice((float)newprice);
+			purchase.setPurchaseDate(purchaseDate);
+			purchase.setExpirationDate(expiryDate);
+			data.add(purchase);
+			GUIClient.sendActionToServer(Action.RENEW,data);
+		}
+		else
+			JOptionPane.showMessageDialog(null, "You haven't selected any purchase to Renew.", "Error",
+					JOptionPane.WARNING_MESSAGE);
     }
 	/**
 	 *
