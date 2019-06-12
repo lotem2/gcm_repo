@@ -47,6 +47,7 @@ import javafx.util.Callback;
 import javax.swing.JOptionPane;//library for popup messages
 
 public class MainGUIController implements ControllerListener {
+	static Map currentWatchedMap;
 
 	@FXML
 	private ResourceBundle resources;
@@ -147,9 +148,6 @@ public class MainGUIController implements ControllerListener {
 	 */
 	@FXML
 	void Login(ActionEvent event) {
-		// handle the event here
-//		try {
-//			Message myMessage;
 			String userName = "", password;
 			ArrayList<Object> data = new ArrayList<Object>();
 			userName = tfUser.getText();
@@ -236,33 +234,20 @@ public class MainGUIController implements ControllerListener {
 							MainGUI.currClient = (Client) currMsg.getData().get(1);
 							Platform.runLater(() -> {
 							btnMyProfile.setVisible(true);
-							btnEditMaps.setText("Show Maps");
-							btnEditMaps.setVisible(true);
-							btnBuy.setVisible(true);
 							btnInbox.setVisible(true);
 							});
 							break;
 						case EDITOR:
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
 							Platform.runLater(() -> {
-							btnEditMaps.setVisible(true);
-							btnBuy.setVisible(false);
 							btnManage.setVisible(true);
-							btnEditMaps.setText("Edit Maps");
-							btnEditMaps.setVisible(true);
-							btnBuy.setVisible(false);
 							btnInbox.setVisible(true);
 							});
 							break;
 						case MANAGING_EDITOR:
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
 							Platform.runLater(() -> {
-							btnEditMaps.setVisible(true);
-							btnBuy.setVisible(false);
 							btnManage.setVisible(true);
-							btnEditMaps.setText("Edit Maps");
-							btnEditMaps.setVisible(true);
-							btnBuy.setVisible(false);
 							btnInbox.setVisible(true);
 							});
 							break;
@@ -270,9 +255,6 @@ public class MainGUIController implements ControllerListener {
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
 							Platform.runLater(() -> {
 							btnManage.setVisible(true);
-							btnEditMaps.setText("Edit Maps");
-							btnEditMaps.setVisible(true);
-							btnBuy.setVisible(false);
 							btnInbox.setVisible(true);
 						});
 							break;
@@ -308,6 +290,7 @@ public class MainGUIController implements ControllerListener {
 						btnEditMaps.setVisible(false);
 						btnBuy.setVisible(false);
 						btnInbox.setVisible(false);
+						SearchResultsTable.getItems().clear();
 					JOptionPane.showMessageDialog(null, "Disconnected successfully", "Notification",
 							JOptionPane.DEFAULT_OPTION);
 				} catch (Exception e) {
@@ -319,8 +302,29 @@ public class MainGUIController implements ControllerListener {
 			 if((Integer)currMsg.getData().get(0) == 0) 
 			 {
 				 HashMap<Integer, String> maps = new HashMap<>();
-					maps = (HashMap<Integer, String>) currMsg.getData().get(1);
+				 maps = (HashMap<Integer, String>) currMsg.getData().get(1);
 				 setTableViewForMapsSearchResult(maps);
+						switch (MainGUI.currUser.getPermission()) 
+						{
+							case CLIENT:
+							{
+								Platform.runLater(() -> {
+								btnEditMaps.setText("Show Maps");
+								btnEditMaps.setVisible(true);
+								btnBuy.setVisible(true);
+								});
+							}
+							break;
+			     			default:
+			     			{
+								Platform.runLater(() -> {
+								btnEditMaps.setText("Edit Maps");
+								btnEditMaps.setVisible(true);
+								btnBuy.setVisible(false);
+								});
+			     			}
+							break;
+						}
 			 }
 			 else
 				 setTableViewForEmptySearchResult();
@@ -424,6 +428,7 @@ public class MainGUIController implements ControllerListener {
 	@FXML
     void EditMaps(ActionEvent event) {
 		Permission permission = (MainGUI.currUser.getPermission());
+		currentWatchedMap = SearchResultsTable.getSelectionModel().getSelectedItem();
 		switch(permission) 
 		{
 			case CLIENT:
