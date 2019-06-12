@@ -103,7 +103,7 @@
                 </ChoiceBox>
                 <Button id="btnSaveSite" fx:id="btnAddAnExistingSiteToMap" layoutX="486.0" layoutY="52.0" mnemonicParsing="false" onAction="#AddAnExistingSiteToMap" prefHeight="27.0" prefWidth="103.0" text="Add Site" />
                 <Label id="lblMapName" fx:id="lblExistingSiteToMapChoser" font="$x1" layoutX="431.0" layoutY="0.0" text="Choose an existing site:" />
-                <Separator layoutX="413.0" layoutY="82.0" prefWidth="270.0" />
+                <Separator id="seperator" fx:id="seperatorSites" layoutX="413.0" layoutY="82.0" prefWidth="270.0" />
               </children>
             </AnchorPane>
           </content>

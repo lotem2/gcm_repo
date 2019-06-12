@@ -61,7 +61,9 @@ import javafx.stage.Stage;
 	
 public class ClientProfileController implements ControllerListener {
 
-GUIClient client;
+    GUIClient client;
+	public static Purchase currentPurchase;
+
 
     @FXML 
     private ResourceBundle resources;
@@ -276,7 +278,7 @@ GUIClient client;
 		lblWelcome.setText("Welcome " + MainGUI.currUser.getUserName() + "!");
 		//setRadioButtonGroup();
 		setPersonalInfoBooleanBinding();
-		//btnDownload.setOnAction(btnLoadEventListener);
+		setInputVerification();
 		ArrayList<Object> data = new ArrayList<Object>();
 		data.add(MainGUI.currUser.getUserName());
 		GUIClient.sendActionToServer(Action.GET_USER_PURCHASES,data);
@@ -427,32 +429,37 @@ GUIClient client;
 
     @FXML
     void Watch(ActionEvent event) {
-		Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
-		String city = purchase.getCityName();
-		//sending the name of the city to the show Window
-		ArrayList<Object> data = new ArrayList<Object>();
-		data.add(MainGUI.currUser.getPermission());
-		data.add(purchase.getID());
-		Permission permission = (MainGUI.currUser.getPermission());
-		switch(permission) 
+		currentPurchase = purchasesTable.getSelectionModel().getSelectedItem();
+		if (currentPurchase!=null) 
 		{
-			case CLIENT:
+			String city = currentPurchase.getCityName();
+			ArrayList<Object> data = new ArrayList<Object>();
+			data.add(currentPurchase.getID());
+			Permission permission = (MainGUI.currUser.getPermission());
+			switch(permission) 
 			{
-				if ((purchase.getPurchaseType().toString().equals("SHORT_TERM_PURCHASE"))
-					||(purchase.getExpirationDate().isBefore(LocalDate.now())))
-					JOptionPane.showMessageDialog(null, "You can't watch a short term purchase\nYou should purchase it again.", "Error",
-							JOptionPane.WARNING_MESSAGE);
-				else 
+				case CLIENT:
 				{
-					MainGUI.MainStage.setTitle("Global City Map - View Maps");
-					GUIClient.sendActionToServer(Action.WATCH_MAP,data);
+					if ((currentPurchase.getPurchaseType().toString().equals("SHORT_TERM_PURCHASE"))
+						||(currentPurchase.getExpirationDate().isBefore(LocalDate.now())))
+						JOptionPane.showMessageDialog(null, "You can't watch a short term purchase\nYou should purchase it again.", "Error",
+								JOptionPane.WARNING_MESSAGE);
+					else 
+					{
+						MainGUI.MainStage.setTitle("Global City Map - View Maps");
+						GUIClient.sendActionToServer(Action.WATCH_MAP,data);
+						MainGUI.openScene(SceneType.Edit);
+					}
+					break;
 				}
-				break;
+				default:
+					MainGUI.MainStage.setTitle("Global City Map - Edit Maps");
+					MainGUI.openScene(SceneType.Edit);
 			}
-			default:
-				MainGUI.MainStage.setTitle("Global City Map - Edit Maps");
-				MainGUI.openScene(SceneType.Edit);
 		}
+		else
+			JOptionPane.showMessageDialog(null, "You haven't selected any purchase to view.", "Error",
+					JOptionPane.WARNING_MESSAGE);
     }
 	
     @FXML
@@ -553,7 +560,7 @@ GUIClient client;
 				if (!newValue.matches("\\d*")) 
 				{
 					textField.setText(newValue.replaceAll("[^\\d]", ""));
-					JOptionPane.showMessageDialog(null, "\"*Please enter only digits from 0 to 9.\"", "",
+					JOptionPane.showMessageDialog(null, "Please enter only digits from 0 to 9.", "Notification",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
 			};

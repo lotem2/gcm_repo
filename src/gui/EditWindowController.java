@@ -68,7 +68,7 @@ public class EditWindowController implements ControllerListener {
 	URL URLImage;
 	static ArrayList<String> citiesList;
 	ArrayList<String> routeList;
-	ArrayList<Site> currRouteSites;
+	ArrayList<Site> allSitesInTheCity;
 
 	
     @FXML
@@ -311,23 +311,30 @@ public class EditWindowController implements ControllerListener {
 
     @FXML
     void initialize() {
-    	//Platform.runLater(() -> {
 		lblWelcome.setText("Welcome " + MainGUI.currUser.getUserName() + "!");
-    	//});
         btnBrowse.setOnAction(btnLoadEventListener);
         setButtonsBooleanBinding();
-		GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
-		//cityChoiceBoxListener(); 
         setLists();
 		Permission permission = MainGUI.currUser.getPermission();
 		switch (permission) {
 		case CLIENT:
 	    	Platform.runLater(() -> {
 			lblEditorTool.setText("Map Viewer");
-			setShowWindow();
+			setShowWindow();		
+			if (ClientProfileController.currentPurchase!=null)
+			{
+				ArrayList<Object> data = new ArrayList<Object>();
+				String currCityName=ClientProfileController.currentPurchase.getCityName();
+				data.add(MainGUI.currUser.getPermission());
+				data.add(currCityName);
+				GUIClient.sendActionToServer(Action.GET_CITY,data);
+				cityChoser.setValue(currCityName);
+				cityChoser.setDisable(true);
+			}
 			});
 			break;
 		case EDITOR:
+			GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
 //	    	Platform.runLater(() -> {
 //			tfPrice.setDisable(true);
 //			btnDeleteSite.setDisable(false);
@@ -336,19 +343,20 @@ public class EditWindowController implements ControllerListener {
 //			});
 			break;
 		case MANAGING_EDITOR:
+			GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
 //	    	Platform.runLater(() -> {
 //			btnUpdatePrice.setDisable(false);
 //			//btnUpdateVersion.setDisable(false);
 //			});
 			break;
 		case CEO:
+			GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
 //	    	Platform.runLater(() -> {
 //			//btnUpdatePrice.setDisable(false);
 //			//btnUpdateVersion.setDisable(false);
 //			});
 			break;
 		default:
-
 		}
     }
 
@@ -409,8 +417,7 @@ public class EditWindowController implements ControllerListener {
 	   sitesChoiceBoxListener(map);
 	   tfMapName.setText(map.getName());
 	   tfMapDescription.setText(map.getDescription());
-	   loadImage(map.getImageAsByte());
-	   
+	   //loadImage(map.getImageAsByte());
    }
    
    void loadImage(byte[] imageBytesToAdd) {
@@ -436,7 +443,6 @@ public class EditWindowController implements ControllerListener {
 	 *
 	 */ 
    void setRouteInfo(Route route) {
-	   //tfRouteName.setText(route.getName());
 	   tfrouteDescription.setText(route.getDescription());
 	   ArrayList<Site> sites = route.getSites();
 	   ObservableList<Site> currSitesList = FXCollections.observableArrayList(sites);
@@ -455,10 +461,10 @@ public class EditWindowController implements ControllerListener {
 	   setMapsChoiceBox(city);//loading the maps in the city to a choice box
 	   setRoutesChoiceBox(city);//loading the routes in the city to a choice box
 	   ArrayList<Object> data = new ArrayList<Object>();
-		String userName = MainGUI.currUser.getUserName();
-		Permission permission = MainGUI.currUser.getPermission();
-		data.add(userName);
-		data.add(permission);
+	   String cityName = city.getName();
+	   Permission permission = MainGUI.currUser.getPermission();
+	   data.add(permission);
+	   data.add(cityName);
 	   GUIClient.sendActionToServer(Action.GET_ALL_SITES_LIST,data);//requests the list of the sites in the city
    }
     
@@ -719,16 +725,14 @@ public class EditWindowController implements ControllerListener {
 				else 
 					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
 							JOptionPane.WARNING_MESSAGE);
-			break;	
 			}
+			break;	
 			case GET_ALL_SITES_LIST:
 				if ((Integer) currMsg.getData().get(0) == 0) 
 				{
-					currRouteSites = (ArrayList<Site>) currMsg.getData().get(1);
-					ObservableList<Site> currSitesList = FXCollections.observableArrayList(currRouteSites);
-					setAddSitesToRouteChoiceBox(currRouteSites);
-					
-					//routesChoiceBoxListener(currSitesList);
+					allSitesInTheCity = (ArrayList<Site>) currMsg.getData().get(1);
+					ObservableList<Site> currSitesList = FXCollections.observableArrayList(allSitesInTheCity);
+					setAddSitesToRouteChoiceBox(allSitesInTheCity);
 				}
 				else 
 					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
@@ -772,7 +776,7 @@ public class EditWindowController implements ControllerListener {
 		      @Override
 		      public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
 		    	  String currCityName = (cityChoser.getItems().get((Integer) number2));
-		    	  setCityChoiceBox(currCityName);
+		    	  setCurrentCity(currCityName);
 			}
 		});
 	}
@@ -808,7 +812,6 @@ public class EditWindowController implements ControllerListener {
 		    	  String currSiteName = (siteChoser.getItems().get((Integer) number2));
 					if (currSiteName.equals("Add New Site"))
 					{
-						System.out.print(currSiteName);
 						addNewSite();
 					}
 					else
@@ -853,24 +856,19 @@ public class EditWindowController implements ControllerListener {
 		 *
 		 *method to add sites to the Route
 		 * 
-		 *ArrayList<Site> sites
+		 *
 		 */  
 	    @FXML
 		void addSiteToRoute(ActionEvent event) 
 		{
-			sitesChoserForRoutes.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
-		      @Override
-		      public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
-		    	  String currSiteName = (sitesChoserForRoutes.getItems().get((Integer) number2));
-				    for(Site currSite : currRouteSites){
-				        if(currSite.getName() != null && currSite.getName().contains(currSiteName))
-				        	tableRouteDeatils.getItems().add(currSite);
-				    }
+//	    	String currSiteName = sitesChoserForRoutes.getSelectionModel().getSelectedItem();
+//		      for(Site currSite : currRoute){
+//				    if(currSite.getName() != null && currSite.getName().contains(currSiteName))
+//				        tableRouteDeatils.getItems().add(currSite);
+//				    }
+		}
 
-			}
-		});
 
-	}
 		
 	
 		
@@ -881,14 +879,15 @@ public class EditWindowController implements ControllerListener {
 	 * 
 	 *
 	 */  
-	void setCityChoiceBox(String currCityName) {
+	void setCurrentCity(String currCityName) {
 				if (currCityName.equals("Add New City"))
 				{
-					System.out.print(currCityName);
 					addNewCity();
 				}
 				else
 				{
+//					if (ClientProfileController.currentPurchase!=null)
+//						currCityName=ClientProfileController.currentPurchase.getCityName();
 					Message myMessage = new Message(Action.GET_CITY,MainGUI.currUser.getPermission(),currCityName);					
 					try {
 						MainGUI.GUIclient.sendToServer(myMessage);
