@@ -345,7 +345,7 @@ public class UsersDB {
 	 */
 	public HashMap<String, String> getUsersDetails(ArrayList<Object> params){
 		// Variables
-		HashMap<String, String> details   = null;
+		HashMap<String, String> details   = new HashMap<String, String>();
 		ResultSet 		  		rs 		  = null;
 		ArrayList<Object> 		usernames = new ArrayList<Object>();
 
@@ -353,9 +353,12 @@ public class UsersDB {
 			// Connect to DB
 			SQLController.Connect();
 
+			// Get the names into a new ArrayList
+			ArrayList<Object> names = new ArrayList<Object>(params.subList(0, params.size()));
+
 			// Get every user name into an array list of objects for the query execution
-			for (String username : (ArrayList<String>)params.get(0)) {
-				usernames.add(username);
+			for (Object username : names) {
+				usernames.add(username.toString());
 			}
 
 			// Prepare statement to insert new user
@@ -377,6 +380,9 @@ public class UsersDB {
 			// Read data
 			while (rs.next()) {
 				// Concatenate first name and email of the current user
+				/*String username = rs.getString("username");
+				String firstname = rs.getString("firstname");
+				String email = rs.getString("email");*/
 				details.put(rs.getString("username"), rs.getString("firstname") + "," + rs.getString("email"));
 			}
 		}

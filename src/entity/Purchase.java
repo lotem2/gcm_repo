@@ -139,11 +139,11 @@ public class Purchase implements java.io.Serializable{
 	 */
 	@Override
 	public String toString() {
-		return "User name: " + this.getUserName() + System.getProperty("line.separator") + 
-			   "City name: " + this.getCityName() + System.getProperty("line.separator") +
-			   "Purchase type: " + this.getPurchaseType() + System.getProperty("line.separator") +
-			   "Purchase date: " + this.getPurchaseDate() + System.getProperty("line.separator") +
-			   "Expirtaion date: " + this.getExpirationDate() + System.getProperty("line.separator") +
+		return "User name: " + this.getUserName() + "<br>" + 
+			   "City name: " + this.getCityName() + "<br>" +
+			   "Purchase type: " + this.getPurchaseType() + "<br>" +
+			   "Purchase date: " + this.getPurchaseDate() + "<br>" +
+			   "Expirtaion date: " + this.getExpirationDate() + "<br>" +
 			   "Price: " + this.getPrice();
 	}
 }
