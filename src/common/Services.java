@@ -23,11 +23,13 @@ import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.activation.*;
 
 import entity.*;
 import entity.Purchase.PurchaseType;
@@ -141,15 +143,16 @@ public final class Services extends TimerTask {
 	     props.put("mail.smtp.port", "587");
 	     props.put("mail.smtp.auth", "true");
 	    
-	     Session session = Session.getDefaultInstance(props); // Get the default Session object
+	     Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator(){
+	         protected PasswordAuthentication getPasswordAuthentication() {
+	             return new PasswordAuthentication(
+	            		 USER_NAME + "@gmail.com", PASSWORD);// Specify the user name and the password
+	         }
+	     	}); // Get the default Session object
 
 	     try {
 		     MimeMessage message = new MimeMessage(session); // Create a default MimeMessage object
 	         message.setFrom(new InternetAddress(USER_NAME)); // Set sender address
-	         
-	         // Open session to enable transport and create subject for the message
-	         Transport transport = session.getTransport("smtp");
-	         transport.connect(host, USER_NAME, PASSWORD);
 	         message.setSubject("Your purchase is about to expire!");
 
 	         // Create messages for each user and sends it to him
@@ -159,16 +162,19 @@ public final class Services extends TimerTask {
 		         
 	        	 // Create content for the message, including details about the user and the purchase
 	        	 // using HTML tags
-	        	 String content = "<p><i>Dear " + entry.getValue().split(",")[0] +"</i><br/>,The Purchase: <br><b>" + 
+	        	 String content = "<p><i>Dear " + entry.getValue().split(",")[0] +"</i>,<br></br><br>The Purchase: <br><b>" + 
 	        	 entry.getKey().toString() + "</b><br> is about to expire in 3 days.<br/>"
-	        	 		+ "<b><font color=read>Note, you can enjoy 10% discount when renewing your subscription.</b><br/> "
+	        	 		+ "<b><font color=red>Note, you can enjoy 10% discount when renewing your subscription.</b><br/> "
 	        	 		+ "After the expiry date of your subscription you will have to pay the full price.</p>"; 	
 	         
 		         message.setContent(content,"text/html"); // Set content of message
-		         Transport.send(message); // sends message
-	         }
 
-	         transport.close(); // Close transport
+		         // Open session to enable transport and create subject for the message
+		         Transport transport = session.getTransport("smtp");
+		         transport.connect(host, USER_NAME, PASSWORD);
+		         Transport.send(message, message.getAllRecipients()); // sends message
+		         transport.close(); // Close transport
+	         }
 	     }
 	     catch (AddressException ae) {
 	         ae.printStackTrace();
