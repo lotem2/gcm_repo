@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 
 import common.Action;
 import common.Message;
+import common.Permission;
 import entity.Client;
 import entity.Map;
 import gui.MainGUI.SceneType;
@@ -59,6 +60,10 @@ GUIClient client;
     private Button btnMain;
     @FXML
     private Button btnShowDetails;
+    @FXML
+    private Button btnEditMaps;
+    @FXML
+    private Button btnInbox;
     @FXML
     private Label lblWelcome;
 
@@ -139,6 +144,18 @@ GUIClient client;
 			}
 		});
 	}
+	
+	@FXML
+	void OpenInbox(ActionEvent event) {
+		MainGUI.MainStage.setTitle("Global City Map - Inbox");
+		MainGUI.openScene(MainGUI.SceneType.Inbox);
+	}
+	
+	@FXML
+    void EditMaps(ActionEvent event) {
+		MainGUI.MainStage.setTitle("Global City Map - Edit Maps");
+		MainGUI.openScene(SceneType.Edit);
+    }
 
 }
 
