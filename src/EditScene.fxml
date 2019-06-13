@@ -54,36 +54,24 @@
                 <ChoiceBox fx:id="accessibilityChoser" layoutX="436.0" layoutY="377.0" prefHeight="25.0" prefWidth="200.0">
                   <items>
                     <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
                     </FXCollections>
                   </items>
                 </ChoiceBox>
                 <ChoiceBox fx:id="categoryChoser" layoutX="435.0" layoutY="315.0" prefHeight="25.0" prefWidth="200.0">
                   <items>
                     <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
                     </FXCollections>
                   </items>
                 </ChoiceBox>
                 <ChoiceBox fx:id="siteChoser" layoutX="431.0" layoutY="122.0" prefHeight="25.0" prefWidth="200.0">
                   <items>
                     <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
                     </FXCollections>
                   </items>
                 </ChoiceBox>
                 <ChoiceBox fx:id="mapChoser" layoutX="14.0" layoutY="31.0" prefHeight="25.0" prefWidth="200.0">
                   <items>
                     <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
                     </FXCollections>
                   </items>
                 </ChoiceBox>
@@ -95,9 +83,6 @@
                 <ChoiceBox id="siteChoser" fx:id="existingSiteToMapChoser" layoutX="431.0" layoutY="18.0" prefHeight="25.0" prefWidth="200.0">
                   <items>
                     <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
                     </FXCollections>
                   </items>
                 </ChoiceBox>
@@ -139,27 +124,18 @@
                 <ChoiceBox fx:id="cityChoser" layoutX="17.0" layoutY="25.0" prefHeight="25.0" prefWidth="200.0">
                   <items>
                     <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
                     </FXCollections>
                   </items>
                 </ChoiceBox>
                 <ChoiceBox fx:id="routesChoser" layoutX="16.0" layoutY="339.0" prefWidth="200.0">
                   <items>
                     <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
                     </FXCollections>
                   </items>
                 </ChoiceBox>
                 <ChoiceBox fx:id="sitesChoserForRoutes" layoutX="12.0" layoutY="540.0" prefHeight="25.0" prefWidth="200.0">
                   <items>
                     <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
                     </FXCollections>
                   </items>
                 </ChoiceBox>
