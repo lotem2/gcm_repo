@@ -411,7 +411,7 @@ public class ClientProfileController implements ControllerListener {
 	}
 	/**
 	 *
-	 *sets the table for maps that the user purchased
+	 *sets the table for the purchases that the user bought
 	 *
      */
 	
@@ -430,7 +430,14 @@ public class ClientProfileController implements ControllerListener {
 			}
 		});
 	}
-
+	/**
+	 *
+	 *Sends the server a request to view the purchase.
+	 *The method allows to download only long term purchases that haven't expired yet
+	 *Shows the purchase according to the permission of the viewer.
+	 *
+	 *
+	 */
     @FXML
     void Watch(ActionEvent event) {
 		currentPurchase = purchasesTable.getSelectionModel().getSelectedItem();
@@ -465,7 +472,14 @@ public class ClientProfileController implements ControllerListener {
 			JOptionPane.showMessageDialog(null, "You haven't selected any purchase to view.", "Error",
 					JOptionPane.WARNING_MESSAGE);
     }
-	
+	/**
+	 *
+	 *Sends the server a request to download the purchase.
+	 *The method allows to download only long term purchases
+	 *
+	 *
+	 *
+	 */
     @FXML
     void Download(ActionEvent event) {
 		currentPurchase = purchasesTable.getSelectionModel().getSelectedItem();
@@ -499,7 +513,7 @@ public class ClientProfileController implements ControllerListener {
 	/**
 	 *
 	 *Sends the server a request to renew the purchase for the same period of time with a 10% discount.
-	 *
+	 *The method calculates the new price and send it with the price and the same period of time to the server
 	 *
 	 *
 	 *
@@ -511,7 +525,6 @@ public class ClientProfileController implements ControllerListener {
     	Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
 		if (purchase!=null) 
 		{
-			//Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
 			double newprice = (purchase.getPrice()*0.9);
 			newprice = Double.parseDouble(new DecimalFormat("##.##").format(newprice));
 			Period period = Period.between(purchase.getPurchaseDate() , purchase.getExpirationDate());
@@ -578,9 +591,15 @@ public class ClientProfileController implements ControllerListener {
 		});
 	}
 	
+	
+	
+	/**
+	 *
+	 *	Sets all the listeners for all the fields in the window
+	 *
+	 * @param textField - textField.
+	 */
 	void setInputVerification() {
-		//setPersonalInfoBooleanBinding();
-		//setPaymentRadioButtonsGroup();
 		listenerForOnlyDigitsInput(tfphone);
 		listenerForOnlyDigitsInput(tfIDNumber);
 		listenerForOnlyDigitsInput(tfCreditCard1);
