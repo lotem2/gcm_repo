@@ -58,7 +58,10 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import java.awt.image.BufferedImage;
@@ -125,7 +128,7 @@ public class EditWindowController implements ControllerListener {
     @FXML
     private Accordion editingAccordion;
     @FXML
-    private ChoiceBox<?> existingSiteToMapChoser;
+    private ChoiceBox<String> existingSiteToMapChoser;
     @FXML
     private Label lbLocation;
     @FXML
@@ -399,10 +402,7 @@ public class EditWindowController implements ControllerListener {
 	 *
 	 *
 	 */ 
-    @FXML
-    void AddAnExistingSiteToMap(ActionEvent event) {
-    }
-    
+   
    void setSiteInfo(Site site) {
 	   tfSiteName.setText(site.getName());
 	   tfSiteDescription.setText(site.getDescription());
@@ -827,7 +827,7 @@ public class EditWindowController implements ControllerListener {
 				{
 					allSitesInTheCity = (ArrayList<Site>) currMsg.getData().get(1);
 					ObservableList<Site> currSitesList = FXCollections.observableArrayList(allSitesInTheCity);
-					setAddSitesToRouteChoiceBox(allSitesInTheCity);
+					setAddSitesToRouteAndMapsChoiceBox(allSitesInTheCity);
 				}
 				else 
 					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
@@ -1121,7 +1121,7 @@ public class EditWindowController implements ControllerListener {
 	 *method for setting up the sites that can be added to the route
 	 *
 	 */
-	void setAddSitesToRouteChoiceBox(ArrayList<Site> allSitesList) 
+	void setAddSitesToRouteAndMapsChoiceBox(ArrayList<Site> allSitesList) 
 	{
     	ArrayList<String> sitesList = new ArrayList<String>();
 		if (allSitesList != null) {
@@ -1133,6 +1133,7 @@ public class EditWindowController implements ControllerListener {
 		}
 		ObservableList<String> currSitesList = FXCollections.observableArrayList(sitesList);
 		sitesChoserForRoutes.setItems(currSitesList);
+		existingSiteToMapChoser.setItems(currSitesList);
 	}
 	
 	
@@ -1171,6 +1172,40 @@ public class EditWindowController implements ControllerListener {
             }
         }
     };
+    
+    void setImageView()
+    {
+//        // Load an image in the background
+//        String imageUrl = "https://docs.oracle.com/javafx/javafx/images/javafx-documentation.png";
+//        Image image = new Image(imageUrl);
+// 
+//        // Create three WritableImage instances
+//        // One Image will be a darker, one brighter, and one semi-transparent
+//        WritableImage darkerImage = new WritableImage(mapView.get, height);
+//        WritableImage semiTransparentImage = new WritableImage(width, height);      
+//         
+//        // Copy source pixels to the destinations
+//        this.createImages(image, darkerImage, semiTransparentImage,width,height);
+//         
+//        // Create the ImageViews
+//        ImageView imageView = new ImageView(image);
+//        ImageView darkerView = new ImageView(darkerImage);
+//        // Create the VBox for the Original Image
+//        VBox originalViewBox = new VBox();
+//        // Add ImageView to the VBox
+//        originalViewBox.getChildren().addAll(mapView, new Text("Original"));
+//         
+//        // Create the VBox for the Darker Image
+//        VBox darkerViewBox = new VBox();
+//        // Add ImageView to the VBox
+//        darkerViewBox.getChildren().addAll(darkerView, new Text("Darker"));
+//         
+//        // Create the HBox
+//        HBox root = new HBox(10);
+//        // Add VBoxes to the HBox
+//        root.getChildren().addAll(originalViewBox);
+    }
+    
 
 	/**
 	 *
@@ -1178,20 +1213,16 @@ public class EditWindowController implements ControllerListener {
 	 * @param <onMouseClicked>
 	 *
 	 */    
- //    @FXML
-//    void paint(MouseEvent event) {
-//    	mapView.setOnMouseClicked(e -> 
-//	    {
-//	        //System.out.println("["+e.getX()+", "+e.getY()+"]")
-//	        Circle c = new Circle(e.getX(), e.getY(), 5, javafx.scene.paint.Color.RED);
-//	        paneMap.getChildren().add(c);
-//	        mapView.setOnMouseClicked(null);
-//	    });
-//    }
-//<onMouseClicked>
-//  void paint(MouseEvent event) {
-//
-//  }
+     @FXML
+    void paint(MouseEvent event) {
+    	mapView.setOnMouseClicked(e -> 
+	    {
+	        //System.out.println("["+e.getX()+", "+e.getY()+"]")
+	        Circle c = new Circle(e.getX(), e.getY(), 5, javafx.scene.paint.Color.RED);
+	        paneMap.getChildren().add(c);
+	        mapView.setOnMouseClicked(null);
+	    });
+    }
     
    
     
@@ -1214,17 +1245,32 @@ public class EditWindowController implements ControllerListener {
 
     @FXML
     void DeleteSite(ActionEvent event) {
-    	int siteIndex = cityChoser.getSelectionModel().getSelectedIndex();
+    	int siteIndex = siteChoser.getSelectionModel().getSelectedIndex();
     	String cityName = cityChoser.getSelectionModel().getSelectedItem();
     	String mapName = mapChoser.getSelectionModel().getSelectedItem();
     	String siteName = siteChoser.getSelectionModel().getSelectedItem();
     	siteChoser.getItems().remove(siteIndex);
 		ArrayList<Object> data = new ArrayList<Object>();
-    	float newPrice = Float.valueOf(tfPrice.getText());
 		data.add(cityName);
 		data.add(mapName);
 		data.add(siteName);
 		GUIClient.sendActionToServer(Action.REMOVE_SITE,data);
+    }
+    
+    @FXML
+    void AddAnExistingSiteToMap(ActionEvent event) {
+    	String cityName = cityChoser.getSelectionModel().getSelectedItem();
+    	String mapName = mapChoser.getSelectionModel().getSelectedItem();
+    	String mapDescription =tfMapDescription.getText();
+    	String siteName = siteChoser.getSelectionModel().getSelectedItem();
+    	siteChoser.getItems().add(siteName);
+    	/*(int id, String mapname, String description, 
+    			String cityname, ArrayList<Site> sites, byte[] image, boolean is_active)*/
+    	//Map map= new Map(mapName,mapDescription,cityName,URLImage,1);
+		ArrayList<Object> data = new ArrayList<Object>();
+		//data.add(map);
+		data.add(siteName);
+		GUIClient.sendActionToServer(Action.ADD_SITE,data);
     }
 	
 
