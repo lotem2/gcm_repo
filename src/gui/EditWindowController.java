@@ -1277,11 +1277,13 @@ public class EditWindowController implements ControllerListener {
     @FXML
     void UpdatePrice(ActionEvent event) {
 		ArrayList<Object> data = new ArrayList<Object>();
+		String cityName = String.valueOf(tfCityName.getText());
     	float newPrice = Float.valueOf(tfPrice.getText());
-		if (!tfPrice.getText().isBlank() && newPrice>0)
+		if (!tfPrice.getText().isBlank() && newPrice>0 && !tfCityName.getText().isBlank())
 		{
-			data.add(MainGUI.currUser.getPermission());
+			data.add(cityName);
 			data.add(newPrice);
+			data.add(MainGUI.currUser);
 			GUIClient.sendActionToServer(Action.REQUEST_PRICE_CHANGE,data);
 		}
 		else

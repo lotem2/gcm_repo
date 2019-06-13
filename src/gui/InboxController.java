@@ -62,7 +62,7 @@ public class InboxController implements ControllerListener {
 			data.add(isApproved ? Status.APPROVED.toString() : Status.DECLINED.toString());
 			data.add(m_selectedMessage);
 			data.add(m_selectedMessage.getContent().split("to ")[1]);
-			data.add((m_selectedMessage.getContent().split("for ")[1]).split(" to")[0]); //cityname
+			data.add((m_selectedMessage.getContent().split("Approve ")[1]).split(" new")[0]); //cityname
 		}
 		else // m_selectedMessage.getContent().contains("version"))
 		{
