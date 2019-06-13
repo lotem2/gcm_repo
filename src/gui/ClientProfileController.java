@@ -158,8 +158,8 @@ public class ClientProfileController implements ControllerListener {
     private RadioButton rbtnPreviousCreditCard;
 
 	/**
-	 *
-	 *	Sets listener to specific TextField - Enable write on textField only digits Input.
+	 *gets all the data from the gui and sends it to the server to update the client's information
+	 *	
 	 *
 	 * @param textField - textField.
 	 */
@@ -253,9 +253,6 @@ public class ClientProfileController implements ControllerListener {
     	tfCreditCard2.setDisable(false);
     	tfCreditCard3.setDisable(false);
     	tfCreditCard4.setDisable(false);
-    	//BooleanBinding booleanBind;
-    	//booleanBind = (tfIDNumber.disabledProperty()).and(tfExpiryDate.disabledProperty()).and(tfCreditCard1.disabledProperty()).and(tfCreditCard2.disabledProperty()).and(tfCreditCard3.disabledProperty()).and(tfCreditCard4.disabledProperty());
-    	//rbChangeCreditNumber.selectedProperty().bind(booleanBind);
     }
 	/**
 	 *
@@ -338,7 +335,7 @@ public class ClientProfileController implements ControllerListener {
 //	}}
 
 	/**
-	 *Loading the Main GUI
+	 *Loading the Main GUI Scene
 	 *	
 	 *
 	 * 
@@ -503,7 +500,13 @@ public class ClientProfileController implements ControllerListener {
 					JOptionPane.WARNING_MESSAGE);
     }
     
-  
+	/**
+	 *
+	 *gets the date of the date picker
+	 *
+	 *
+	 *
+	 */
 	@FXML
 	String getDate() {
 			LocalDate creditCardExpiryDate = dpCreditCardExpiryDate.getValue();
