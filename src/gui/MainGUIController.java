@@ -103,7 +103,8 @@ public class MainGUIController implements ControllerListener {
     private Button btnInbox;
 	@FXML
 	private Label lblWelcome;
-
+	@FXML
+	private Label lblClientMenu;
 
 	/**
 	 * @param event making the data to send to the server
@@ -192,6 +193,7 @@ public class MainGUIController implements ControllerListener {
 	}
 
 	/**
+	 * Opening My Profile Window
 	 * @param event
 	 */
 	@FXML
@@ -200,6 +202,10 @@ public class MainGUIController implements ControllerListener {
 		MainGUI.openScene(SceneType.ClientProfile);
 	}
 
+	/**
+	 * Initializing the Main Window. Setting the boolean binding for the search input.
+	 * @param event
+	 */
 	@FXML
 	void initialize() {
 		setSearchInfoBooleanBinding();
@@ -218,26 +224,38 @@ public class MainGUIController implements ControllerListener {
 						btnLogin.setVisible(false);
 						btnRegister.setVisible(false);
 						btnLogout.setVisible(true);
-						btnInbox.setVisible(true);
 						MainGUI.currUser = (User) currMsg.getData().get(1);
 						Permission permission = ((User) currMsg.getData().get(1)).getPermission();
 						switch (permission) {
 						case CLIENT:
 							MainGUI.currClient = (Client) currMsg.getData().get(1);
 							Platform.runLater(() -> {
+							lblClientMenu.setVisible(true);
 							btnMyProfile.setVisible(true);
+							btnEditMaps.setText("Show Maps");
+							btnEditMaps.setVisible(true);
+							btnBuy.setVisible(true);
+							btnInbox.setVisible(true);
 							});
 							break;
 						case EDITOR:
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
 							Platform.runLater(() -> {
-							btnManage.setVisible(true);
+							lblClientMenu.setVisible(true);
+							lblClientMenu.setText("Editor Menu:");
+							btnEditMaps.setText("Edit Maps");
+							btnEditMaps.setVisible(true);
+							btnInbox.setVisible(true);
 							});
 							break;
 						case MANAGING_EDITOR:
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
 							Platform.runLater(() -> {
-							btnManage.setVisible(true);
+							lblClientMenu.setVisible(true);
+							lblClientMenu.setText("Managing Editor Menu:");
+							btnEditMaps.setText("Edit Maps");
+							btnEditMaps.setVisible(true);
+							btnInbox.setVisible(true);
 							});
 							break;
 						case CEO:
@@ -278,6 +296,7 @@ public class MainGUIController implements ControllerListener {
 						btnEditMaps.setVisible(false);
 						btnBuy.setVisible(false);
 						btnInbox.setVisible(false);
+						lblClientMenu.setVisible(false);
 						clearSearch();
 					JOptionPane.showMessageDialog(null, "Disconnected successfully", "Notification",
 							JOptionPane.DEFAULT_OPTION);
@@ -292,27 +311,6 @@ public class MainGUIController implements ControllerListener {
 				 HashMap<Integer, String> maps = new HashMap<>();
 				 maps = (HashMap<Integer, String>) currMsg.getData().get(1);
 				 setTableViewForMapsSearchResult(maps);
-						switch (MainGUI.currUser.getPermission()) 
-						{
-							case CLIENT:
-							{
-								Platform.runLater(() -> {
-								btnEditMaps.setText("Show Maps");
-								btnEditMaps.setVisible(true);
-								btnBuy.setVisible(true);
-								});
-							}
-							break;
-			     			default:
-			     			{
-								Platform.runLater(() -> {
-								btnEditMaps.setText("Edit Maps");
-								btnEditMaps.setVisible(true);
-								btnBuy.setVisible(false);
-								});
-			     			}
-							break;
-						}
 			 }
 			 else
 				 setTableViewForEmptySearchResult();
@@ -386,7 +384,10 @@ public class MainGUIController implements ControllerListener {
 			//}
 		});
 	}
-
+	/**
+	 * Clears the search fields and the table
+	 * 
+	 */
 	void clearSearch() {
 		tfCitySearch.clear();
 		tfSiteSearch.clear();
@@ -397,7 +398,7 @@ public class MainGUIController implements ControllerListener {
 	
 	/**
 	 * Called when there are no search results for maps.
-	 * @param msg
+	 * 
 	 */
 	public void setTableViewForEmptySearchResult() {
 		Platform.runLater(new Runnable() {
@@ -410,15 +411,19 @@ public class MainGUIController implements ControllerListener {
 	}
 
 	/**
+	 * Opening the control panel of the CEO, that includes all his options of management
+	 * 
 	 * @param event
 	 */
 	@FXML
 	void Manage(ActionEvent event) {
-		MainGUI.MainStage.setTitle("Global City Map - Users Management");
+		MainGUI.MainStage.setTitle("Global City Map - Control Panel");
 		MainGUI.openScene(SceneType.ClientsManagement);
 	}
 
 	/**
+	 * Opening the Edit Maps according to the permission. The user will see the show maps window,
+	 * while the employees will see the edit maps window.
 	 * @param event
 	 */
 	@FXML
@@ -429,15 +434,27 @@ public class MainGUIController implements ControllerListener {
 		{
 			case CLIENT:
 			{
-				MainGUI.MainStage.setTitle("Global City Map - View Maps");
+				if(currentWatchedMap==null)
+				{
+					JOptionPane.showMessageDialog(null,"Plaese choose a map to watch", "Error",
+							JOptionPane.WARNING_MESSAGE);
+				}
+				else
+				{
+					MainGUI.MainStage.setTitle("Global City Map - View Maps");
+					MainGUI.openScene(SceneType.Edit);
+				}
 				break;
 			}
 			default:
 				MainGUI.MainStage.setTitle("Global City Map - Edit Maps");
+				MainGUI.openScene(SceneType.Edit);
 		}
-		MainGUI.openScene(SceneType.Edit);
     }
-    
+	/**
+	 * Setting the boolean binding for the search input.
+	 * @param event
+	 */
 	void setSearchInfoBooleanBinding() {
 		BooleanBinding booleanBind;
 		booleanBind = (tfCitySearch.textProperty().isEmpty()).and(tfSiteSearch.textProperty().isEmpty()).and(tfDesSearch.textProperty().isEmpty());

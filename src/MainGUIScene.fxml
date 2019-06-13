@@ -34,8 +34,8 @@
         <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="68.0" text="Version" fx:id="col_version" /> -->
       </columns>
     </TableView>
-    <Button fx:id="btnBuy" layoutX="560.0" layoutY="553.0" mnemonicParsing="false" onAction="#Buy" prefHeight="27.0" prefWidth="92.0" text="Buy" visible="false" />
-    <Button fx:id="btnEditMaps" layoutX="560.0" layoutY="441.0" mnemonicParsing="false" onAction="#EditMaps" prefHeight="27.0" prefWidth="92.0" text="Edit Maps" visible="false" />
+    <Button fx:id="btnBuy" layoutX="597.0" layoutY="276.0" mnemonicParsing="false" onAction="#Buy" prefHeight="27.0" prefWidth="92.0" text="Buy" visible="false" />
+    <Button fx:id="btnEditMaps" layoutX="597.0" layoutY="239.0" mnemonicParsing="false" onAction="#EditMaps" prefHeight="27.0" prefWidth="92.0" text="Edit Maps" visible="false" />
     <Label fx:id="lblCityName" layoutX="27.0" layoutY="137.0" text="City Name:">
       <font>
         <Font name="System Bold" size="15.0" fx:id="x1" />
@@ -43,7 +43,8 @@
     </Label>
     <Label fx:id="lblMapsCatalog" font="$x1" layoutX="209.0" layoutY="138.0" text="Site Name:" />
     <Label fx:id="lblDescription" font="$x1" layoutX="30.0" layoutY="182.0" text="Description:" />
-    <Button fx:id="btnInbox" layoutX="513.0" layoutY="87.0" mnemonicParsing="false" onAction="#OpenInbox" prefHeight="27.0" prefWidth="94.0" text="Inbox" visible="false" />
+    <Button fx:id="btnInbox" layoutX="599.0" layoutY="202.0" mnemonicParsing="false" onAction="#OpenInbox" prefHeight="27.0" prefWidth="89.0" text="Inbox" visible="false" />
+    <Label fx:id="lblClientMenu" font="$x1" layoutX="596.0" layoutY="172.0" text="Client Menu:" visible="false" />
   </children>
   <rotationAxis>
     <Point3D />
