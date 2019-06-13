@@ -110,8 +110,6 @@ public class MainGUIController implements ControllerListener {
 	 */
 	@FXML
 	void Search(ActionEvent event) {
-		try {
-			Message myMessage;
 			String cityName, siteName, mapDescription;
 			ArrayList<Object> data = new ArrayList<Object>();
 			cityName = tfCitySearch.getText();
@@ -121,24 +119,15 @@ public class MainGUIController implements ControllerListener {
 				data.add(cityName);
 			else
 			   data.add(null);
-			
 			if (!siteName.isEmpty()) 
 				data.add(siteName);
 			else
 			   data.add(null);
-			
 			if (!mapDescription.isEmpty())
 				data.add(mapDescription);
 			else
 			   data.add(null);
-			myMessage = new Message(Action.SEARCH, data);
-			MainGUI.GUIclient.sendToServer(myMessage);
-		} catch (IOException e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Could not send message to server. Terminating client.",
-					"Error", JOptionPane.WARNING_MESSAGE);
-			MainGUI.GUIclient.quit();
-		}
+			GUIClient.sendActionToServer(Action.SEARCH,data);
 	}
 	
 	
@@ -169,6 +158,7 @@ public class MainGUIController implements ControllerListener {
 	 */
 	@FXML
 	void OpenInbox(ActionEvent event) {
+		MainGUI.MainStage.setTitle("Global City Map - Inbox");
 		MainGUI.openScene(MainGUI.SceneType.Inbox);
 	}
 
@@ -177,6 +167,7 @@ public class MainGUIController implements ControllerListener {
 	 */
 	@FXML
 	void Buy(ActionEvent event) {
+		MainGUI.MainStage.setTitle("Global City Map - Purchase");
 		MainGUI.openScene(MainGUI.SceneType.BUY);
 	}
 
@@ -227,6 +218,7 @@ public class MainGUIController implements ControllerListener {
 						btnLogin.setVisible(false);
 						btnRegister.setVisible(false);
 						btnLogout.setVisible(true);
+						btnInbox.setVisible(true);
 						MainGUI.currUser = (User) currMsg.getData().get(1);
 						Permission permission = ((User) currMsg.getData().get(1)).getPermission();
 						switch (permission) {
@@ -234,28 +226,24 @@ public class MainGUIController implements ControllerListener {
 							MainGUI.currClient = (Client) currMsg.getData().get(1);
 							Platform.runLater(() -> {
 							btnMyProfile.setVisible(true);
-							btnInbox.setVisible(true);
 							});
 							break;
 						case EDITOR:
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
 							Platform.runLater(() -> {
 							btnManage.setVisible(true);
-							btnInbox.setVisible(true);
 							});
 							break;
 						case MANAGING_EDITOR:
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
 							Platform.runLater(() -> {
 							btnManage.setVisible(true);
-							btnInbox.setVisible(true);
 							});
 							break;
 						case CEO:
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
 							Platform.runLater(() -> {
 							btnManage.setVisible(true);
-							btnInbox.setVisible(true);
 						});
 							break;
 						default:
@@ -290,7 +278,7 @@ public class MainGUIController implements ControllerListener {
 						btnEditMaps.setVisible(false);
 						btnBuy.setVisible(false);
 						btnInbox.setVisible(false);
-						SearchResultsTable.getItems().clear();
+						clearSearch();
 					JOptionPane.showMessageDialog(null, "Disconnected successfully", "Notification",
 							JOptionPane.DEFAULT_OPTION);
 				} catch (Exception e) {
@@ -399,6 +387,14 @@ public class MainGUIController implements ControllerListener {
 		});
 	}
 
+	void clearSearch() {
+		tfCitySearch.clear();
+		tfSiteSearch.clear();
+		tfDesSearch.clear();
+		SearchResultsTable.getItems().clear();
+	}
+	
+	
 	/**
 	 * Called when there are no search results for maps.
 	 * @param msg
@@ -408,7 +404,7 @@ public class MainGUIController implements ControllerListener {
 			@Override
 			public void run() {
 				SearchResultsTable.setVisible(true);
-				SearchResultsTable.getItems().clear();
+				clearSearch();
 			}
 		});
 	}
