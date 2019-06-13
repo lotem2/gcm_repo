@@ -14,6 +14,7 @@ import javafx.fxml.FXML;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -137,12 +138,14 @@ public class InboxController implements ControllerListener {
 				break;
 			case HANDLE_PRICE_CHANGE_REQ:
 				if ((Integer) currMsg.getData().get(0) == 0) {
-					updateTable((List<InboxMessage>) currMsg.getData().get(1));
+					//updateTable((List<InboxMessage>) currMsg.getData().get(1));
+					getMessagesFromServer();
 				}
 				break;
 			case HANDLE_NEW_VER_REQ:
 				if ((Integer) currMsg.getData().get(0) == 0) {
-					updateTable((List<InboxMessage>) currMsg.getData().get(1));
+					//updateTable((List<InboxMessage>) currMsg.getData().get(1));
+					getMessagesFromServer();
 				}
 				break;
 			default:
@@ -174,7 +177,8 @@ public class InboxController implements ControllerListener {
 		            setStyle("");
 		        }
 		    }};
-        if (MainGUI.currUser.getPermission() != Permission.CLIENT) {
+        if (MainGUI.currUser.getPermission() != Permission.CLIENT && 
+        	MainGUI.currUser.getPermission() != Permission.EDITOR) {
         	row.setOnMouseClicked(e -> {
                 if (!row.isEmpty()) {
                 	m_selectedMessage = row.getItem();
@@ -188,9 +192,10 @@ public class InboxController implements ControllerListener {
         }
         return row;
 		});
-		
-		clmMessages.setCellValueFactory(new PropertyValueFactory<InboxMessage, String>("Content"));
-		clmDate.setCellValueFactory(new PropertyValueFactory<InboxMessage, LocalDate>("ReceiveDate"));
-		tblInbox.setItems(observableList);
+		Platform.runLater(() -> {
+			clmMessages.setCellValueFactory(new PropertyValueFactory<InboxMessage, String>("Content"));
+			clmDate.setCellValueFactory(new PropertyValueFactory<InboxMessage, LocalDate>("ReceiveDate"));
+			tblInbox.setItems(observableList);
+		});
 	}
 }

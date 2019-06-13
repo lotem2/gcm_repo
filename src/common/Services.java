@@ -208,11 +208,11 @@ public final class Services extends TimerTask {
 
 			// Check if a new price change message is currently under management approval
 			if(SQLController.DoesRecordExist("Inbox","content", "status",
-						"Approve " + ((InboxMessage)params.get(1)).getSenderUserName() + "'s new city price for "+
+						"Approve " + ((InboxMessage)params.get(1)).getSenderUserName() + " new city price for "+
 								cityName + " to "  + params.get(2).toString(), "APPROVED"))
 				throw new Exception("New version is under approval, cannot create publish request.");
 
-			msgContent  = ((InboxMessage)params.get(1)).getSenderUserName() + "'s new city price for "+
+			msgContent  = ((InboxMessage)params.get(1)).getSenderUserName() + " new city price for "+
 					cityName + " to "  + params.get(2).toString();
 
 			// Edit content according to the CEO's decision
@@ -258,6 +258,7 @@ public final class Services extends TimerTask {
 				data.clear(); data.add(status); data.add(((InboxMessage)params.get(1)).getID());
 				common.Message message;
 				message = InboxDB.EditInboxMessageStatus(data);
+				data.add(message);
 			}
 			catch (Exception e)
 			{
@@ -293,11 +294,11 @@ public final class Services extends TimerTask {
 		try {
 			// Check if a new price change message is currently under management approval
 			if(SQLController.DoesRecordExist("Inbox","content", "status",
-						"Approve " + params.get(0).toString() + "'s new city price to " + params.get(1).toString(), "New"))
+						"Approve " + params.get(0).toString() + " new city price to " + params.get(1).toString(), "New"))
 				throw new Exception("New version is under approval, cannot create publish request.");
 
 			// Prepare statement to insert new map
-			String content = "Approve " + params.get(0).toString() + "'s new city price to " + params.get(1).toString();
+			String content = "Approve " + params.get(0).toString() + " new city price to " + params.get(1).toString();
 
 			// Insert new Inbox message to managers with the approval request of a city's new price
 			common.Message msg = InboxDB.getInstance().AddInboxMessage(
@@ -416,7 +417,7 @@ public final class Services extends TimerTask {
 		// Variables
 		ArrayList<Object> data        = new ArrayList<Object>();
 		common.Message    replyMsg    = null;
-		String            msgContent  = "Approve " + params.get(2).toString() + "'s new version requested by " +
+		String            msgContent  = "Approve " + params.get(2).toString() + " new version requested by " +
 										((InboxMessage)params.get(1)).getReceiverUserName() + " was ";
 		String            content     = "";
 		String            status      = "";
@@ -501,7 +502,7 @@ public final class Services extends TimerTask {
 
 	/**
 	* Create a request for approval of a city's new version
-	* @param params - Contain city's name, the sender's username
+	* @param params - Contain city's name, the sender's user entity
 	* @return {@link Message} - Indicating success/failure with corresponding message
 	*/
 	public static common.Message createNewVersionRequest(ArrayList<Object> params){
@@ -515,7 +516,7 @@ public final class Services extends TimerTask {
 				throw new Exception("New version is under approval, cannot create publish request.");
 
 			// Prepare statement to insert new map
-			String content = "Approve " + params.get(0).toString() + "'s new version";
+			String content = "Approve " + params.get(0).toString() + " s new version";
 
 			// Insert new Inbox message to managers with the approval request of map's new version
 			common.Message msg = InboxDB.getInstance().AddInboxMessage(
