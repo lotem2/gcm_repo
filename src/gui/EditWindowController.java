@@ -1,6 +1,6 @@
 package gui;
 
-import java.awt.event.MouseEvent;
+
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -16,6 +16,8 @@ import java.util.logging.Logger;
 //import org.apache.commons.io.IOUtils;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
+
+import javafx.scene.paint.Color;
 
 import java.awt.Point;
 
@@ -62,7 +64,10 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -82,10 +87,11 @@ import javafx.util.Duration;
 public class EditWindowController implements ControllerListener {
 
 	GUIClient client;
-	URL URLImage;
+	String pathToMap = "";
 	static ArrayList<String> citiesList;
 	ArrayList<String> routeList;
 	ArrayList<Site> allSitesInTheCity;
+	City currentCity = null;
 
 	
     @FXML
@@ -224,14 +230,20 @@ public class EditWindowController implements ControllerListener {
 	private AnchorPane AncPane;
     @FXML 
 	private ProgressIndicator progressIndicator;
+ 
 	private PauseTransition delayTimeout;
-
+    
 	/**
 	 *
 	 *gets the parameters of the map to and sends it to the server
 	 *
 	 *
 	 */  
+
+    public void setCurrentCity(City city) {
+    	currentCity = city;
+    }
+
     
     @FXML
     void SaveCity(ActionEvent event) {
@@ -240,7 +252,7 @@ public class EditWindowController implements ControllerListener {
 		Message myMessage = null;
 		String cityName = tfCityName.getText();
 		String cityDescription = tfCityDescription.getText();
-		String price = tfPrice.getText();
+		float price = Float.parseFloat(tfPrice.getText());
 		if (selection.equals("Add New City"))
 			myMessage = new Message(Action.ADD_CITY,cityName,cityDescription,0,price);
 		MainGUI.GUIclient.sendToServer(myMessage);
@@ -249,6 +261,10 @@ public class EditWindowController implements ControllerListener {
 			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
 					"Error", JOptionPane.WARNING_MESSAGE);
 			MainGUI.GUIclient.quit();
+		}
+		catch(Exception e) {
+			JOptionPane.showMessageDialog(null, "One or more parameters are not correct.",
+					"Error", JOptionPane.WARNING_MESSAGE);
 		}
     }
 	/**
@@ -261,15 +277,29 @@ public class EditWindowController implements ControllerListener {
     void SaveMap(ActionEvent event) {
 		try {
 			Message myMessage;
+			Map oldMap = getCurrentMap(currentCity.getMaps(), tfMapName.getText());
+			Map newMap = new Map(0, tfMapName.getText(), tfMapDescription.getText(), 
+					cityChoser.getSelectionModel().getSelectedItem(), 
+					null, null, false);
+			newMap.setImage(pathToMap);
 			String selection = mapChoser.getSelectionModel().getSelectedItem();
-			String cityName = cityChoser.getSelectionModel().getSelectedItem();
-			String mapName = tfMapName.getText();
-			String mapDescription = tfMapDescription.getText();
-			if (selection.equals("Add New Map"))
-				myMessage = new Message(Action.ADD_MAP,mapName,cityName,mapDescription,URLImage);
+
+			if (selection.equals("Add New Map")) {
+				myMessage = new Message(Action.ADD_MAP,newMap.getName(), 
+						newMap.getCityName(), newMap.getDescription(), newMap.getImageAsByte());
+				currentCity.getMaps().set(currentCity.getMaps().indexOf(oldMap), newMap);
+			}
+
 			else
-				myMessage = new Message(Action.EDIT_MAP,mapName,cityName,mapDescription,URLImage);
+			{
+				myMessage = new Message(Action.EDIT_MAP,newMap.getName(), newMap.getCityName(),
+						newMap.getDescription(), newMap.getImageAsByte());
+				
+			}
+
 			MainGUI.GUIclient.sendToServer(myMessage);
+			setMapInfo(newMap);
+			mapChoser.getSelectionModel().select(newMap.getName());
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
 					"Error", JOptionPane.WARNING_MESSAGE);
@@ -287,6 +317,7 @@ public class EditWindowController implements ControllerListener {
 		try {
 			Message myMessage;
 			String selection = siteChoser.getSelectionModel().getSelectedItem();
+			String city = cityChoser.getSelectionModel().getSelectedItem();
 			String map = mapChoser.getSelectionModel().getSelectedItem();
 			String name = tfSiteName.getText();
 			String description = tfSiteDescription.getText();
@@ -294,20 +325,28 @@ public class EditWindowController implements ControllerListener {
 			Boolean accessible = (accessibleString.equals("Yes"))? true:false;
 			Float visitDuration = Float.parseFloat(tfEstimatedTime.getText());
 			Point locationPoint = new Point(); 
-			locationPoint.x=Integer.parseInt(tfX.getText());
-			locationPoint.y=Integer.parseInt(tfY.getText());
+			locationPoint.setLocation(Double.parseDouble(tfX.getText()), Double.parseDouble(tfY.getText()));
 			String location = (tfX.getText()+","+tfY.getText());
 			String classification = categoryChoser.getSelectionModel().getSelectedItem();
-			Site currSite = new Site(name,selection,setClassification(classification),description,accessible,visitDuration,locationPoint);
-			if (selection.equals("Add New Site"))
-				myMessage = new Message(Action.ADD_SITE,currSite,name,selection,setClassification(classification),description,accessible,visitDuration,location);
-			else
-				myMessage = new Message(Action.EDIT_SITE,name,selection,setClassification(classification),description,accessible,visitDuration,location);
+			Site newSite = new Site(name,city,setClassification(classification),description,accessible,visitDuration,locationPoint);
+			if (selection.equals("Add New Site")) {
+				myMessage = new Message(Action.ADD_SITE, getCurrentMap(currentCity.getMaps(), map),name,city,setClassification(classification),description,accessible,visitDuration,location);
+				siteChoser.getItems().add(name);
+				getCurrentMap(currentCity.getMaps(), map).getSites().add(newSite);
+			}
+			else {
+				myMessage = new Message(Action.EDIT_SITE,name,city,setClassification(classification),description,accessible,visitDuration,location);
+				updateMapsAndRoutes(getCurrentSite(currentCity.getMaps(), currentCity.getRoutes(), name), newSite);
+			}
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
 					"Error", JOptionPane.WARNING_MESSAGE);
 			MainGUI.GUIclient.quit();
+		}
+		catch(Exception e) {
+			JOptionPane.showMessageDialog(null, "One or more parameters are not corrent.",
+					"Error", JOptionPane.WARNING_MESSAGE);	
 		}
     }
 	/**
@@ -577,25 +616,43 @@ public class EditWindowController implements ControllerListener {
 		   tfMapName.setText(map.getName());
 		   tfMapDescription.setText(map.getDescription());
 	   });
-	   //loadImage(map.getImageAsByte());
+	   Platform.runLater(new Runnable() {
+		
+		@Override
+		public void run() {
+			writeImage(map);
+		}
+	});
    }
    
-   void loadImage(byte[] imageBytesToAdd) {
-//	   Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-//	   ImageView image = (ImageView) findViewById(R.id.imageView1);
-//
-//	   image.setImageBitmap(Bitmap.createScaledBitmap(bmp, image.getWidth(),
-//	                   image.getHeight(), false));
+   /**
+    * Writes the locations of the current map's sites onto the image
+    */
+   void writeImage(Map map) {
+	   // Go through each site and print it's location
+	   mapView.setImage(map.getMapImage());
+	   for (Site site : map.getSites()) {
+		   Circle currentSite = new Circle(mapView.getBoundsInParent().getMinX() + site.getLocation().getX(),
+				   mapView.getBoundsInParent().getMinY() + site.getLocation().getY(), 2);
+		   currentSite.setFill(Color.BLUE);
+		   currentSite.setOnMouseClicked(new EventHandler<MouseEvent>() {
+		         @Override
+		         public void handle(MouseEvent event) {
+		        	if(currentSite.contains(event.getX(), event.getY()))
+		        		setSiteInfo(site);
+		        	Platform.runLater(new Runnable() {
+						
+						@Override
+						public void run() {
+							siteChoser.getSelectionModel().select(site.getName());							
+						}
+					});
+		         }
+		      });
+		   paneMap.getChildren().add(currentSite);
+	}
    }
-   
-//   byte[] sendImage()
-//   {
-//   	   BitMap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
-//	   ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//	   bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-//	   byte[] byteArray = stream.toByteArray();
-//	   return byteArray;
-//   }
+
 	/**
 	 *
 	 *method to put the route info in the fields, gotten from the server, for the editor
@@ -665,6 +722,7 @@ public class EditWindowController implements ControllerListener {
 	 *
 	 *
 	 */ 
+
     void clearMapParameters() {
     	Platform.runLater(() -> {
 	    	tfMapName.setDisable(false);
@@ -675,7 +733,18 @@ public class EditWindowController implements ControllerListener {
 	    	btnUpdateVersion.setDisable(true);
 	    	clearSiteParameters();
 	    	siteChoser.setValue(null);
-    	});
+    	});}
+
+    void addNewMap() {
+    	tfMapName.setDisable(false);
+    	tfMapDescription.setDisable(false);
+    	tfMapName.clear();
+    	tfMapDescription.clear();
+    	tfPrice.clear();
+    	btnUpdateVersion.setDisable(true);
+    	clearSiteParameters();
+    	siteChoser.setValue(null);
+
     }
 
 	/**
@@ -998,14 +1067,7 @@ public class EditWindowController implements ControllerListener {
 					}
 					else
 					{
-				    	ArrayList<Map> maps = currCity.getMaps();
-					    for(Map currMap : maps){
-					        if(currMap.getName() != null && currMap.getName().contains(currMapName))
-					        	Platform.runLater(() -> {
-					        		setMapInfo(currMap);
-					        	});
-					    }
-						
+						setMapInfo(getCurrentMap(currentCity.getMaps(), currMapName));
 					}
 		    	  });
 			}
@@ -1055,11 +1117,7 @@ public class EditWindowController implements ControllerListener {
 					}
 					else
 					{
-				    	ArrayList<Route> routes = currCity.getRoutes();
-					    for(Route currRoute : routes){
-					        if(currRoute.getName() != null && currRoute.getName().contains(currRouteName))
-					        	setRouteInfo(currRoute);
-					    }
+						setRouteInfo(getCurrentRoute(currentCity.getRoutes(), currRouteName));
 					}
 		    	  });
 		      }
@@ -1276,9 +1334,10 @@ public class EditWindowController implements ControllerListener {
             //Show open file dialog
             File file = fileChooser.showOpenDialog(null);
             try {
+            	
                 BufferedImage bufferedImage = ImageIO.read(file);
                 Image image = SwingFXUtils.toFXImage(bufferedImage, null);
-                URLImage = file.toURI().toURL();//saving the URL for using later
+                pathToMap = file.getAbsolutePath(); //saving the URL for using later
                 mapView.setImage(image);
             } 
             catch (IOException ex) 
@@ -1330,14 +1389,18 @@ public class EditWindowController implements ControllerListener {
 	 *
 	 */    
      @FXML
-    void paint(MouseEvent event) {
-    	mapView.setOnMouseClicked(e -> 
-	    {
-	        //System.out.println("["+e.getX()+", "+e.getY()+"]")
-	        Circle c = new Circle(e.getX(), e.getY(), 5, javafx.scene.paint.Color.RED);
-	        paneMap.getChildren().add(c);
-	        mapView.setOnMouseClicked(null);
-	    });
+    public void paint(MouseEvent event) {
+         double x = event.getSceneX(); double y = event.getSceneY();
+        	 Platform.runLater(new Runnable() {
+				
+				@Override
+				public void run() {
+					clearSiteParameters();
+					tfX.setText(Double.toString(x).substring(0, Double.toString(x).indexOf(".") + 2));
+					tfY.setText(Double.toString(y).substring(0, Double.toString(y).indexOf(".") + 2));
+
+				}
+			});
     }
 
 	public void setTableViewForRouteSites(ObservableList<Site> currSitesList) {
@@ -1364,24 +1427,17 @@ public class EditWindowController implements ControllerListener {
     	String siteName = siteChoser.getSelectionModel().getSelectedItem();
     	siteChoser.getItems().remove(siteIndex);
 		ArrayList<Object> data = new ArrayList<Object>();
-		data.add(cityName);
-		data.add(mapName);
+		data.add(getCurrentMap(currentCity.getMaps(), mapName));
 		data.add(siteName);
 		GUIClient.sendActionToServer(Action.REMOVE_SITE,data);
     }
     
     @FXML
     void AddAnExistingSiteToMap(ActionEvent event) {
-    	String cityName = cityChoser.getSelectionModel().getSelectedItem();
-    	String mapName = mapChoser.getSelectionModel().getSelectedItem();
-    	String mapDescription =tfMapDescription.getText();
-    	String siteName = siteChoser.getSelectionModel().getSelectedItem();
+    	String siteName = existingSiteToMapChoser.getSelectionModel().getSelectedItem();
     	siteChoser.getItems().add(siteName);
-    	/*(int id, String mapname, String description, 
-    			String cityname, ArrayList<Site> sites, byte[] image, boolean is_active)*/
-    	//Map map= new Map(mapName,mapDescription,cityName,URLImage,1);
 		ArrayList<Object> data = new ArrayList<Object>();
-		//data.add(map);
+		data.add(getCurrentMap(currentCity.getMaps(), mapChoser.getSelectionModel().getSelectedItem()));
 		data.add(siteName);
 		GUIClient.sendActionToServer(Action.ADD_SITE,data);
     }
@@ -1478,5 +1534,79 @@ public class EditWindowController implements ControllerListener {
 				alert.showAndWait();
 			}
 		});
+	}
+
+	/**
+	 * Private method to get current displayed map
+	 * @param city_maps - city's list of maps
+	 * @param name - name of the displayed map
+	 * @return {@link Map}
+	 */	
+	private Map getCurrentMap(ArrayList<Map> city_maps, String name) {
+	    for(Map currMap : city_maps){
+	        if(currMap.getName() != null && currMap.getName().equals(name))
+	        	return currMap;
+	    }
+		return null;
+	}
+	
+	/**
+	 * Private method to get current displayed route
+	 * @param city_routes - city's list of routes
+	 * @param name - name of the displayed route
+	 * @return {@link Route}
+	 */
+	private Route getCurrentRoute(ArrayList<Route> city_routes, String name) {
+    	ArrayList<Route> routes = city_routes;
+	    for(Route currRoute : routes){
+	        if(currRoute.getName() != null && currRoute.getName().contains(name))
+	        	return currRoute;
+	    }
+		return null;
+	}
+	
+	/**
+	 * Get instance of site according to his name
+	 * @param city_maps - list of city's maps
+	 * @param city_routes - list of city's routes
+	 * @param name - site's name
+	 * @return - {@link Site}
+	 */
+	private Site getCurrentSite(ArrayList<Map> city_maps, ArrayList<Route> city_routes, String name) {
+		for (Map map : city_maps) {
+		    for(Site currSite : map.getSites()){
+		        if(currSite.getName() != null && currSite.getName().equals(name))
+		        	return currSite;
+		    }	
+		}
+		
+		for (Route route : city_routes) {
+		    for(Site currSite : route.getSites()){
+		        if(currSite.getName() != null && currSite.getName().equals(name))
+		        	return currSite;
+		    }	
+		}
+		return null;
+	}
+	
+	/**
+	 * Private method to update the details of the site in all the occurrences of it in the city
+	 * @param currentSite - the old site's instance
+	 * @param newSite - the updated site's instance
+	 */
+	private void updateMapsAndRoutes(Site currentSite, Site newSite) {
+		for (Map map : currentCity.getMaps()) {
+		    for(Site currSite : map.getSites()){
+		        if(currSite.getName() != null && currSite.getName().equals(newSite.getName()))
+		        	currentSite = newSite;
+		    }	
+		}
+		
+		for (Route route : currentCity.getRoutes()) {
+		    for(Site currSite : route.getSites()){
+		    	if(currSite.getName() != null && currSite.getName().equals(newSite.getName()))
+		        	currentSite = newSite;
+		    }	
+		}
 	}
 }
