@@ -432,8 +432,9 @@ public class SiteDB {
 			{
 				// Reads location coordinates
 				String Location = rs.getString("location");
-				String xLocation = Location.split(",")[0];
-				String yLocation = Location.split(",")[1];
+				Point sitePoint = new Point();	// Read site's location from database
+				sitePoint.setLocation(Double.parseDouble(Location.split(",")[0]), 
+						Double.parseDouble(Location.split(",")[0]));
 
 				Site currSite = new Site(
 						rs.getString("name"),
@@ -442,8 +443,7 @@ public class SiteDB {
 						rs.getString("description"),
 						rs.getBoolean("accessible"),
 						rs.getFloat("visitDuration"),
-						new Point(Math.round(Float.parseFloat(xLocation)), 
-								Math.round(Float.parseFloat(yLocation))));
+						sitePoint);
 
 				sites.add(currSite);
 			}
