@@ -31,6 +31,8 @@ import entity.Purchase;
 import entity.Route;
 import entity.Site;
 import entity.User;
+import javafx.animation.Animation;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.value.ChangeListener;
@@ -42,6 +44,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -55,6 +58,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -64,9 +68,16 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
+
 import java.awt.image.BufferedImage;
 //import sun.security.util.IOUtils;
-
+import javafx.animation.Animation;
+import javafx.animation.PauseTransition;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Alert.AlertType;
+import javafx.util.Duration;
 
 public class EditWindowController implements ControllerListener {
 
@@ -209,7 +220,18 @@ public class EditWindowController implements ControllerListener {
     private TextField tfrouteDescription;
     @FXML
     private Separator seperator;
+    @FXML
+	private AnchorPane AncPane;
+    @FXML 
+	private ProgressIndicator progressIndicator;
+	private PauseTransition delayTimeout;
 
+	/**
+	 *
+	 *gets the parameters of the map to and sends it to the server
+	 *
+	 *
+	 */  
     
     @FXML
     void SaveCity(ActionEvent event) {
@@ -229,7 +251,12 @@ public class EditWindowController implements ControllerListener {
 			MainGUI.GUIclient.quit();
 		}
     }
-    
+	/**
+	 *
+	 *gets the parameters of the map to and sends it to the server
+	 *
+	 *
+	 */  
     @FXML
     void SaveMap(ActionEvent event) {
 		try {
@@ -249,7 +276,12 @@ public class EditWindowController implements ControllerListener {
 			MainGUI.GUIclient.quit();
 		}
     }
-    
+	/**
+	 *
+	 *gets the parameters of the site to and sends it to the server
+	 *
+	 *
+	 */  
     @FXML
     void SaveSite(ActionEvent event) {
 		try {
@@ -278,7 +310,12 @@ public class EditWindowController implements ControllerListener {
 			MainGUI.GUIclient.quit();
 		}
     }
-    
+	/**
+	 *
+	 *gets the parameters of the route to and sends it to the server
+	 *
+	 *
+	 */  
     @FXML
     void SaveRoute(ActionEvent event) {
 		try {
@@ -299,8 +336,12 @@ public class EditWindowController implements ControllerListener {
 		}
     }
     
-    
-    
+	/**
+	 *
+	 *preparing the string of the route that is edited/added to be sent back to the server
+	 *
+	 *
+	 */  
     String getNewRouteFromTableView() {
     	ObservableList<Site> currSitesList = tableRouteDeatils.getItems();
 	    StringBuilder sb = new StringBuilder();
@@ -312,7 +353,12 @@ public class EditWindowController implements ControllerListener {
 	    return routeListString;
     }
     
-    
+	/**
+	 *
+	 *loading the main window
+	 *
+	 *
+	 */  
 
     @FXML
     void backToMainGUI(ActionEvent event) {
@@ -321,7 +367,12 @@ public class EditWindowController implements ControllerListener {
     	});
 		MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
     }
-    
+	/**
+	 *
+	 *initializing the edit/show window according to the permission of the user
+	 *
+	 *
+	 */  
 
     @FXML
     void initialize() {
@@ -421,7 +472,12 @@ public class EditWindowController implements ControllerListener {
 		   accessibilityChoser.setValue("No");
 	   });
    }
-   
+	/**
+	 *
+	 *method to set the enum to the Category it belongs to in the choice box
+	 *the return value is the classification saved on the server
+	 *
+	 */  
    String getClassification(Site site) {
 	   String currChoice = null;
 	   switch(site.getClassification())
@@ -461,7 +517,12 @@ public class EditWindowController implements ControllerListener {
 	   }
 	   return currChoice;
    }
-   
+	/**
+	 *
+	 *method to set the choice of the category to the enum that it belongs to.
+	 *used to send it back to the server.
+	 *
+	 */  
    Classification setClassification(String classificationChoice) {
 	   Classification classification = null;
 	   switch(categoryChoser.getSelectionModel().getSelectedItem())
@@ -511,6 +572,7 @@ public class EditWindowController implements ControllerListener {
    void setMapInfo(Map map) {
 	   setSitesChoiceBox(map);
 	   sitesChoiceBoxListener(map);
+	   btnBrowse.setVisible(false);
 	   Platform.runLater(() -> {
 		   tfMapName.setText(map.getName());
 		   tfMapDescription.setText(map.getDescription());
@@ -562,6 +624,7 @@ public class EditWindowController implements ControllerListener {
 		   tfPrice.setText(Float.toString(city.getPrice()));
 		   setMapsChoiceBox(city);//loading the maps in the city to the choice box
 		   setRoutesChoiceBox(city);//loading the routes in the city to the choice box
+		   
 	   });
 	   ArrayList<Object> data = new ArrayList<Object>();
 	   String cityName = city.getName();
@@ -578,7 +641,7 @@ public class EditWindowController implements ControllerListener {
 	 *
 	 *
 	 */ 
-    void addNewCity() {
+    void clearCityParameters() {
     	Platform.runLater(() -> {
 	    	tfCityName.clear();
 	    	tfCityDescription.clear();
@@ -588,8 +651,8 @@ public class EditWindowController implements ControllerListener {
 	    	tfCityDescription.setDisable(false);
 	    	tfPrice.clear();
 	    	tfPrice.setDisable(false);
-	    	addNewMap();
-	    	addNewRoute();
+	    	clearMapParameters();
+	    	clearRouteParameters();
 	    	mapChoser.setValue(null);
 	    	routesChoser.setValue(null);
 	    	btnUpdatePrice.setDisable(true);
@@ -602,7 +665,7 @@ public class EditWindowController implements ControllerListener {
 	 *
 	 *
 	 */ 
-    void addNewMap() {
+    void clearMapParameters() {
     	Platform.runLater(() -> {
 	    	tfMapName.setDisable(false);
 	    	tfMapDescription.setDisable(false);
@@ -610,7 +673,7 @@ public class EditWindowController implements ControllerListener {
 	    	tfMapDescription.clear();
 	    	tfPrice.clear();
 	    	btnUpdateVersion.setDisable(true);
-	    	addNewSite();
+	    	clearSiteParameters();
 	    	siteChoser.setValue(null);
     	});
     }
@@ -621,7 +684,7 @@ public class EditWindowController implements ControllerListener {
 	 *
 	 *
 	 */ 
-    void addNewRoute() {
+    void clearRouteParameters() {
     	Platform.runLater(() -> {
     		tfRouteName.clear();
     		tfrouteDescription.clear();
@@ -636,7 +699,7 @@ public class EditWindowController implements ControllerListener {
 	 *
 	 *
 	 */ 
-    void addNewSite() {
+    void clearSiteParameters() {
     	Platform.runLater(() -> {
 	    	tfSiteName.clear();
 	    	tfSiteDescription.clear();
@@ -839,9 +902,12 @@ public class EditWindowController implements ControllerListener {
 			{
 				if ((Integer) currMsg.getData().get(0) == 0) 
 				{
+					clearCityParameters();
 			    	City currCity = (City) currMsg.getData().get(1);
+			    	disableProressIndicator();
 			    	Platform.runLater(() -> {
 			    		setCityInfo(currCity);
+
 			    		setUpdateVersions();
 			    	});
 				}
@@ -912,6 +978,7 @@ public class EditWindowController implements ControllerListener {
 		      public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
 		    	  Platform.runLater(() -> {
 		    		  String currCityName = (cityChoser.getItems().get((Integer) number2));
+		    		  clearSiteParameters();
 		    		  setCurrentCity(currCityName);
 		    	  });
 			}
@@ -926,7 +993,8 @@ public class EditWindowController implements ControllerListener {
 		    	  String currMapName = (mapChoser.getItems().get((Integer) number2));
 					if (currMapName.equals("Add New Map"))
 					{
-						addNewMap();
+						clearMapParameters();
+						btnBrowse.setVisible(true);
 					}
 					else
 					{
@@ -954,7 +1022,7 @@ public class EditWindowController implements ControllerListener {
 					if (currSiteName.equals("Add New Site"))
 					{
 						
-							addNewSite();
+						clearSiteParameters();
 					}
 					else
 					{
@@ -983,7 +1051,7 @@ public class EditWindowController implements ControllerListener {
 		    	  String currRouteName = (routesChoser.getItems().get((Integer) number2));
 					if (currRouteName.equals("Add New Route"))
 					{
-						addNewRoute();
+						clearRouteParameters();
 					}
 					else
 					{
@@ -1037,13 +1105,15 @@ public class EditWindowController implements ControllerListener {
 	void setCurrentCity(String currCityName) {
 				if (currCityName.equals("Add New City"))
 				{
-					addNewCity();
+					clearCityParameters();
+					btnBrowse.setVisible(true);
 				}
 				else
 				{
 					ArrayList<Object> data = new ArrayList<Object>();
 					data.add(MainGUI.currUser.getPermission());
 					data.add(currCityName);
+					enableProressIndicator();
 					GUIClient.sendActionToServer(Action.GET_CITY,data);
 				}
 			}
@@ -1059,6 +1129,7 @@ public class EditWindowController implements ControllerListener {
 		Platform.runLater(() -> {
 			cityChoser.setItems(currCitiesList);
 		});
+		
 		cityChoiceBoxListener(); 
 	}
 	/**
@@ -1348,7 +1419,64 @@ public class EditWindowController implements ControllerListener {
 					JOptionPane.WARNING_MESSAGE);
     }
 	
+    /**
+	 * Loads the loading animation and freeze the rest of the screen. <br>
+	 * Waits for a answer from the server for 20 seconds. If there is no answer calling the fucntion: {@link #timedOut()}
+	 * @param showOrHide - Disable\Enable the screen for the user.
+	 */
+	public void loadingAnimation(Boolean showOrHide) {
+
+		if (showOrHide == true) {
+			delayTimeout = new PauseTransition(Duration.seconds(30));
+			delayTimeout.setOnFinished(event -> timedOut());
+			delayTimeout.play();
+		} else {
+			// stopDelayTimeout();
+			delayTimeout.getStatus();
+			delayTimeout.stop();
+		}
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				progressIndicator.setVisible(showOrHide);
+				AncPane.setDisable(showOrHide);
+			}
+		});
+	}
 	
+	public void enableProressIndicator() {
+		loadingAnimation(true);
+	}
+	
+	public void disableProressIndicator() {
+		loadingAnimation(false);
+	}
+
+	public Animation.Status getDelayTimeoutStatus() {
+		return delayTimeout.getStatus();
+	}
+
+	public void stopDelayTimeout() {
+		delayTimeout.stop();
+	}
+
+	/**
+	 * Occurs when we received no answer from the server, show an error message for the user with the message "Request timed out"
+	 */
+	private void timedOut() {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				delayTimeout.stop();
+				progressIndicator.setVisible(false);
+				AncPane.setDisable(false);
+				loadingAnimation(false);
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("Error");
+				alert.setHeaderText(null);
+				alert.setContentText("Request timed out.");
+				alert.showAndWait();
+			}
+		});
+	}
 }
-
-

@@ -7,10 +7,12 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
+<?import javafx.scene.control.ProgressIndicator?>
 
 <AnchorPane fx:id="EditorWindow" prefHeight="775.0" prefWidth="700.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="gui.EditWindowController">
   <!-- TODO Add Nodes -->
   <children>
+  <AnchorPane fx:id="AncPane">
     <Label fx:id="lblWelcome" layoutX="543.0" layoutY="19.0" text="Welcome" />
     <Button id="btnMain" fx:id="btnBackToMain" layoutX="543.0" layoutY="52.0" mnemonicParsing="false" onAction="#backToMainGUI" prefHeight="27.0" prefWidth="80.0" text="Catalog" />
     <Label fx:id="lblEditorTool" layoutX="9.0" layoutY="0.0" text="Editor Tool" textAlignment="LEFT">
@@ -42,7 +44,7 @@
                 <Label id="lblMapName" fx:id="lblSiteDescription" layoutX="436.0" layoutY="210.0" text="Site Description:" />
                 <TextField fx:id="tfSiteDescription" alignment="TOP_LEFT" layoutX="435.0" layoutY="233.0" onAction="#SaveSite" prefHeight="51.0" prefWidth="200.0" promptText="Site Description" />
                 <Label fx:id="lblAccessibilty" layoutX="435.0" layoutY="355.0" text="Accessibility:" />
-                <Button fx:id="btnBrowse" layoutX="327.0" layoutY="413.0" mnemonicParsing="false" text="Browse" />
+                <Button fx:id="btnBrowse" layoutX="327.0" layoutY="413.0" mnemonicParsing="false" text="Browse" visible="false" />
                 <Label fx:id="lbLocation" layoutX="440.0" layoutY="515.0" text="Location:" />
                 <TextField id="tf" fx:id="tfX" alignment="CENTER_LEFT" layoutX="440.0" layoutY="535.0" onAction="#SaveSite" prefWidth="97.0" promptText="X" text="" />
                 <TextField id="tf" fx:id="tfY" layoutX="547.0" layoutY="535.0" onAction="#SaveSite" prefWidth="84.0" promptText="Y" />
@@ -53,38 +55,22 @@
                 <Button fx:id="btnSaveSite" layoutX="437.0" layoutY="569.0" mnemonicParsing="false" onAction="#SaveSite" prefHeight="27.0" prefWidth="103.0" text="Save Site" />
                 <ChoiceBox fx:id="accessibilityChoser" layoutX="436.0" layoutY="377.0" prefHeight="25.0" prefWidth="200.0">
                   <items>
-                    <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
-                    </FXCollections>
+                    <FXCollections fx:factory="observableArrayList" />
                   </items>
                 </ChoiceBox>
                 <ChoiceBox fx:id="categoryChoser" layoutX="435.0" layoutY="315.0" prefHeight="25.0" prefWidth="200.0">
                   <items>
-                    <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
-                    </FXCollections>
+                    <FXCollections fx:factory="observableArrayList" />
                   </items>
                 </ChoiceBox>
                 <ChoiceBox fx:id="siteChoser" layoutX="431.0" layoutY="122.0" prefHeight="25.0" prefWidth="200.0">
                   <items>
-                    <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
-                    </FXCollections>
+                    <FXCollections fx:factory="observableArrayList" />
                   </items>
                 </ChoiceBox>
                 <ChoiceBox fx:id="mapChoser" layoutX="14.0" layoutY="31.0" prefHeight="25.0" prefWidth="200.0">
                   <items>
-                    <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
-                    </FXCollections>
+                    <FXCollections fx:factory="observableArrayList" />
                   </items>
                 </ChoiceBox>
                 <Label id="lblAccessibilty" layoutX="436.0" layoutY="292.0" text="Category:" />
@@ -94,11 +80,7 @@
                 <Button id="btnSave" fx:id="btnUpdateVersion" disable="true" layoutX="259.0" layoutY="543.0" mnemonicParsing="false" onAction="#UpdateVersion" prefHeight="27.0" prefWidth="135.33319091796875" text="Update Version" />
                 <ChoiceBox id="siteChoser" fx:id="existingSiteToMapChoser" layoutX="431.0" layoutY="18.0" prefHeight="25.0" prefWidth="200.0">
                   <items>
-                    <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
-                    </FXCollections>
+                    <FXCollections fx:factory="observableArrayList" />
                   </items>
                 </ChoiceBox>
                 <Button id="btnSaveSite" fx:id="btnAddAnExistingSiteToMap" layoutX="486.0" layoutY="53.0" mnemonicParsing="false" onAction="#AddAnExistingSiteToMap" prefHeight="27.0" prefWidth="103.0" text="Add Site" />
@@ -138,29 +120,17 @@
                 <Button id="addSiteToRoute" fx:id="btnAddSiteToRoute" layoutX="77.0" layoutY="574.0" mnemonicParsing="false" onAction="#addSiteToRoute" prefHeight="27.0" prefWidth="86.0" text="Add Site" />
                 <ChoiceBox fx:id="cityChoser" layoutX="17.0" layoutY="25.0" prefHeight="25.0" prefWidth="200.0">
                   <items>
-                    <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
-                    </FXCollections>
+                    <FXCollections fx:factory="observableArrayList" />
                   </items>
                 </ChoiceBox>
                 <ChoiceBox fx:id="routesChoser" layoutX="16.0" layoutY="339.0" prefWidth="200.0">
                   <items>
-                    <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
-                    </FXCollections>
+                    <FXCollections fx:factory="observableArrayList" />
                   </items>
                 </ChoiceBox>
                 <ChoiceBox fx:id="sitesChoserForRoutes" layoutX="12.0" layoutY="540.0" prefHeight="25.0" prefWidth="200.0">
                   <items>
-                    <FXCollections fx:factory="observableArrayList">
-                      <String fx:value="Item 1" />
-                      <String fx:value="Item 2" />
-                      <String fx:value="Item 3" />
-                    </FXCollections>
+                    <FXCollections fx:factory="observableArrayList" />
                   </items>
                 </ChoiceBox>
                 <TextField id="tf" fx:id="tfPrice" disable="false" layoutX="19.0" layoutY="241.0" onAction="#SaveMap" prefWidth="200.0" promptText="Price" />
@@ -175,5 +145,7 @@
         <fx:reference source="accPaneMap" />
       </panes>
     </Accordion>
-  </children>
+    </AnchorPane>
+    <ProgressIndicator fx:id="progressIndicator" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="93.0" prefWidth="94.0" visible="false" />
+    </children>
 </AnchorPane>

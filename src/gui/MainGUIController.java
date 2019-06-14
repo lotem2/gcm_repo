@@ -44,6 +44,14 @@ import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import javafx.animation.Animation;
+import javafx.animation.PauseTransition;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Alert.AlertType;
+import javafx.util.Duration;
+import javafx.scene.layout.VBox;
+
 import javax.swing.JOptionPane;//library for popup messages
 
 public class MainGUIController implements ControllerListener {
@@ -108,6 +116,12 @@ public class MainGUIController implements ControllerListener {
 	@FXML
 	private Label lblRoutesNum;
 
+	private Label lblClientMenu;
+	@FXML 
+	private ProgressIndicator progressIndicator;
+	@FXML
+	private AnchorPane AncPane;
+	private PauseTransition delayTimeout;
 
 	/**
 	 * @param event making the data to send to the server
@@ -131,10 +145,9 @@ public class MainGUIController implements ControllerListener {
 				data.add(mapDescription);
 			else
 			   data.add(null);
+			enableProressIndicator();
 			GUIClient.sendActionToServer(Action.SEARCH,data);
 	}
-	
-	
 
 	/**
 	 * @param event
@@ -149,7 +162,9 @@ public class MainGUIController implements ControllerListener {
 			if ((userName != null) && (password != null)) {
 				data.add(userName);
 				data.add(password);
+
 			} 
+
 			GUIClient.sendActionToServer(Action.LOGIN,data);
 	}
 	
@@ -196,6 +211,7 @@ public class MainGUIController implements ControllerListener {
 	}
 
 	/**
+	 * Opening My Profile Window
 	 * @param event
 	 */
 	@FXML
@@ -205,6 +221,10 @@ public class MainGUIController implements ControllerListener {
 		MainGUI.openScene(SceneType.ClientProfile);
 	}
 
+	/**
+	 * Initializing the Main Window. Setting the boolean binding for the search input.
+	 * @param event
+	 */
 	@FXML
 	void initialize() {
 		setSearchInfoBooleanBinding();
@@ -217,32 +237,45 @@ public class MainGUIController implements ControllerListener {
 			Message currMsg = (Message) msg;
 			switch (currMsg.getAction()) {
 			case LOGIN:
+				disableProressIndicator();
 				if ((Integer) currMsg.getData().get(0) == 0) {
 						tfUser.setVisible(false);
 						pfPassword.setVisible(false);
 						btnLogin.setVisible(false);
 						btnRegister.setVisible(false);
 						btnLogout.setVisible(true);
-						btnInbox.setVisible(true);
 						MainGUI.currUser = (User) currMsg.getData().get(1);
 						Permission permission = ((User) currMsg.getData().get(1)).getPermission();
 						switch (permission) {
 						case CLIENT:
 							MainGUI.currClient = (Client) currMsg.getData().get(1);
 							Platform.runLater(() -> {
+							lblClientMenu.setVisible(true);
 							btnMyProfile.setVisible(true);
+							btnEditMaps.setText("Show Maps");
+							btnEditMaps.setVisible(true);
+							btnBuy.setVisible(true);
+							btnInbox.setVisible(true);
 							});
 							break;
 						case EDITOR:
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
 							Platform.runLater(() -> {
-							btnManage.setVisible(true);
+							lblClientMenu.setVisible(true);
+							lblClientMenu.setText("Editor Menu:");
+							btnEditMaps.setText("Edit Maps");
+							btnEditMaps.setVisible(true);
+							btnInbox.setVisible(true);
 							});
 							break;
 						case MANAGING_EDITOR:
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
 							Platform.runLater(() -> {
-							btnManage.setVisible(true);
+							lblClientMenu.setVisible(true);
+							lblClientMenu.setText("Managing Editor Menu:");
+							btnEditMaps.setText("Edit Maps");
+							btnEditMaps.setVisible(true);
+							btnInbox.setVisible(true);
 							});
 							break;
 						case CEO:
@@ -283,6 +316,7 @@ public class MainGUIController implements ControllerListener {
 						btnEditMaps.setVisible(false);
 						btnBuy.setVisible(false);
 						btnInbox.setVisible(false);
+						lblClientMenu.setVisible(false);
 						clearSearch();
 					JOptionPane.showMessageDialog(null, "Disconnected successfully", "Notification",
 							JOptionPane.DEFAULT_OPTION);
@@ -292,50 +326,18 @@ public class MainGUIController implements ControllerListener {
 				}
 				break;
 			case SEARCH:
-			 if((Integer)currMsg.getData().get(0) == 0) 
-			 {
-				 HashMap<Integer, String> maps = new HashMap<>();
-				 maps = (HashMap<Integer, String>) currMsg.getData().get(1);
-				 int dataSize = ((ArrayList<Object>) currMsg.getData()).size();		
-				 int hashZize = maps.size();
-				 setTableViewForMapsSearchResult(maps, dataSize);
-				 if(dataSize !=2) {
-					 Platform.runLater(() -> {
-					 lblMapsNum.setText("Maps number: " + hashZize);
-					 lblMapsNum.setVisible(true);
-					 lblRoutesNum.setText("Routes number: " + (Integer)currMsg.getData().get(2));
-					 lblRoutesNum.setVisible(true);
-					 });
-				 } else {
-					 lblRoutesNum.setVisible(false);
-					 lblMapsNum.setVisible(false); 
-				 }
-//						switch (MainGUI.currUser.getPermission()) 
-//						{
-//							case CLIENT:
-//							{
-//								Platform.runLater(() -> {
-//								btnEditMaps.setText("Show Maps");
-//								btnEditMaps.setVisible(true);
-//								btnBuy.setVisible(true);
-//								});
-//							}
-//							break;
-//			     			default:
-//			     			{
-//								Platform.runLater(() -> {
-//								btnEditMaps.setText("Edit Maps");
-//								btnEditMaps.setVisible(true);
-//								btnBuy.setVisible(false);
-//								});
-//			     			}
-//							break;
-//						}
-			 }
-			 else
-				 setTableViewForEmptySearchResult();
-				break;
-     			default:
+
+				disableProressIndicator();
+				if((Integer)currMsg.getData().get(0) == 0) 
+				{
+					HashMap<Integer, String> maps = new HashMap<>();
+					maps = (HashMap<Integer, String>) currMsg.getData().get(1);
+					setTableViewForMapsSearchResult(maps);
+				}
+				else
+					setTableViewForEmptySearchResult();
+					break;
+     		default:
 					
 			}
 		} catch (Exception e) {
@@ -404,7 +406,10 @@ public class MainGUIController implements ControllerListener {
 			//}
 		});
 	}
-
+	/**
+	 * Clears the search fields and the table
+	 * 
+	 */
 	void clearSearch() {
 		tfCitySearch.clear();
 		tfSiteSearch.clear();
@@ -412,12 +417,13 @@ public class MainGUIController implements ControllerListener {
 		SearchResultsTable.getItems().clear();
 		lblMapsNum.setVisible(false);
 		lblRoutesNum.setVisible(false);
+
 	}
 	
 	
 	/**
 	 * Called when there are no search results for maps.
-	 * @param msg
+	 * 
 	 */
 	public void setTableViewForEmptySearchResult() {
 		Platform.runLater(new Runnable() {
@@ -430,16 +436,20 @@ public class MainGUIController implements ControllerListener {
 	}
 
 	/**
+	 * Opening the control panel of the CEO, that includes all his options of management
+	 * 
 	 * @param event
 	 */
 	@FXML
 	void Manage(ActionEvent event) {
-		clearSearch();
-		MainGUI.MainStage.setTitle("Global City Map - Users Management");
+
+		MainGUI.MainStage.setTitle("Global City Map - Control Panel");
 		MainGUI.openScene(SceneType.ClientsManagement);
 	}
 
 	/**
+	 * Opening the Edit Maps according to the permission. The user will see the show maps window,
+	 * while the employees will see the edit maps window.
 	 * @param event
 	 */
 	@FXML
@@ -451,18 +461,91 @@ public class MainGUIController implements ControllerListener {
 		{
 			case CLIENT:
 			{
-				MainGUI.MainStage.setTitle("Global City Map - View Maps");
+				if(currentWatchedMap==null)
+				{
+					JOptionPane.showMessageDialog(null,"Plaese choose a map to watch", "Error",
+							JOptionPane.WARNING_MESSAGE);
+				}
+				else
+				{
+					MainGUI.MainStage.setTitle("Global City Map - View Maps");
+					MainGUI.openScene(SceneType.Edit);
+				}
 				break;
 			}
 			default:
 				MainGUI.MainStage.setTitle("Global City Map - Edit Maps");
+				MainGUI.openScene(SceneType.Edit);
 		}
-		MainGUI.openScene(SceneType.Edit);
     }
-    
+	/**
+	 * Setting the boolean binding for the search input.
+	 * @param event
+	 */
 	void setSearchInfoBooleanBinding() {
 		BooleanBinding booleanBind;
 		booleanBind = (tfCitySearch.textProperty().isEmpty()).and(tfSiteSearch.textProperty().isEmpty()).and(tfDesSearch.textProperty().isEmpty());
 		btnSearch.disableProperty().bind(booleanBind);
+	}
+
+	/**
+	 * Loads the loading animation and freeze the rest of the screen. <br>
+	 * Waits for a answer from the server for 20 seconds. If there is no answer calling the fucntion: {@link #timedOut()}
+	 * @param showOrHide - Disable\Enable the screen for the user.
+	 */
+	public void loadingAnimation(Boolean showOrHide) {
+
+		if (showOrHide == true) {
+			delayTimeout = new PauseTransition(Duration.seconds(20));
+			delayTimeout.setOnFinished(event -> timedOut());
+			delayTimeout.play();
+		} else {
+			// stopDelayTimeout();
+			delayTimeout.getStatus();
+			delayTimeout.stop();
+		}
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				progressIndicator.setVisible(showOrHide);
+				AncPane.setDisable(showOrHide);
+			}
+		});
+	}
+	
+	public void enableProressIndicator() {
+		loadingAnimation(true);
+	}
+	
+	public void disableProressIndicator() {
+		loadingAnimation(false);
+	}
+
+	public Animation.Status getDelayTimeoutStatus() {
+		return delayTimeout.getStatus();
+	}
+
+	public void stopDelayTimeout() {
+		delayTimeout.stop();
+	}
+
+	/**
+	 * Occurs when we received no answer from the server, show an error message for the user with the message "Request timed out"
+	 */
+	private void timedOut() {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				delayTimeout.stop();
+				progressIndicator.setVisible(false);
+				AncPane.setDisable(false);
+				loadingAnimation(false);
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("Error");
+				alert.setHeaderText(null);
+				alert.setContentText("Request timed out.");
+				alert.showAndWait();
+			}
+		});
 	}
 }

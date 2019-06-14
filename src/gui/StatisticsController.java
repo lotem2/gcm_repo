@@ -18,6 +18,8 @@ import entity.Client;
 import entity.Purchase;
 import entity.Purchase.PurchaseType;
 import entity.Report;
+import javafx.animation.Animation;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
@@ -26,22 +28,31 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
-
+import javafx.util.Duration;
 import entity.Report;
+import javafx.animation.Animation;
+import javafx.animation.PauseTransition;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Alert.AlertType;
+import javafx.util.Duration;
 
 public class StatisticsController implements ControllerListener {
 
@@ -134,7 +145,12 @@ public class StatisticsController implements ControllerListener {
 
     @FXML
     private TableColumn<Report, Integer> clmDownloads;
-
+	@FXML 
+	private ProgressIndicator progressIndicator;
+	@FXML
+	private AnchorPane AncPane;
+	private PauseTransition delayTimeout;
+	
 	/**
 	 * @param event
 	 */
@@ -152,6 +168,7 @@ public class StatisticsController implements ControllerListener {
 			data.add(dTF.format(fromDate));
 			data.add(dTF.format(toDate));
 			data.add(city);
+			enableProressIndicator();
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null,
@@ -175,6 +192,7 @@ public class StatisticsController implements ControllerListener {
 			myMessage = new Message(Action.ACTIVITY_REPORT, data);
 			data.add(dTF.format(fromDate));
 			data.add(dTF.format(toDate));
+			enableProressIndicator();
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -234,6 +252,7 @@ public class StatisticsController implements ControllerListener {
 			}
 			break;
 		case CITY_ACTIVITY_REPORT:
+			disableProressIndicator();
 			if ((Integer) currMsg.getData().get(0) == 0) {
 				Report report = ((Report) currMsg.getData().get(1));
 				Platform.runLater(() -> {
@@ -250,6 +269,7 @@ public class StatisticsController implements ControllerListener {
 			}
 			break;
 		case ACTIVITY_REPORT:
+			disableProressIndicator();
 			if ((Integer) currMsg.getData().get(0) == 0) {
 				ArrayList<Report> reports = (ArrayList<Report>) (currMsg.getData().get(1));
 				ObservableList<Report> reportsList = FXCollections.observableArrayList(reports);
@@ -306,4 +326,65 @@ public class StatisticsController implements ControllerListener {
 			}
 		});
 	}
+	
+	   /**
+		 * Loads the loading animation and freeze the rest of the screen. <br>
+		 * Waits for a answer from the server for 20 seconds. If there is no answer calling the fucntion: {@link #timedOut()}
+		 * @param showOrHide - Disable\Enable the screen for the user.
+		 */
+		public void loadingAnimation(Boolean showOrHide) {
+
+			if (showOrHide == true) {
+				delayTimeout = new PauseTransition(Duration.seconds(30));
+				delayTimeout.setOnFinished(event -> timedOut());
+				delayTimeout.play();
+			} else {
+				// stopDelayTimeout();
+				delayTimeout.getStatus();
+				delayTimeout.stop();
+			}
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					progressIndicator.setVisible(showOrHide);
+					AncPane.setDisable(showOrHide);
+				}
+			});
+		}
+		
+		public void enableProressIndicator() {
+			loadingAnimation(true);
+		}
+		
+		public void disableProressIndicator() {
+			loadingAnimation(false);
+		}
+
+		public Animation.Status getDelayTimeoutStatus() {
+			return delayTimeout.getStatus();
+		}
+
+		public void stopDelayTimeout() {
+			delayTimeout.stop();
+		}
+
+		/**
+		 * Occurs when we received no answer from the server, show an error message for the user with the message "Request timed out"
+		 */
+		private void timedOut() {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					delayTimeout.stop();
+					progressIndicator.setVisible(false);
+					AncPane.setDisable(false);
+					loadingAnimation(false);
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Error");
+					alert.setHeaderText(null);
+					alert.setContentText("Request timed out.");
+					alert.showAndWait();
+				}
+			});
+		}
 }
