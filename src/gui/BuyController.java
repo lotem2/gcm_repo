@@ -33,7 +33,6 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 public class BuyController implements ControllerListener {
@@ -268,11 +267,11 @@ public class BuyController implements ControllerListener {
 			if ((Integer) currMsg.getData().get(0) == 0) {
 				if (rbBuyOnce.isSelected()) {
 					Platform.runLater(() -> {
-						DirectoryChooser directoryChooser = new DirectoryChooser ();
-						directoryChooser.setTitle("Save To Folder");
-						File file = directoryChooser.showDialog(MainGUI.MainStage);
-						Message newMsg = (Message) (currMsg.getData().get(1));
-						Services.writeCityToFile((City) (newMsg.getData().get(1)), file.getAbsolutePath());
+						FileChooser fileChooser = new FileChooser();
+						fileChooser.setTitle("Save Image");
+						fileChooser.setInitialFileName("citymap.png");
+						File file = fileChooser.showSaveDialog(MainGUI.MainStage);
+						Services.writeCityToFile((City) (currMsg.getData().get(1)), file.getAbsolutePath());
 					});
 				} else {
 					JOptionPane.showMessageDialog(null, "Order Complete!", "", JOptionPane.INFORMATION_MESSAGE);

@@ -112,6 +112,10 @@ public class MainGUIController implements ControllerListener {
 	@FXML
 	private Label lblWelcome;
 	@FXML
+	private Label lblMapsNum;
+	@FXML
+	private Label lblRoutesNum;
+	@FXML
 	private Label lblClientMenu;
 	@FXML 
 	private ProgressIndicator progressIndicator;
@@ -150,6 +154,7 @@ public class MainGUIController implements ControllerListener {
 	 */
 	@FXML
 	void Login(ActionEvent event) {
+		clearSearch();
 			String userName = "", password;
 			ArrayList<Object> data = new ArrayList<Object>();
 			userName = tfUser.getText();
@@ -157,13 +162,9 @@ public class MainGUIController implements ControllerListener {
 			if ((userName != null) && (password != null)) {
 				data.add(userName);
 				data.add(password);
-			} else {
-				JOptionPane.showMessageDialog(null, "Incorrect username or password, please try again.", "",
-						JOptionPane.INFORMATION_MESSAGE);
-				tfUser.setText("");
-				pfPassword.setText("");
-			}
-			enableProressIndicator();
+
+			} 
+
 			GUIClient.sendActionToServer(Action.LOGIN,data);
 	}
 	
@@ -171,7 +172,8 @@ public class MainGUIController implements ControllerListener {
 	 * @param event
 	 */
 	@FXML
-	void OpenInbox(ActionEvent event) {
+	void Inbox(ActionEvent event) {
+		clearSearch();
 		MainGUI.MainStage.setTitle("Global City Map - Inbox");
 		MainGUI.openScene(MainGUI.SceneType.Inbox);
 	}
@@ -181,6 +183,7 @@ public class MainGUIController implements ControllerListener {
 	 */
 	@FXML
 	void Buy(ActionEvent event) {
+		clearSearch();
 		MainGUI.MainStage.setTitle("Global City Map - Purchase");
 		MainGUI.openScene(MainGUI.SceneType.BUY);
 	}
@@ -190,6 +193,7 @@ public class MainGUIController implements ControllerListener {
 	 */
 	@FXML
 	void Logout(ActionEvent event) {
+		clearSearch();
 		ArrayList<Object> data = new ArrayList<Object>();
 		String userName = MainGUI.currUser.getUserName();
 		data.add(userName);
@@ -201,6 +205,7 @@ public class MainGUIController implements ControllerListener {
 	 */
 	@FXML
 	void Register(ActionEvent event) {
+		clearSearch();
 		MainGUI.MainStage.setTitle("Global City Map - Registration");
 		MainGUI.openScene(MainGUI.SceneType.REGISTER);
 	}
@@ -211,6 +216,7 @@ public class MainGUIController implements ControllerListener {
 	 */
 	@FXML
 	void MyProfile(ActionEvent event) {
+		clearSearch();
 		MainGUI.MainStage.setTitle("Global City Map - My Profile");
 		MainGUI.openScene(SceneType.ClientProfile);
 	}
@@ -320,17 +326,31 @@ public class MainGUIController implements ControllerListener {
 				}
 				break;
 			case SEARCH:
-				disableProressIndicator();
-				if((Integer)currMsg.getData().get(0) == 0) 
-				{
-					HashMap<Integer, String> maps = new HashMap<>();
-					maps = (HashMap<Integer, String>) currMsg.getData().get(1);
-					setTableViewForMapsSearchResult(maps);
-				}
-				else
-					setTableViewForEmptySearchResult();
-					break;
-     		default:
+			 if((Integer)currMsg.getData().get(0) == 0) 
+			 {
+				 HashMap<Integer, String> maps = new HashMap<>();
+				 maps = (HashMap<Integer, String>) currMsg.getData().get(1);
+				 int dataSize = ((ArrayList<Object>) currMsg.getData()).size();		
+				 int hashZize = maps.size();
+				 setTableViewForMapsSearchResult(maps, dataSize);
+				 if(dataSize !=2) {
+					 Platform.runLater(() -> {
+						 lblMapsNum.setText("Maps number: " + hashZize);
+						 lblMapsNum.setVisible(true);
+						 lblRoutesNum.setText("Routes number: " + (Integer)currMsg.getData().get(2));
+						 lblRoutesNum.setVisible(true);
+					 });
+				 } else {
+					 lblRoutesNum.setVisible(false);
+					 lblMapsNum.setVisible(false); 
+				 }
+			 }
+				 else {
+					 setTableViewForEmptySearchResult();
+				 }
+				 disableProressIndicator();				 
+				 break;
+			default:
 					
 			}
 		} catch (Exception e) {
@@ -343,7 +363,7 @@ public class MainGUIController implements ControllerListener {
 	/**
 	 * @param maps
 	 */
-	public void setTableViewForMapsSearchResult(HashMap<Integer, String> maps) 
+	public void setTableViewForMapsSearchResult(HashMap<Integer, String> maps, int dataSize) 
 	{
 		Platform.runLater(new Runnable() {
 			@SuppressWarnings("unchecked")
@@ -357,7 +377,7 @@ public class MainGUIController implements ControllerListener {
 				// Create ObservableList of type Map
 				ObservableList<Map>  keys  =  FXCollections.observableArrayList();
 				// Insert every pair according to the names of columns
-				if (maps.size()==2)
+				if (dataSize != 2)
 				{
 					for  (Integer key  :  maps.keySet())  
 					{
@@ -404,12 +424,13 @@ public class MainGUIController implements ControllerListener {
 	 * 
 	 */
 	void clearSearch() {
-		Platform.runLater(() -> {
-			tfCitySearch.clear();
-			tfSiteSearch.clear();
-			tfDesSearch.clear();
-			SearchResultsTable.getItems().clear();
-		});
+		tfCitySearch.clear();
+		tfSiteSearch.clear();
+		tfDesSearch.clear();
+		SearchResultsTable.getItems().clear();
+		lblMapsNum.setVisible(false);
+		lblRoutesNum.setVisible(false);
+
 	}
 	
 	
@@ -421,8 +442,8 @@ public class MainGUIController implements ControllerListener {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
+				//clearSearch();
 				SearchResultsTable.setVisible(true);
-				clearSearch();
 			}
 		});
 	}
@@ -434,6 +455,7 @@ public class MainGUIController implements ControllerListener {
 	 */
 	@FXML
 	void Manage(ActionEvent event) {
+
 		MainGUI.MainStage.setTitle("Global City Map - Control Panel");
 		MainGUI.openScene(SceneType.ClientsManagement);
 	}
@@ -445,6 +467,7 @@ public class MainGUIController implements ControllerListener {
 	 */
 	@FXML
     void EditMaps(ActionEvent event) {
+		clearSearch();
 		Permission permission = (MainGUI.currUser.getPermission());
 		currentWatchedMap = SearchResultsTable.getSelectionModel().getSelectedItem();
 		switch(permission) 
@@ -489,7 +512,7 @@ public class MainGUIController implements ControllerListener {
 			delayTimeout = new PauseTransition(Duration.seconds(20));
 			delayTimeout.setOnFinished(event -> timedOut());
 			delayTimeout.play();
-		} else {
+		} else if (delayTimeout != null){
 			// stopDelayTimeout();
 			delayTimeout.getStatus();
 			delayTimeout.stop();
