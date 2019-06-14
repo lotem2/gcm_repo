@@ -6,9 +6,11 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
+<?import javafx.scene.control.ProgressIndicator?>
 
 <AnchorPane fx:id="MapSearchWindow" disable="false" focusTraversable="false" pickOnBounds="true" prefHeight="775.0" prefWidth="700.0" snapToPixel="true" visible="true" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="gui.MainGUIController">
-  <children>
+ <children>
+ <AnchorPane fx:id="AncPane">
     <TextField fx:id="tfCitySearch" layoutX="28.0" layoutY="156.0" onAction="#Search" prefWidth="166.0" promptText="City Name" text="" />
     <TextField fx:id="tfSiteSearch" layoutX="209.0" layoutY="156.0" onAction="#Search" prefWidth="200.0" promptText="Site Name" text="" />
     <TextField fx:id="tfDesSearch" layoutX="28.0" layoutY="201.0" onAction="#Search" prefWidth="381.0" promptText="Description" text="" />
@@ -45,6 +47,8 @@
     <Label fx:id="lblDescription" font="$x1" layoutX="30.0" layoutY="182.0" text="Description:" />
     <Button fx:id="btnInbox" layoutX="599.0" layoutY="202.0" mnemonicParsing="false" onAction="#OpenInbox" prefHeight="27.0" prefWidth="89.0" text="Inbox" visible="false" />
     <Label fx:id="lblClientMenu" font="$x1" layoutX="596.0" layoutY="172.0" text="Client Menu:" visible="false" />
+    </AnchorPane>
+    <ProgressIndicator fx:id="progressIndicator" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="93.0" prefWidth="94.0" visible="false" />
   </children>
   <rotationAxis>
     <Point3D />

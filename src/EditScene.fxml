@@ -7,10 +7,12 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
+<?import javafx.scene.control.ProgressIndicator?>
 
 <AnchorPane fx:id="EditorWindow" prefHeight="775.0" prefWidth="700.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="gui.EditWindowController">
   <!-- TODO Add Nodes -->
   <children>
+  <AnchorPane fx:id="AncPane">
     <Label fx:id="lblWelcome" layoutX="543.0" layoutY="19.0" text="Welcome" />
     <Button id="btnMain" fx:id="btnBackToMain" layoutX="543.0" layoutY="52.0" mnemonicParsing="false" onAction="#backToMainGUI" prefHeight="27.0" prefWidth="80.0" text="Catalog" />
     <Label fx:id="lblEditorTool" layoutX="9.0" layoutY="0.0" text="Editor Tool" textAlignment="LEFT">
@@ -143,5 +145,7 @@
         <fx:reference source="accPaneMap" />
       </panes>
     </Accordion>
-  </children>
+    </AnchorPane>
+    <ProgressIndicator fx:id="progressIndicator" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="93.0" prefWidth="94.0" visible="false" />
+    </children>
 </AnchorPane>

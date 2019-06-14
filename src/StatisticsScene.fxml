@@ -8,9 +8,11 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
+<?import javafx.scene.control.ProgressIndicator?>
 
 <AnchorPane prefHeight="775.0" prefWidth="700.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="gui.StatisticsController">
   <children>
+   <AnchorPane fx:id="AncPane">
     <TabPane layoutX="0.0" layoutY="74.0" prefHeight="701.0" prefWidth="700.0" tabClosingPolicy="UNAVAILABLE">
       <tabs>
         <Tab text="Daily Statistics">
@@ -93,5 +95,7 @@
         <Font size="40.0" />
       </font>
     </Label>
+     </AnchorPane>
+   <ProgressIndicator fx:id="progressIndicator" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="93.0" prefWidth="94.0" visible="false" />
   </children>
 </AnchorPane>

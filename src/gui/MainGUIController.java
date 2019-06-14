@@ -44,6 +44,14 @@ import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import javafx.animation.Animation;
+import javafx.animation.PauseTransition;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.Alert.AlertType;
+import javafx.util.Duration;
+import javafx.scene.layout.VBox;
+
 import javax.swing.JOptionPane;//library for popup messages
 
 public class MainGUIController implements ControllerListener {
@@ -105,6 +113,11 @@ public class MainGUIController implements ControllerListener {
 	private Label lblWelcome;
 	@FXML
 	private Label lblClientMenu;
+	@FXML 
+	private ProgressIndicator progressIndicator;
+	@FXML
+	private AnchorPane AncPane;
+	private PauseTransition delayTimeout;
 
 	/**
 	 * @param event making the data to send to the server
@@ -128,10 +141,9 @@ public class MainGUIController implements ControllerListener {
 				data.add(mapDescription);
 			else
 			   data.add(null);
+			enableProressIndicator();
 			GUIClient.sendActionToServer(Action.SEARCH,data);
 	}
-	
-	
 
 	/**
 	 * @param event
@@ -151,6 +163,7 @@ public class MainGUIController implements ControllerListener {
 				tfUser.setText("");
 				pfPassword.setText("");
 			}
+			enableProressIndicator();
 			GUIClient.sendActionToServer(Action.LOGIN,data);
 	}
 	
@@ -218,6 +231,7 @@ public class MainGUIController implements ControllerListener {
 			Message currMsg = (Message) msg;
 			switch (currMsg.getAction()) {
 			case LOGIN:
+				disableProressIndicator();
 				if ((Integer) currMsg.getData().get(0) == 0) {
 						tfUser.setVisible(false);
 						pfPassword.setVisible(false);
@@ -306,16 +320,17 @@ public class MainGUIController implements ControllerListener {
 				}
 				break;
 			case SEARCH:
-			 if((Integer)currMsg.getData().get(0) == 0) 
-			 {
-				 HashMap<Integer, String> maps = new HashMap<>();
-				 maps = (HashMap<Integer, String>) currMsg.getData().get(1);
-				 setTableViewForMapsSearchResult(maps);
-			 }
-			 else
-				 setTableViewForEmptySearchResult();
-				break;
-     			default:
+				disableProressIndicator();
+				if((Integer)currMsg.getData().get(0) == 0) 
+				{
+					HashMap<Integer, String> maps = new HashMap<>();
+					maps = (HashMap<Integer, String>) currMsg.getData().get(1);
+					setTableViewForMapsSearchResult(maps);
+				}
+				else
+					setTableViewForEmptySearchResult();
+					break;
+     		default:
 					
 			}
 		} catch (Exception e) {
@@ -389,10 +404,12 @@ public class MainGUIController implements ControllerListener {
 	 * 
 	 */
 	void clearSearch() {
-		tfCitySearch.clear();
-		tfSiteSearch.clear();
-		tfDesSearch.clear();
-		SearchResultsTable.getItems().clear();
+		Platform.runLater(() -> {
+			tfCitySearch.clear();
+			tfSiteSearch.clear();
+			tfDesSearch.clear();
+			SearchResultsTable.getItems().clear();
+		});
 	}
 	
 	
@@ -459,5 +476,66 @@ public class MainGUIController implements ControllerListener {
 		BooleanBinding booleanBind;
 		booleanBind = (tfCitySearch.textProperty().isEmpty()).and(tfSiteSearch.textProperty().isEmpty()).and(tfDesSearch.textProperty().isEmpty());
 		btnSearch.disableProperty().bind(booleanBind);
+	}
+
+	/**
+	 * Loads the loading animation and freeze the rest of the screen. <br>
+	 * Waits for a answer from the server for 20 seconds. If there is no answer calling the fucntion: {@link #timedOut()}
+	 * @param showOrHide - Disable\Enable the screen for the user.
+	 */
+	public void loadingAnimation(Boolean showOrHide) {
+
+		if (showOrHide == true) {
+			delayTimeout = new PauseTransition(Duration.seconds(20));
+			delayTimeout.setOnFinished(event -> timedOut());
+			delayTimeout.play();
+		} else {
+			// stopDelayTimeout();
+			delayTimeout.getStatus();
+			delayTimeout.stop();
+		}
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				progressIndicator.setVisible(showOrHide);
+				AncPane.setDisable(showOrHide);
+			}
+		});
+	}
+	
+	public void enableProressIndicator() {
+		loadingAnimation(true);
+	}
+	
+	public void disableProressIndicator() {
+		loadingAnimation(false);
+	}
+
+	public Animation.Status getDelayTimeoutStatus() {
+		return delayTimeout.getStatus();
+	}
+
+	public void stopDelayTimeout() {
+		delayTimeout.stop();
+	}
+
+	/**
+	 * Occurs when we received no answer from the server, show an error message for the user with the message "Request timed out"
+	 */
+	private void timedOut() {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				delayTimeout.stop();
+				progressIndicator.setVisible(false);
+				AncPane.setDisable(false);
+				loadingAnimation(false);
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("Error");
+				alert.setHeaderText(null);
+				alert.setContentText("Request timed out.");
+				alert.showAndWait();
+			}
+		});
 	}
 }
