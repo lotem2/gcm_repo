@@ -92,6 +92,15 @@ public class EditWindowController implements ControllerListener {
 	ArrayList<String> routeList;
 	ArrayList<Site> allSitesInTheCity;
 	City currentCity = null;
+	Map currentMap = null;
+	Route currentRoute = null;
+	Site currentSite = null;
+	City newCity = null;
+	Map newMap = null;
+	Route newRoute = null;
+	Site newSite = null;
+	
+	
 
 	
     @FXML
@@ -253,6 +262,7 @@ public class EditWindowController implements ControllerListener {
 		String cityName = tfCityName.getText();
 		String cityDescription = tfCityDescription.getText();
 		float price = Float.parseFloat(tfPrice.getText());
+		newCity= new City(cityName,cityDescription,currentCity.getMaps(),currentCity.getRoutes(),0,price);
 		if (selection.equals("Add New City"))
 			myMessage = new Message(Action.ADD_CITY,cityName,cityDescription,0,price);
 		MainGUI.GUIclient.sendToServer(myMessage);
@@ -278,25 +288,21 @@ public class EditWindowController implements ControllerListener {
 		try {
 			Message myMessage;
 			Map oldMap = getCurrentMap(currentCity.getMaps(), tfMapName.getText());
-			Map newMap = new Map(0, tfMapName.getText(), tfMapDescription.getText(), 
+			newMap = new Map(0, tfMapName.getText(), tfMapDescription.getText(), 
 					cityChoser.getSelectionModel().getSelectedItem(), 
 					null, null, false);
 			newMap.setImage(pathToMap);
 			String selection = mapChoser.getSelectionModel().getSelectedItem();
-
 			if (selection.equals("Add New Map")) {
 				myMessage = new Message(Action.ADD_MAP,newMap.getName(), 
 						newMap.getCityName(), newMap.getDescription(), newMap.getImageAsByte());
 				currentCity.getMaps().set(currentCity.getMaps().indexOf(oldMap), newMap);
 			}
-
 			else
 			{
 				myMessage = new Message(Action.EDIT_MAP,newMap.getName(), newMap.getCityName(),
 						newMap.getDescription(), newMap.getImageAsByte());
-				
 			}
-
 			MainGUI.GUIclient.sendToServer(myMessage);
 			setMapInfo(newMap);
 			mapChoser.getSelectionModel().select(newMap.getName());
@@ -328,7 +334,7 @@ public class EditWindowController implements ControllerListener {
 			locationPoint.setLocation(Double.parseDouble(tfX.getText()), Double.parseDouble(tfY.getText()));
 			String location = (tfX.getText()+","+tfY.getText());
 			String classification = categoryChoser.getSelectionModel().getSelectedItem();
-			Site newSite = new Site(name,city,setClassification(classification),description,accessible,visitDuration,locationPoint);
+			newSite = new Site(name,city,setClassification(classification),description,accessible,visitDuration,locationPoint);
 			if (selection.equals("Add New Site")) {
 				myMessage = new Message(Action.ADD_SITE, getCurrentMap(currentCity.getMaps(), map),name,city,setClassification(classification),description,accessible,visitDuration,location);
 				siteChoser.getItems().add(name);
@@ -363,6 +369,8 @@ public class EditWindowController implements ControllerListener {
 			String routeName = tfRouteName.getText();
 			String cityName = cityChoser.getSelectionModel().getSelectedItem();
 			String description = tfrouteDescription.getText();
+			Route newRoute = new Route(currentRoute.getID(),routeName,cityName,currentRoute.getSites(),description);
+			currentRoute = newRoute;
 			if (selection.equals("Add New Route"))
 				myMessage = new Message(Action.ADD_ROUTE,routeName,cityName,description,getNewRouteFromTableView());
 			else
@@ -499,6 +507,7 @@ public class EditWindowController implements ControllerListener {
    
    void setSiteInfo(Site site) {
 	   Platform.runLater(() -> {
+		   currentSite = site;
 		   tfSiteName.setText(site.getName());
 		   tfSiteDescription.setText(site.getDescription());
 		   tfEstimatedTime.setText(Float.toString(site.getVisitTime()));
@@ -609,6 +618,7 @@ public class EditWindowController implements ControllerListener {
 	 *
 	 */ 
    void setMapInfo(Map map) {
+	   currentMap = map;
 	   setSitesChoiceBox(map);
 	   sitesChoiceBoxListener(map);
 	   btnBrowse.setVisible(false);
@@ -661,6 +671,7 @@ public class EditWindowController implements ControllerListener {
 	 */ 
    void setRouteInfo(Route route) {
 	   Platform.runLater(() -> {
+		   currentRoute = route;
 		   tfRouteName.setText(route.getName());
 		   tfrouteDescription.setText(route.getDescription());
 		   ArrayList<Site> sites = route.getSites();
@@ -676,6 +687,7 @@ public class EditWindowController implements ControllerListener {
 	 */ 
    void setCityInfo(City city) {
 	   Platform.runLater(() -> {
+		   currentCity = city;
 		   tfCityName.setText(city.getName());
 		   tfCityDescription.setText(city.getDescription());
 		   tfPrice.setText(Float.toString(city.getPrice()));
@@ -1010,18 +1022,96 @@ public class EditWindowController implements ControllerListener {
 							JOptionPane.WARNING_MESSAGE);
 			}
 			break;
-			default:
+			case ADD_CITY:
 			{
 				if ((Integer) currMsg.getData().get(0) == 0) 
-					JOptionPane.showMessageDialog(null, "All the changes have been saved succesfully", "Notification",
+				{
+					setCurrentCity(currentCity);
+					cityChoser.getItems().add(currentCity.getName());
+					JOptionPane.showMessageDialog(null, "The city have been added succesfully", "Notification",
+							JOptionPane.INFORMATION_MESSAGE);
+				}
+				else 
+					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
+							JOptionPane.WARNING_MESSAGE);
+			}
+			case ADD_MAP:
+			{
+				if ((Integer) currMsg.getData().get(0) == 0) 
+				{
+					currentMap = newMap;
+					siteChoser.getItems().add(currentMap.getName());
+					JOptionPane.showMessageDialog(null, "The map have been added succesfully", "Notification",
+							JOptionPane.INFORMATION_MESSAGE);
+				}
+				else 
+					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
+							JOptionPane.WARNING_MESSAGE);
+			}
+			case ADD_SITE:
+			{
+				if ((Integer) currMsg.getData().get(0) == 0) 
+				{
+					currentSite = newSite;
+					getCurrentMap(currentCity.getMaps(), currentMap.getName()).getSites().add(currentSite);
+					siteChoser.getItems().add(currentSite.getName());
+					JOptionPane.showMessageDialog(null, "The site have been added succesfully", "Notification",
+							JOptionPane.INFORMATION_MESSAGE);
+				}
+				else 
+					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
+							JOptionPane.WARNING_MESSAGE);
+			}
+			case ADD_ROUTE:
+			{
+				if ((Integer) currMsg.getData().get(0) == 0) 
+					JOptionPane.showMessageDialog(null, "The route have been added succesfully", "Notification",
 							JOptionPane.INFORMATION_MESSAGE);
 				else 
 					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
 							JOptionPane.WARNING_MESSAGE);
 			}
+			case EDIT_MAP:
+			{
+				if ((Integer) currMsg.getData().get(0) == 0) 
+					JOptionPane.showMessageDialog(null, "The changes to the map have been added succesfully", "Notification",
+							JOptionPane.INFORMATION_MESSAGE);
+				else 
+					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
+							JOptionPane.WARNING_MESSAGE);
+			}
+			case EDIT_SITE:
+			{
+				if ((Integer) currMsg.getData().get(0) == 0) 
+				{
+					currentSite = newSite;
+					updateMapsAndRoutes(getCurrentSite(currentCity.getMaps(), currentCity.getRoutes(), currentSite.getName()), currentSite);
+					JOptionPane.showMessageDialog(null, "The changes to the site have been added succesfully", "Notification",
+							JOptionPane.INFORMATION_MESSAGE);
+				}
+				else 
+					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
+							JOptionPane.WARNING_MESSAGE);
+			}
+			case EDIT_ROUTE:
+			{
+				if ((Integer) currMsg.getData().get(0) == 0) 
+					JOptionPane.showMessageDialog(null, "The changes to the route have been added succesfully", "Notification",
+							JOptionPane.INFORMATION_MESSAGE);
+				else 
+					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
+							JOptionPane.WARNING_MESSAGE);
+			}
+			default:
+			{
+			}
 
 		}
 	}
+
+
+
+	
 	void setUpdateVersions() {
 		if((MainGUI.currUser.getPermission().equals(Permission.CEO))||(MainGUI.currUser.getPermission().equals(Permission.MANAGING_EDITOR)))
 		{
@@ -1047,7 +1137,7 @@ public class EditWindowController implements ControllerListener {
 		      public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
 		    	  Platform.runLater(() -> {
 		    		  String currCityName = (cityChoser.getItems().get((Integer) number2));
-		    		  clearSiteParameters();
+		    		  clearCityParameters();
 		    		  setCurrentCity(currCityName);
 		    	  });
 			}
@@ -1092,6 +1182,7 @@ public class EditWindowController implements ControllerListener {
 					    for(Site currSite : sites){
 					        if(currSite.getName() != null && currSite.getName().contains(currSiteName))
 					        	Platform.runLater(() -> {
+					        		currentSite = currSite;
 					        		setSiteInfo(currSite);
 					        	});
 					    }
@@ -1348,39 +1439,7 @@ public class EditWindowController implements ControllerListener {
         }
     };
     
-    void setImageView()
-    {
-//        // Load an image in the background
-//        String imageUrl = "https://docs.oracle.com/javafx/javafx/images/javafx-documentation.png";
-//        Image image = new Image(imageUrl);
-// 
-//        // Create three WritableImage instances
-//        // One Image will be a darker, one brighter, and one semi-transparent
-//        WritableImage darkerImage = new WritableImage(mapView.get, height);
-//        WritableImage semiTransparentImage = new WritableImage(width, height);      
-//         
-//        // Copy source pixels to the destinations
-//        this.createImages(image, darkerImage, semiTransparentImage,width,height);
-//         
-//        // Create the ImageViews
-//        ImageView imageView = new ImageView(image);
-//        ImageView darkerView = new ImageView(darkerImage);
-//        // Create the VBox for the Original Image
-//        VBox originalViewBox = new VBox();
-//        // Add ImageView to the VBox
-//        originalViewBox.getChildren().addAll(mapView, new Text("Original"));
-//         
-//        // Create the VBox for the Darker Image
-//        VBox darkerViewBox = new VBox();
-//        // Add ImageView to the VBox
-//        darkerViewBox.getChildren().addAll(darkerView, new Text("Darker"));
-//         
-//        // Create the HBox
-//        HBox root = new HBox(10);
-//        // Add VBoxes to the HBox
-//        root.getChildren().addAll(originalViewBox);
-    }
-    
+   
 
 	/**
 	 *
