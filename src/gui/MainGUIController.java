@@ -333,18 +333,19 @@ public class MainGUIController implements ControllerListener {
 				 int dataSize = ((ArrayList<Object>) currMsg.getData()).size();		
 				 int hashZize = maps.size();
 				 setTableViewForMapsSearchResult(maps, dataSize);
-				 if(dataSize !=2) {
-					 Platform.runLater(() -> {
+				 Platform.runLater(() -> {
+					 if(dataSize !=2) {
 						 lblMapsNum.setText("Maps number: " + hashZize);
 						 lblMapsNum.setVisible(true);
 						 lblRoutesNum.setText("Routes number: " + (Integer)currMsg.getData().get(2));
 						 lblRoutesNum.setVisible(true);
-					 });
-				 } else {
-					 lblRoutesNum.setVisible(false);
-					 lblMapsNum.setVisible(false); 
-				 }
-			 }
+					 } else {
+						 lblMapsNum.setText("Maps number: " + hashZize);
+						 lblMapsNum.setVisible(true);
+						 lblRoutesNum.setVisible(false);
+					 }
+				 });
+		     }
 				 else {
 					 setTableViewForEmptySearchResult();
 				 }
@@ -424,9 +425,6 @@ public class MainGUIController implements ControllerListener {
 	 * 
 	 */
 	void clearSearch() {
-		tfCitySearch.clear();
-		tfSiteSearch.clear();
-		tfDesSearch.clear();
 		SearchResultsTable.getItems().clear();
 		lblMapsNum.setVisible(false);
 		lblRoutesNum.setVisible(false);
@@ -442,7 +440,7 @@ public class MainGUIController implements ControllerListener {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				//clearSearch();
+				clearSearch();
 				SearchResultsTable.setVisible(true);
 			}
 		});
