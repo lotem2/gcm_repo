@@ -188,6 +188,10 @@ public class Server extends AbstractServer {
 				replyMsg = RouteDB.getInstance().AddRoute(currMsg.getData());
 				replyMsg.setAction(Action.ADD_ROUTE);
 				break;
+			case ADD_CITY:
+				replyMsg = CityDB.getInstance().addNewCity(currMsg.getData());
+				replyMsg.setAction(Action.ADD_CITY);
+				break;
 			case WATCH_MAP:
 				replyMsg = PurchaseDB.getInstance().viewPurchase(currMsg.getData());
 				replyMsg.setAction(Action.WATCH_MAP);
