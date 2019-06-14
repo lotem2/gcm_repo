@@ -260,7 +260,7 @@ public class MapDB {
 	
 	/**
 	 * Get instance of map according to the user's permission
-	 * @param params - Contains user's permission and map id
+	 * @param params - Contains user's permission, map id and the user name of the current user
 	 * @return {@link Message} - Indicating success/failure with corresponding message 
 	 */
 	public Message getMap(ArrayList<Object> params){
@@ -277,7 +277,17 @@ public class MapDB {
 			
 			// Check permission of the requested user
 			if(params.get(0).toString().equals(Permission.CLIENT.toString()))
+			{
+				ArrayList<Object> paramsToSQL = new ArrayList<Object>();
+				paramsToSQL.add(params.get(2));
+				paramsToSQL.add(getCityNameByMapID(params.get(1)));
+				
+				// Check if current user has purchased the city's collection of maps
+				if((Integer)((Message)PurchaseDB.getInstance().getActivePurchase(paramsToSQL)).getData().get(0) == 1)
+					throw new Exception("Current user has not purchased the corresponding city.");
+
 				sql = "SELECT * FROM Maps WHERE mapID = ? AND is_active = 1"; // Prepare SELECT query
+			}
 			else
 				sql = "SELECT m2.mapname as \"name\", m2.cityname as \"cityname\", "
 						+ "m2.description as \"description\", m2.url as \"url\" \r\n" + 
@@ -294,7 +304,7 @@ public class MapDB {
 						+ "AND m.is_active = 0 AND Maps.mapID = map.id))";
 
 			// Prepare parameters for query
-			ArrayList<Object> cityparam = new ArrayList<Object>(params.subList(1, params.size()));
+			ArrayList<Object> cityparam = new ArrayList<Object>(params.subList(1, params.size() - 1));
 
 			// Execute sql query, get results
 			rs = SQLController.ExecuteQuery(sql, cityparam);
@@ -747,7 +757,8 @@ public class MapDB {
 					"			WHERE b.mapID IN (SELECT b.mapID as \"mapID\" " + 
 					"						      FROM Sites s, Maps m, BridgeMSC b, Cities c " + 
 					"						      WHERE m.mapID = b.mapID AND s.siteID = b.siteID " +
-					" AND c.id = b.cityID AND " + sql.split(":")[1] + " AND b.is_active = 1)) as search, Sites s, Maps m " + 
+					" AND c.id = b.cityID AND " + sql.split(":")[1] + 
+					" AND b.is_active = 1 AND m.is_active = 1)) as search, Sites s, Maps m " + 
 					"	  WHERE search.mapID = m.mapID AND search.siteID = s.siteID AND s.is_active = 1" + 
 					"	  GROUP BY search.mapID";
 		else
@@ -755,11 +766,63 @@ public class MapDB {
 								"m.description as \"mapDescription\" " + 
 								"FROM Sites s, Maps m, BridgeMSC b, Cities c " +
 								"WHERE m.mapID = b.mapID AND s.siteID = b.siteID AND c.id = b.cityID " + 
-								"AND " + sql.split(":")[1] + " AND b.is_active = 1 AND s.is_active = 1";
+								"AND " + sql.split(":")[1] + 
+								" AND b.is_active = 1 AND m.is_active = 1 AND s.is_active = 1";
 
 		return sql;
 	}
 
+	/**
+	 * Get city's name by map's id
+	 * @param params - Contains map id
+	 * @return String - map's city's name, or empty string in case of failure
+	 */
+	private String getCityNameByMapID(Object...params){
+		// Variables
+		Message 		  replyMsg = null;
+		ResultSet 		  rs 	   = null;
+		ArrayList<Object> data 	   = new ArrayList<Object>();
+		String 			  city	   = "";
+
+		try {
+			// Connect to DB
+			SQLController.Connect();
+
+			// Prepare query to execute
+			String sql = "SELECT cityname FROM Maps WHERE mapID = ? AND is_active = 1";
+
+			for (Object object : params) {	// Get parameters for the query
+				data.add(object);
+			}
+
+			// Execute sql query, get results
+			rs = SQLController.ExecuteQuery(sql, data);
+
+			// check if query succeeded
+			if(!rs.next()) {
+				throw new Exception("No map was found.");
+			}
+
+			rs.beforeFirst(); // Return cursor to the start of the first row
+
+			// Reads data
+			while (rs.next())
+			{
+				city = rs.getString("cityname");
+			}
+		}
+		catch (SQLException e) {
+		}
+		catch(Exception e) {
+		}
+		finally {
+			// Disconnect DB
+			SQLController.Disconnect(rs);	
+		}
+
+		return city;
+	}
+	
 	/**
 	 * Private method to get the id of the sites of a specific map
 	 * @param params - contains map id, is_active type - current displayed or for future display
