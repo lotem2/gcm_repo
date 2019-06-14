@@ -115,7 +115,7 @@ public class MainGUIController implements ControllerListener {
 	private Label lblMapsNum;
 	@FXML
 	private Label lblRoutesNum;
-
+	@FXML
 	private Label lblClientMenu;
 	@FXML 
 	private ProgressIndicator progressIndicator;
@@ -326,18 +326,31 @@ public class MainGUIController implements ControllerListener {
 				}
 				break;
 			case SEARCH:
-
-				disableProressIndicator();
-				if((Integer)currMsg.getData().get(0) == 0) 
-				{
-					HashMap<Integer, String> maps = new HashMap<>();
-					maps = (HashMap<Integer, String>) currMsg.getData().get(1);
-					setTableViewForMapsSearchResult(maps);
-				}
-				else
-					setTableViewForEmptySearchResult();
-					break;
-     		default:
+			 if((Integer)currMsg.getData().get(0) == 0) 
+			 {
+				 HashMap<Integer, String> maps = new HashMap<>();
+				 maps = (HashMap<Integer, String>) currMsg.getData().get(1);
+				 int dataSize = ((ArrayList<Object>) currMsg.getData()).size();		
+				 int hashZize = maps.size();
+				 setTableViewForMapsSearchResult(maps, dataSize);
+				 if(dataSize !=2) {
+					 Platform.runLater(() -> {
+						 lblMapsNum.setText("Maps number: " + hashZize);
+						 lblMapsNum.setVisible(true);
+						 lblRoutesNum.setText("Routes number: " + (Integer)currMsg.getData().get(2));
+						 lblRoutesNum.setVisible(true);
+					 });
+				 } else {
+					 lblRoutesNum.setVisible(false);
+					 lblMapsNum.setVisible(false); 
+				 }
+			 }
+				 else {
+					 setTableViewForEmptySearchResult();
+				 }
+				 disableProressIndicator();				 
+				 break;
+			default:
 					
 			}
 		} catch (Exception e) {
@@ -499,7 +512,7 @@ public class MainGUIController implements ControllerListener {
 			delayTimeout = new PauseTransition(Duration.seconds(20));
 			delayTimeout.setOnFinished(event -> timedOut());
 			delayTimeout.play();
-		} else {
+		} else if (delayTimeout != null){
 			// stopDelayTimeout();
 			delayTimeout.getStatus();
 			delayTimeout.stop();

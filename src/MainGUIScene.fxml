@@ -50,7 +50,7 @@
     <Button fx:id="btnInbox" layoutX="513.0" layoutY="87.0" mnemonicParsing="false" onAction="#Inbox" prefHeight="27.0" prefWidth="94.0" text="Inbox" visible="false" />
       <Label fx:id="lblRoutesNum" layoutX="221.0" layoutY="240.0" text="Routes number: " visible="false" />
       <Label fx:id="lblMapsNum" layoutX="49.0" layoutY="239.0" text="Maps number: " visible="false" />
-    <Button fx:id="btnInbox" layoutX="599.0" layoutY="202.0" mnemonicParsing="false" onAction="#OpenInbox" prefHeight="27.0" prefWidth="89.0" text="Inbox" visible="false" />
+    <Button fx:id="btnInbox" layoutX="599.0" layoutY="202.0" mnemonicParsing="false" onAction="#Inbox" prefHeight="27.0" prefWidth="89.0" text="Inbox" visible="false" />
     <Label fx:id="lblClientMenu" font="$x1" layoutX="596.0" layoutY="172.0" text="Client Menu:" visible="false" />
     </AnchorPane>
     <ProgressIndicator fx:id="progressIndicator" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="93.0" prefWidth="94.0" visible="false" />
