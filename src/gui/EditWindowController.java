@@ -93,6 +93,7 @@ public class EditWindowController implements ControllerListener {
 	ArrayList<String> routeList;
 	ArrayList<Site> allSitesInTheCity;
 	City currentCity = null;
+	Map newMap = null;
 	Site newSite = null;
 	
 	
@@ -279,7 +280,6 @@ public class EditWindowController implements ControllerListener {
     void SaveMap(ActionEvent event) {
 		try {
 			Message myMessage;
-			Map newMap;
 			byte[] image;
 			
 			String selection = mapChoser.getSelectionModel().getSelectedItem();
@@ -397,7 +397,7 @@ public class EditWindowController implements ControllerListener {
 	        if(currSite.getName() != null)
 	        	routeListString = sb.append(currSite.getName()).append(",").toString();
 	    }
-	    return routeListString;
+	    return routeListString.substring(0, routeListString.length() - 1);
     }
     
 	/**
@@ -615,6 +615,7 @@ public class EditWindowController implements ControllerListener {
 	 *
 	 */ 
    void setMapInfo(Map map) {
+	   siteChoser.getItems().clear();
 	   setSitesChoiceBox(map);
 	   sitesChoiceBoxListener(map);
 	   btnBrowse.setVisible(false);
@@ -639,8 +640,7 @@ public class EditWindowController implements ControllerListener {
 	   // Go through each site and print it's location
 	   mapView.setImage(map.getMapImage());
 	   for (Site site : map.getSites()) {
-		   Circle currentSiteCircle = new Circle(mapView.getBoundsInParent().getMinX() + site.getLocation().getX(),
-				   mapView.getBoundsInParent().getMinY() + site.getLocation().getY(), 2);
+		   Circle currentSiteCircle = new Circle(site.getLocation().getX(), site.getLocation().getY(), 3);
 		   currentSiteCircle.setFill(Color.BLUE);
 		   currentSiteCircle.setOnMouseClicked(new EventHandler<MouseEvent>() {
 		         @Override
@@ -691,6 +691,8 @@ public class EditWindowController implements ControllerListener {
 		   setRoutesChoiceBox(city);//loading the routes in the city to the choice box
 		   
 	   });
+	   mapView.setImage(null);
+	   paneMap.getChildren().removeIf(filter -> filter instanceof Circle);
 	   ArrayList<Object> data = new ArrayList<Object>();
 	   String cityName = city.getName();
 	   Permission permission = MainGUI.currUser.getPermission();
@@ -911,7 +913,7 @@ public class EditWindowController implements ControllerListener {
     {
 	 ArrayList<String> categories = new ArrayList<String>();
 	 categories.add("Cinema");
-	 categories.add("Historic Place");
+	 categories.add("Historic");
 	 categories.add("Hotel");
 	 categories.add("Mall");
 	 categories.add("Museum");
@@ -1039,10 +1041,6 @@ public class EditWindowController implements ControllerListener {
 			{
 				if ((Integer) currMsg.getData().get(0) == 0) 
 				{
-					Map newMap = new Map(0, tfMapName.getText(), tfMapDescription.getText(), 
-							cityChoser.getSelectionModel().getSelectedItem(), 
-							null, null, false);
-					newMap.setImage(pathToMap);
 					currentCity.getMaps().add(newMap);
 					mapChoser.getItems().add(newMap.getName());
 					mapChoser.getSelectionModel().select(newMap.getName());
@@ -1052,6 +1050,8 @@ public class EditWindowController implements ControllerListener {
 				else 
 					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
 							JOptionPane.WARNING_MESSAGE);
+
+				newMap = null;
 			break;
 			}
 			case ADD_SITE:
@@ -1100,10 +1100,6 @@ public class EditWindowController implements ControllerListener {
 			case EDIT_MAP:
 			{
 				if ((Integer) currMsg.getData().get(0) == 0) {
-					Map newMap = new Map(0, tfMapName.getText(), tfMapDescription.getText(), 
-							cityChoser.getSelectionModel().getSelectedItem(), 
-							null, null, false);
-					newMap.setImage(pathToMap);
 					currentCity.getMaps().set(currentCity.getMaps().indexOf
 							(getCurrentMap(currentCity.getMaps(), tfMapName.getText())), newMap);
 					JOptionPane.showMessageDialog(null, "The changes to the map have been added succesfully", "Notification",
@@ -1112,6 +1108,8 @@ public class EditWindowController implements ControllerListener {
 				else 
 					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
 							JOptionPane.WARNING_MESSAGE);
+				
+				newMap = null;
 			break;
 			}
 			case EDIT_SITE:
@@ -1213,7 +1211,11 @@ public class EditWindowController implements ControllerListener {
 		      @Override
 		      public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
 		    	  Platform.runLater(() -> {
-		    	  String currMapName = (mapChoser.getItems().get((Integer) number2));
+		    	  String currMapName = "";
+		    	  if(!mapChoser.getSelectionModel().isEmpty())
+		    	  {
+		    		  currMapName = (mapChoser.getItems().get((Integer) number2));
+		    	  }
 					if (currMapName.equals("Add New Map"))
 					{
 						clearMapParameters();
@@ -1235,7 +1237,10 @@ public class EditWindowController implements ControllerListener {
 		      @Override
 		      public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
 		    	  Platform.runLater(() -> {
-		    	  String currSiteName = (siteChoser.getItems().get((Integer) number2));
+		    		  String currSiteName = "";
+		    		  if(!siteChoser.getSelectionModel().isEmpty()) {
+		    			  currSiteName = (siteChoser.getItems().get((Integer) number2));
+		    		  }
 					if (currSiteName.equals("Add New Site"))
 					{
 						
@@ -1416,9 +1421,9 @@ public class EditWindowController implements ControllerListener {
 		if((MainGUI.currUser.getPermission()!= Permission.CLIENT))
 			sitesList.add(0, "Add New Site");
 		ObservableList<String> currSitesList = FXCollections.observableArrayList(sitesList);
-		Platform.runLater(() -> {
+		//Platform.runLater(() -> {
 			siteChoser.setItems(currSitesList);
-		});
+		//});
 	}
 	
 	/**
@@ -1513,8 +1518,9 @@ public class EditWindowController implements ControllerListener {
 	 */    
      @FXML
     public void paint(MouseEvent event) {
-         double x = event.getSceneX(); double y = event.getSceneY();
+         double x = event.getX(); double y = event.getY();
          clearSiteParameters();
+         siteChoser.getSelectionModel().select("Add New Site");
         	 Platform.runLater(new Runnable() {
 				
 				@Override

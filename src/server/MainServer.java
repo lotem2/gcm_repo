@@ -26,15 +26,18 @@ public class MainServer extends Application {
 		primaryStage.setResizable(false);
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("GCM Server");
-		
+
 		// Set listener for onClose request
 		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 		      public void handle(WindowEvent we) {
 		          // Close server when pressing the exit button
 		    	  try {
-			    	  m_currentServer.stopServer();		    		  
+			    	  m_currentServer.stopServer();
 		    	  }
 		    	  catch(Exception e) {
+		    	  }
+		    	  finally {
+			    	  System.exit(0);
 		    	  }
 		      }
 		  }); 
@@ -56,6 +59,9 @@ public class MainServer extends Application {
 			// Close server when pressing the exit button
 	    	m_currentServer.stopServer();
 		} catch (Exception e) {
+		}
+		finally {
+	    	  System.exit(0);
 		}
 	}
 }
