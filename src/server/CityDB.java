@@ -391,8 +391,8 @@ public class CityDB {
 			SQLController.Connect();
 
 			// Prepare SELECT query
-			String sql = "SELECT m1.mapID as \"id\"" + 
-					"FROM Maps m1 n" + 
+			String sql = "SELECT m1.mapID as \"id\" " + 
+					"FROM Maps m1 \n" + 
 					"WHERE m1.cityname = ? AND m1.mapID IN \n" + 
 					"(SELECT a.mapID as \"id\" FROM Maps a \n" + 
 					"WHERE m1.mapname = a.mapname AND m1.cityname = a.cityname AND \r\n" + 

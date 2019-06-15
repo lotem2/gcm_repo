@@ -124,7 +124,7 @@ public class MapDB {
 		try {
 			// Check if the collections of maps of the city the new map belongs is under approval
 			if(SQLController.DoesRecordExist("Inbox","content", "status", 
-					"Approve " + params.get(1).toString() + " new version", "New"))
+					"Approve " + params.get(1).toString() + "'s new version", "New"))
 				throw new Exception("New version is under approval, cannot save new changes.");
 			
 			// Check if the map to add is already in the database
@@ -168,19 +168,19 @@ public class MapDB {
 			if(SQLController.DoesRecordExist("Maps", "mapname", "cityname", "is_active", 
 					params.get(0), params.get(1), 0)) {
 				// Prepare statement to update map
-				sql = "UPDATE Maps SET description = ?, url = ? WHERE mapname = ? AND"
+				sql = "UPDATE Maps SET description = ?, url = ? WHERE mapname = ? AND "
 						+ "cityname = ? AND is_active = 0";
 
 				// prepare parameters to sql
 				map_params = new ArrayList<Object>(params.subList(2, params.size())); 
 
 				// Add parameters for the WHERE clause
-				map_params.add(params.get(1)); map_params.add(params.get(2));
+				map_params.add(params.get(0)); map_params.add(params.get(1));
 			}
 			else {
 				// Prepare statement to insert new record with updated details
-				sql = "INSERT INTO Maps (`mapname`, cityname`, `description`, `url`, `is_active`) VALUES"
-						+ "(?, ?, ?, ?, 0)";
+				sql = "INSERT INTO Maps (`mapname`, `cityname`, `description`, `url`, `is_active`) "
+						+ "VALUES (?, ?, ?, ?, 0)";
 
 				// prepare parameters to sql
 				map_params = new ArrayList<Object>(params); 
@@ -219,15 +219,12 @@ public class MapDB {
 		try {
 			// Check if a new map version is currently under management approval
 			if(SQLController.DoesRecordExist("Inbox","content", "status", 
-					"Approve " + currentMap.getCityName() + " new version", "New"))
+					"Approve " + currentMap.getCityName() + "'s new version", "New"))
 				throw new Exception("New version is under approval, cannot save new changes.");
 
 			// Check if number of parameters is higher than 3 - indicating a new site is been added
 			if (params.size() > 3) {
 				data = new ArrayList<Object>(params.subList(1, params.size()));
-
-				// Adding name, location to the parameters for the WHERE clause
-				data.add(data.get(0)); data.add(data.get(6));
 				
 				// Throwing exception in case the site's addition to Sites table was unsuccessful
 				if (SiteDB.getInstance().AddSite(data) == 0) throw new Exception("Unable to add the site.");

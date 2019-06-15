@@ -6,8 +6,7 @@ import java.util.ArrayList;
 import server.SQLController;
 import common.*;
 import entity.*;
-import java.awt.Point;
-import java.math.*;
+import java.awt.geom.Point2D;
 
 public class SiteDB {
 	// Variables
@@ -174,7 +173,7 @@ public class SiteDB {
 				sql = "SELECT * FROM Sites WHERE cityname = ? AND is_active = 1";
 			else
 				sql = "SELECT * \n" + 
-						"FROM   Sites s \n" + 
+						"FROM Sites s \n" + 
 						"WHERE s.cityname = ? AND s.siteID IN \n" + 
 						"((SELECT b.siteID \n" + 
 						" FROM Sites b \n" + 
@@ -185,7 +184,7 @@ public class SiteDB {
 						"WHERE s1.cityname = s.cityname) UNION \n" + 
 						"(SELECT a.siteID \n" + 
 						"FROM Sites a \n" + 
-						"WHERE not EXISTS \n" + 
+						"WHERE NOT EXISTS \n" + 
 						"(SELECT 1 FROM Sites s WHERE \n" + 
 						"(s.name = a.name AND s.location = a.location AND s.is_active = 0) AND a.cityname = s.cityname)))";
 
@@ -213,66 +212,63 @@ public class SiteDB {
 	 */
 	public Message updateSiteDetails(ArrayList<Object> params) {
 		// Variables
-		ArrayList<Object> data 		  = new ArrayList<Object>();
+		ArrayList<Object> data 		  = new ArrayList<Object>(params);
 		String 			  sql  		  = "";
+		Message			  msg		  = null;
 
 		try {
 			// Check if a new map version is currently under management approval
 			if(SQLController.DoesRecordExist("Inbox","content", "status", 
-					"Approve " + params.get(1).toString() + " new version", "New"))
+					"Approve " + data.get(1).toString() + "'s new version", "New"))
 				throw new Exception("New version is under approval, cannot save new changes.");
 			
 			// Check if a change to the requested site was already made
 			if(SQLController.DoesRecordExist("Sites","name", "location","is_active", 
-					params.get(0), params.get(5), 0)) {
+					data.get(0), data.get(6), 0)) {
 				// Prepare statement to insert new site
 				sql = "UPDATE Sites SET name = ?, cityname = ?, classification = ?, description = ?, accessible = ?, " +
 							 "visitDuration = ?, location = ? " +
-							 "WHERE name = ?, location = ?, is_active = 0";	
+							 "WHERE name = ? AND location = ? AND is_active = 0";	
+
 				// Adding parameters for the WHERE clause
-				params.add(params.get(0)); params.add(params.get(5));
-				
+				data.add(data.get(0)); data.add(data.get(6));
+
 				// Edit site's details using private editSite method
-				editSite(sql, params);
+				editSite(sql, data);
 			}
 			else {
-				// Adding parameters for the WHERE clause and call AddSite 
-				// to add new record with updated value of a site that already exists but record that is not displayed yet
-				params.add(params.get(0)); params.add(params.get(5));
-				AddSite(params);
+				// Add new record with updated value of a site that already exists but record that is not displayed yet
+				AddSite(data);
 			}
 
 			// Add 0 to indicate success
-			data.add(new Integer(0));
+			msg = new Message(Action.EDIT_SITE, new Integer(0));
 
 			}
 		catch (SQLException e) {
-			data.add(new Integer(1));
-			data.add("There was a problem with the SQL service.");
+			msg = new Message(Action.EDIT_SITE, new Integer(1), "There was a problem with the SQL service.");
 		}
 		catch(Exception e) {
-			data.add(new Integer(1));
-			data.add(e.getMessage());
+			msg = new Message(Action.EDIT_SITE, new Integer(1), e.getMessage());
 		}
 
-		return (new Message(Action.EDIT_SITE, data));
+		return msg;
 	}
 
 	/**
 	 * Generic add site method
-	 * @param params - Contain new site's details and the ADD query
+	 * @param params - Contains new site's details
 	 * @return int - Indicating number of rows affected
 	 * @throws Exception 
 	 */
 	public int AddSite(ArrayList<Object> params) throws Exception {
 		// Variables
-		ArrayList<Object> data = new ArrayList<Object>();
 		int changedRows = 0;
 
 		try {
 			// Check if a the requested new site was already added
 			if(SQLController.DoesRecordExist("Sites","name", "location","is_active", 
-					params.get(0), params.get(5), 0)) throw new Exception("Site already exists.");
+					params.get(0), params.get(6), 0)) throw new Exception("Site already exists.");
 
 			// Connect to DB
 			SQLController.Connect();
@@ -280,8 +276,7 @@ public class SiteDB {
 			// Prepare statement to insert new site
 			String sql = "INSERT INTO Sites (`name`, `cityname`, `classification`, `description`, `accessible`, " +
 						 "`visitDuration`, `location`, `is_active`)" +
-						 "VALUES (?, ?, ?, ?, ?, ?, 0) " +
-						 "WHERE name = ?, location = ?";
+						 "VALUES (?, ?, ?, ?, ?, ?, ?, 0)";
 
 			// Execute sql query, get number of changed rows
 			changedRows = SQLController.ExecuteUpdate(sql, params);
@@ -324,7 +319,7 @@ public class SiteDB {
 						"        s1.cityname = s2.cityname,\n" + 
 						"        s1.classification = s2.classification,\n" + 
 						"        s1.description = s2.description,\n" + 
-						"        s1.accessible = s2.accessible\n" + 
+						"        s1.accessible = s2.accessible \n" + 
 						"WHERE   s1.name = s2.name AND\n" + 
 						"        s1.location = s2.location AND\n" + 
 						"        s1.is_active = 1 AND\n" + 
@@ -431,10 +426,9 @@ public class SiteDB {
 			while (rs.next())
 			{
 				// Reads location coordinates
-				String Location = rs.getString("location");
-				Point sitePoint = new Point();	// Read site's location from database
-				sitePoint.setLocation(Double.parseDouble(Location.split(",")[0]), 
-						Double.parseDouble(Location.split(",")[0]));
+				String[] Location = rs.getString("location").split(",");
+				Point2D.Double location = new Point2D.Double(Double.parseDouble(Location[0]), 
+						Double.parseDouble(Location[1]));
 
 				Site currSite = new Site(
 						rs.getString("name"),
@@ -443,7 +437,7 @@ public class SiteDB {
 						rs.getString("description"),
 						rs.getBoolean("accessible"),
 						rs.getFloat("visitDuration"),
-						sitePoint);
+						location);
 
 				sites.add(currSite);
 			}
