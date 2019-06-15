@@ -441,7 +441,7 @@ public class EditWindowController implements ControllerListener {
 				String currCityName=ClientProfileController.currentPurchase.getCityName();
 				data.add(MainGUI.currUser.getPermission());
 				data.add(currCityName);
-				GUIClient.sendActionToServer(Action.GET_CITY,data);
+				MainGUI.GUIclient.sendActionToServer(Action.GET_CITY,data);
 				cityChoser.setValue(currCityName);
 				cityChoser.setDisable(true);
 			}
@@ -700,7 +700,7 @@ public class EditWindowController implements ControllerListener {
 	   Permission permission = MainGUI.currUser.getPermission();
 	   data.add(permission);
 	   data.add(cityName);
-	   GUIClient.sendActionToServer(Action.GET_ALL_SITES_LIST,data);//requests the list of the sites in the city
+	   MainGUI.GUIclient.sendActionToServer(Action.GET_ALL_SITES_LIST,data);//requests the list of the sites in the city
    }
     
 
@@ -1263,7 +1263,7 @@ public class EditWindowController implements ControllerListener {
 					data.add(MainGUI.currUser.getPermission());
 					data.add(currCityName);
 					enableProressIndicator();
-					GUIClient.sendActionToServer(Action.GET_CITY,data);
+					MainGUI.GUIclient.sendActionToServer(Action.GET_CITY,data);
 				}
 			}
 
@@ -1488,7 +1488,7 @@ public class EditWindowController implements ControllerListener {
 		ArrayList<Object> data = new ArrayList<Object>();
 		data.add(getCurrentMap(currentCity.getMaps(), mapName));
 		data.add(siteName);
-		GUIClient.sendActionToServer(Action.REMOVE_SITE,data);
+		MainGUI.GUIclient.sendActionToServer(Action.REMOVE_SITE,data);
     }
     
     @FXML
@@ -1498,7 +1498,7 @@ public class EditWindowController implements ControllerListener {
 		ArrayList<Object> data = new ArrayList<Object>();
 		data.add(getCurrentMap(currentCity.getMaps(), mapChoser.getSelectionModel().getSelectedItem()));
 		data.add(siteName);
-		GUIClient.sendActionToServer(Action.ADD_SITE,data);
+		MainGUI.GUIclient.sendActionToServer(Action.ADD_SITE,data);
     }
 	
 
@@ -1512,7 +1512,7 @@ public class EditWindowController implements ControllerListener {
 			data.add(cityName);
 			data.add(newPrice);
 			data.add(MainGUI.currUser);
-			GUIClient.sendActionToServer(Action.REQUEST_PRICE_CHANGE,data);
+			MainGUI.GUIclient.sendActionToServer(Action.REQUEST_PRICE_CHANGE,data);
 		}
 		else
 			JOptionPane.showMessageDialog(null, ("Please enter a valid price."), "Error",
@@ -1527,7 +1527,7 @@ public class EditWindowController implements ControllerListener {
 		{
 		data.add(cityName);
 		data.add(MainGUI.currUser);
-		GUIClient.sendActionToServer(Action.REQUEST_NEW_VER_APPROVAL,data);
+		MainGUI.GUIclient.sendActionToServer(Action.REQUEST_NEW_VER_APPROVAL,data);
 		}
 		else
 			JOptionPane.showMessageDialog(null, ("Please choose a city to update"), "Error",

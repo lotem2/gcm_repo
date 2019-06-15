@@ -279,7 +279,7 @@ public class ClientProfileController implements ControllerListener {
 		setInputVerification();
 		ArrayList<Object> data = new ArrayList<Object>();
 		data.add(MainGUI.currUser.getUserName());
-		GUIClient.sendActionToServer(Action.GET_USER_PURCHASES,data);
+		MainGUI.GUIclient.sendActionToServer(Action.GET_USER_PURCHASES,data);
 		String telephoneAsString = String.valueOf(MainGUI.currClient.getTelephone());
 		long lastFourDigitsLong=Math.abs(MainGUI.currClient.getCardNumber())%10000;
 		int lastFourDigits=Math.toIntExact(lastFourDigitsLong);
@@ -455,7 +455,7 @@ public class ClientProfileController implements ControllerListener {
 					else 
 					{
 						MainGUI.MainStage.setTitle("Global City Map - View Maps");
-						GUIClient.sendActionToServer(Action.WATCH_MAP,data);
+						MainGUI.GUIclient.sendActionToServer(Action.WATCH_MAP,data);
 						MainGUI.openScene(SceneType.Edit);
 					}
 					break;
@@ -492,7 +492,7 @@ public class ClientProfileController implements ControllerListener {
 				ArrayList<Object> data = new ArrayList<Object>();
 				data.add(city);
 				data.add(purchase.getPurchaseType());
-				GUIClient.sendActionToServer(Action.DOWNLOAD_PURCHASE, data);
+				MainGUI.GUIclient.sendActionToServer(Action.DOWNLOAD_PURCHASE, data);
 			}
 		}
 		else
@@ -539,7 +539,7 @@ public class ClientProfileController implements ControllerListener {
 			purchase.setPurchaseDate(purchaseDate);
 			purchase.setExpirationDate(expiryDate);
 			data.add(purchase);
-			GUIClient.sendActionToServer(Action.RENEW,data);
+			MainGUI.GUIclient.sendActionToServer(Action.RENEW,data);
 		}
 		else
 			JOptionPane.showMessageDialog(null, "You haven't selected any purchase to Renew.", "Error",

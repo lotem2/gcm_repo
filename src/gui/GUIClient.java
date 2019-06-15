@@ -47,7 +47,7 @@ public class GUIClient extends AbstractClient {
 	 * @param action
 	 * @param data
 	 */
-	public static void sendActionToServer(Action action,ArrayList<Object> data) {
+	public void sendActionToServer(Action action,ArrayList<Object> data) {
 		Message myMessage = new Message(action,data);
 		try {
 			MainGUI.GUIclient.sendToServer(myMessage);

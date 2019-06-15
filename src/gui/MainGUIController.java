@@ -128,25 +128,23 @@ public class MainGUIController implements ControllerListener {
 	 */
 	@FXML
 	void Search(ActionEvent event) {
-			String cityName, siteName, mapDescription;
-			ArrayList<Object> data = new ArrayList<Object>();
-			cityName = tfCitySearch.getText();
-			siteName = tfSiteSearch.getText();
-			mapDescription = tfDesSearch.getText();
-			if (!cityName.isEmpty())
-				data.add(cityName);
-			else
-			   data.add(null);
-			if (!siteName.isEmpty()) 
-				data.add(siteName);
-			else
-			   data.add(null);
-			if (!mapDescription.isEmpty())
-				data.add(mapDescription);
-			else
-			   data.add(null);
-			enableProressIndicator();
-			GUIClient.sendActionToServer(Action.SEARCH,data);
+		String cityName, siteName, mapDescription;
+		cityName = tfCitySearch.getText();
+		siteName = tfSiteSearch.getText();
+		mapDescription = tfDesSearch.getText();
+		
+		enableProressIndicator();
+		MainGUI.GUIclient.sendActionToServer(Action.SEARCH,
+				createDataForSearchAction(cityName, siteName, mapDescription));
+	}
+	
+	private static ArrayList<Object> createDataForSearchAction(
+			String cityName, String siteName, String mapDescription) {
+		ArrayList<Object> data = new ArrayList<Object>();
+		data.add(!cityName.isEmpty() ? cityName : null);
+		data.add(!siteName.isEmpty() ? siteName : null);
+		data.add(!mapDescription.isEmpty() ? mapDescription : null);
+		return data;
 	}
 
 	/**
@@ -165,7 +163,7 @@ public class MainGUIController implements ControllerListener {
 
 			} 
 
-			GUIClient.sendActionToServer(Action.LOGIN,data);
+			MainGUI.GUIclient.sendActionToServer(Action.LOGIN,data);
 	}
 	
 	/**
@@ -197,7 +195,7 @@ public class MainGUIController implements ControllerListener {
 		ArrayList<Object> data = new ArrayList<Object>();
 		String userName = MainGUI.currUser.getUserName();
 		data.add(userName);
-		GUIClient.sendActionToServer(Action.LOGOUT,data);
+		MainGUI.GUIclient.sendActionToServer(Action.LOGOUT,data);
 	}
 
 	/**
@@ -364,7 +362,7 @@ public class MainGUIController implements ControllerListener {
 	/**
 	 * @param maps
 	 */
-	public void setTableViewForMapsSearchResult(HashMap<Integer, String> maps, int dataSize) 
+	private void setTableViewForMapsSearchResult(HashMap<Integer, String> maps, int dataSize) 
 	{
 		Platform.runLater(new Runnable() {
 			@SuppressWarnings("unchecked")
@@ -436,7 +434,7 @@ public class MainGUIController implements ControllerListener {
 	 * Called when there are no search results for maps.
 	 * 
 	 */
-	public void setTableViewForEmptySearchResult() {
+	private void setTableViewForEmptySearchResult() {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
@@ -504,8 +502,7 @@ public class MainGUIController implements ControllerListener {
 	 * Waits for a answer from the server for 20 seconds. If there is no answer calling the fucntion: {@link #timedOut()}
 	 * @param showOrHide - Disable\Enable the screen for the user.
 	 */
-	public void loadingAnimation(Boolean showOrHide) {
-
+	private void loadingAnimation(Boolean showOrHide) {
 		if (showOrHide == true) {
 			delayTimeout = new PauseTransition(Duration.seconds(20));
 			delayTimeout.setOnFinished(event -> timedOut());
@@ -524,19 +521,19 @@ public class MainGUIController implements ControllerListener {
 		});
 	}
 	
-	public void enableProressIndicator() {
+	private void enableProressIndicator() {
 		loadingAnimation(true);
 	}
 	
-	public void disableProressIndicator() {
+	private void disableProressIndicator() {
 		loadingAnimation(false);
 	}
 
-	public Animation.Status getDelayTimeoutStatus() {
+	private Animation.Status getDelayTimeoutStatus() {
 		return delayTimeout.getStatus();
 	}
 
-	public void stopDelayTimeout() {
+	private void stopDelayTimeout() {
 		delayTimeout.stop();
 	}
 

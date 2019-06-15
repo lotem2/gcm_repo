@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="775.0" prefWidth="700.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="gui.InboxController">
+<AnchorPane prefHeight="775.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.InboxController">
   <children>
     <Label layoutX="245.0" layoutY="40.0" text="Inbox">
       <font>
@@ -16,11 +16,11 @@
     </Label>
     <TableView fx:id="tblInbox" layoutX="75.0" layoutY="146.0" prefHeight="513.0" prefWidth="543.0">
       <columns>
-        <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="397.0" text="Messages" fx:id="clmMessages" />
-        <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="146.0" text="Date" fx:id="clmDate" />
+        <TableColumn fx:id="clmMessages" maxWidth="5000.0" minWidth="10.0" prefWidth="397.0" text="Messages" />
+        <TableColumn fx:id="clmDate" maxWidth="5000.0" minWidth="10.0" prefWidth="146.0" text="Date" />
       </columns>
     </TableView>
-    <Pane fx:id="paneApproveDecline" layoutX="580.0" layoutY="146.0" prefHeight="68.0" prefWidth="63.0" visible="false">
+    <Pane fx:id="paneApproveDecline" layoutX="628.0" layoutY="146.0" prefHeight="68.0" prefWidth="63.0" visible="false">
       <children>
         <Button fx:id="btnApprove" layoutX="1.0" layoutY="2.0" mnemonicParsing="false" onAction="#Approve" text="Approve" />
         <Button fx:id="btnDecline" layoutY="40.0" mnemonicParsing="false" onAction="#Decline" text="Decline" />

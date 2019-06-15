@@ -58,7 +58,7 @@ public class MainGUI extends Application {
 	static final Map<SceneType, Pair<Scene, ControllerListener>> sceneMapping = new HashMap<>();
 
 	static Stage MainStage;
-	static GUIClient GUIclient;
+	public static GUIClient GUIclient;
 
 	static Client currClient;
 	public static Employee currEmployee;
