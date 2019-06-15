@@ -449,26 +449,24 @@ public class EditWindowController implements ControllerListener {
 			break;
 		case EDITOR:
 			GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
-//	    	Platform.runLater(() -> {
-//			tfPrice.setDisable(true);
-//			btnDeleteSite.setDisable(false);
-//			btnUpdatePrice.setVisible(false);
-//			//btnUpdateVersion.setVisible(true);
-//			});
+			Platform.runLater(() -> {
+				btnUpdatePrice.setVisible(false);
+				btnUpdateVersion.setVisible(true);
+			});
 			break;
 		case MANAGING_EDITOR:
 			GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
-//	    	Platform.runLater(() -> {
-//			btnUpdatePrice.setDisable(false);
-//			//btnUpdateVersion.setDisable(false);
-//			});
+			Platform.runLater(() -> {
+				btnUpdatePrice.setVisible(true);
+				btnUpdateVersion.setVisible(false);
+			});
 			break;
 		case CEO:
 			GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
-//	    	Platform.runLater(() -> {
-//			//btnUpdatePrice.setDisable(false);
-//			//btnUpdateVersion.setDisable(false);
-//			});
+			Platform.runLater(() -> {
+				btnUpdatePrice.setVisible(false);
+				btnUpdateVersion.setVisible(false);
+			});
 			break;
 		default:
 		}
@@ -1173,15 +1171,17 @@ public class EditWindowController implements ControllerListener {
 		}
 	}
 
-
-
-	
 	void setUpdateVersions() {
-		if((MainGUI.currUser.getPermission().equals(Permission.CEO))||(MainGUI.currUser.getPermission().equals(Permission.MANAGING_EDITOR)))
+		if(MainGUI.currUser.getPermission().equals(Permission.EDITOR))
+		{
+			Platform.runLater(() -> {
+				btnUpdateVersion.setDisable(false);
+			});
+		}
+		if(MainGUI.currUser.getPermission().equals(Permission.MANAGING_EDITOR))
 		{
 			Platform.runLater(() -> {
 				tfPrice.setEditable(true);
-				btnUpdateVersion.setDisable(false);
 				btnUpdatePrice.setDisable(false);
 			});
 		}
