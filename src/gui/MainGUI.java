@@ -3,8 +3,10 @@ package gui;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.management.RuntimeErrorException;
 import javax.swing.JOptionPane;
 
 import javafx.application.Application;
@@ -67,11 +69,29 @@ public class MainGUI extends Application {
 	@Override
 	public void start(Stage primaryStage) throws IOException {
 		MainGUI.MainStage = primaryStage;
-		GUIclient = new GUIClient();
-		GUIclient.setHost(InetAddress.getLocalHost().getHostAddress().toString());
-		//GUIclient.setHost("132.74.210.35");
-		GUIclient.setPort(5555);
-		GUIclient.openConnection();
+		try {
+			GUIclient = new GUIClient();
+			Parameters parameters = getParameters();
+			List<String> paramsList = parameters.getUnnamed();
+			if (paramsList.size() == 0) {
+				// No Params passed in, use local host and 5555 port.		
+				GUIclient.setHost(InetAddress.getLocalHost().getHostAddress().toString());
+				GUIclient.setPort(5555);
+			} else if (paramsList.size() == 2){
+				GUIclient.setHost(paramsList.get(0));
+				GUIclient.setPort(Integer.parseInt(paramsList.get(1)));
+			} else {
+				throw new RuntimeException("Bad amount of args");
+			}
+			GUIclient.openConnection();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null,
+					"Connection to server failed, please check the IP address in" +
+					" the command line and try to restart the application.",
+					"Error",
+					JOptionPane.ERROR_MESSAGE);
+			System.exit(0);
+		}
 		
 		// set icon of the application
 		// Image applicationIcon = new Image(getClass().getResourceAsStream(""));
@@ -132,7 +152,6 @@ public class MainGUI extends Application {
 	// final public static int DEFAULT_PORT = 5555;
 	public static void main(String[] args) {
 		launch(args);
-
 	}
 
 }
