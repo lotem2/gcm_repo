@@ -221,7 +221,7 @@ public class PurchaseDB {
 
 		try {
 			// Prepare statement to get current client's purchase
-			String sql = "SELECT * FROM Purchases WHERE username = ? AND cityname = ? AND "
+			String sql = "SELECT * FROM Purchases WHERE username = ? AND cityName = ? AND "
 					+ "expiryDate > ? AND purchaseType = ? LIMIT 1";
 
 			// Add today's date and purchase type to match the query parameter
@@ -291,7 +291,7 @@ public class PurchaseDB {
 		
 		try {			
 			// Prepare statement to get current client's purchase
-			String sql = "SELECT * FROM Purchases WHERE cityname = ?";
+			String sql = "SELECT * FROM Purchases WHERE cityName = ?";
 
 			// Execute sql query by calling private method getPurchases with the requested SELECT query
 			purchases = getPurchases(sql, params);

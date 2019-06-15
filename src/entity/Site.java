@@ -1,7 +1,9 @@
 package entity;
 
 import common.*;
-import java.awt.Point;
+
+import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 
 /**
  * Entity that represents a Site object in the GCM system
@@ -16,7 +18,7 @@ public class Site implements java.io.Serializable{
 	private String description;
 	private boolean isAccessible;
 	private float visitDuration;
-	private Point location;
+	private Point2D.Double location;
 
 	/**
 	 * Constructor that builds the User entity
@@ -29,7 +31,7 @@ public class Site implements java.io.Serializable{
 	 * @param location - The site's location
 	 */
 	public Site(String name, String cityname, Classification classification, String description,
-			boolean isAccessible, float visitTime, Point location) {
+			boolean isAccessible, float visitTime, Point2D.Double location) {
 		this.name = name;
 		this.cityname = cityname;
 		this.classification = classification;
@@ -126,7 +128,7 @@ public class Site implements java.io.Serializable{
 	 * Get site's location
 	 * @return Point
 	 */
-	public Point getLocation() {
+	public Point2D.Double getLocation() {
 		return location;
 	}
 

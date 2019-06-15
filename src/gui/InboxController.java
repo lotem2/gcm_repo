@@ -177,19 +177,19 @@ public class InboxController implements ControllerListener {
 		            setStyle("");
 		        }
 		    }};
-        if (MainGUI.currUser.getPermission() != Permission.CLIENT && 
-        	MainGUI.currUser.getPermission() != Permission.EDITOR) {
         	row.setOnMouseClicked(e -> {
                 if (!row.isEmpty()) {
                 	m_selectedMessage = row.getItem();
-                    if (m_selectedMessage.getStatus() == Status.NEW) {
+                	if (m_selectedMessage.getStatus() == Status.NEW &&
+                			(MainGUI.currUser.getPermission() == Permission.CEO && m_selectedMessage.getContent().contains("price")) ||
+                			(MainGUI.currUser.getPermission() == Permission.MANAGING_EDITOR && m_selectedMessage.getContent().contains("version")) )
+                	{
                 		paneApproveDecline.setVisible(true);
-                    } else {
+                	} else {
                 		paneApproveDecline.setVisible(false);
-                    }
+                	}
                 }
-            });
-        }
+        	});
         return row;
 		});
 		Platform.runLater(() -> {

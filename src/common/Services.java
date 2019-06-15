@@ -512,11 +512,11 @@ public final class Services extends TimerTask {
 		try {
 			// Check if a new map version is currently under management approval
 			if(SQLController.DoesRecordExist("Inbox","content", "status", 
-						"Approve " + params.get(0).toString() + " new version", "New"))
+						"Approve " + params.get(0).toString() + "'s new version", "New"))
 				throw new Exception("New version is under approval, cannot create publish request.");
 
 			// Prepare statement to insert new map
-			String content = "Approve " + params.get(0).toString() + " s new version";
+			String content = "Approve " + params.get(0).toString() + "'s new version";
 
 			// Insert new Inbox message to managers with the approval request of map's new version
 			common.Message msg = InboxDB.getInstance().AddInboxMessage(
