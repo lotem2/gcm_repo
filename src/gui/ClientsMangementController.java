@@ -3,20 +3,22 @@ package gui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
-
 import javax.swing.JOptionPane;
-
 import common.Action;
 import common.Message;
 import common.Permission;
+import common.Status;
 import entity.Client;
+import entity.InboxMessage;
 import entity.Map;
 import gui.MainGUI.SceneType;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -28,7 +30,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-
 
 public class ClientsMangementController implements ControllerListener {
 	
@@ -67,7 +68,6 @@ GUIClient client;
     @FXML
     private Label lblWelcome;
 
-
     @FXML
     void backToMainGUI(ActionEvent event) {
 		MainGUI.MainStage.setTitle("Global City Map");
@@ -96,30 +96,42 @@ GUIClient client;
     {
     	lblWelcome.setText("Welcome " + MainGUI.currEmployee.getUserName() + "!");
 		GUIClient.sendActionToServer(Action.SHOW_ALL_CLIENTS);
+		InboxController.getMessagesFromServer();
     }
 
-
 	/**
-	 *handling message from server, by getting all the clients details.
-	 *	
+	 * Handle message from server by getting all the clients' details.
 	 *
-	 * 
 	 */
 	@Override
 	public void handleMessageFromServer(Object msg) {
 		Message currMsg = (Message) msg;
 		switch (currMsg.getAction()) {
-		case SHOW_ALL_CLIENTS:
-			if ((Integer) currMsg.getData().get(0) == 0) {
-				setTableViewForClients((ArrayList<Client>)currMsg.getData().get(1));
-			} 
-			else {
-				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
-						JOptionPane.WARNING_MESSAGE);
-			}
-			break;
-		default:
-	
+			case GET_INBOX_MESSAGES:
+				if ((Integer) currMsg.getData().get(0) == 0) {
+					List<InboxMessage> messages = (List<InboxMessage>)currMsg.getData().get(1);
+					int newMsg = 0;
+					for (InboxMessage message : messages)
+					{
+						if(message.getStatus().equals(Status.NEW) )
+							newMsg++;
+					}
+					String inboxTxt = "Inbox("+ newMsg +")";
+					Platform.runLater(() -> {
+						btnInbox.setText(inboxTxt);
+					});
+				}
+				break;
+			case SHOW_ALL_CLIENTS:
+				if ((Integer) currMsg.getData().get(0) == 0) {
+					setTableViewForClients((ArrayList<Client>)currMsg.getData().get(1));
+				} 
+				else {
+					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
+					JOptionPane.WARNING_MESSAGE);
+				}
+				break;
+			default:
 		}	
 	}
 	/**

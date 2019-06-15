@@ -5,6 +5,7 @@ import client.*;
 import entity.*;
 import gui.MainGUI.SceneType;
 import common.*;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +26,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -50,8 +52,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Alert.AlertType;
 import javafx.util.Duration;
-import javafx.scene.layout.VBox;
-
 import javax.swing.JOptionPane;//library for popup messages
 
 public class MainGUIController implements ControllerListener {
@@ -253,7 +253,9 @@ public class MainGUIController implements ControllerListener {
 							btnEditMaps.setText("Show Maps");
 							btnEditMaps.setVisible(true);
 							btnBuy.setVisible(true);
+							InboxController.getMessagesFromServer();
 							btnInbox.setVisible(true);
+							//btnInbox.setOn
 							});
 							break;
 						case EDITOR:
@@ -263,6 +265,7 @@ public class MainGUIController implements ControllerListener {
 							lblClientMenu.setText("Editor Menu:");
 							btnEditMaps.setText("Edit Maps");
 							btnEditMaps.setVisible(true);
+							InboxController.getMessagesFromServer();
 							btnInbox.setVisible(true);
 							});
 							break;
@@ -273,6 +276,7 @@ public class MainGUIController implements ControllerListener {
 							lblClientMenu.setText("Managing Editor Menu:");
 							btnEditMaps.setText("Edit Maps");
 							btnEditMaps.setVisible(true);
+							InboxController.getMessagesFromServer();
 							btnInbox.setVisible(true);
 							});
 							break;
@@ -321,6 +325,21 @@ public class MainGUIController implements ControllerListener {
 				} catch (Exception e) {
 					JOptionPane.showMessageDialog(null, e.toString() + "The log out failed.", "Error",
 							JOptionPane.WARNING_MESSAGE);
+				}
+				break;
+			case GET_INBOX_MESSAGES:
+				if ((Integer) currMsg.getData().get(0) == 0) {
+					List<InboxMessage> messages = (List<InboxMessage>)currMsg.getData().get(1);
+					int newMsg = 0;
+					for (InboxMessage message : messages)
+					{
+						if(message.getStatus().equals(Status.NEW) )
+							newMsg++;
+					}
+					String inboxTxt = "Inbox("+ newMsg +")";
+					Platform.runLater(() -> {
+						btnInbox.setText(inboxTxt);
+					});
 				}
 				break;
 			case SEARCH:

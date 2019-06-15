@@ -106,7 +106,7 @@ public class InboxController implements ControllerListener {
 		getMessagesFromServer();
 	}
 
-	private void getMessagesFromServer() {
+	public static void getMessagesFromServer() {
 		try {
 			ArrayList<Object> data = new ArrayList<Object>();
 			data.add(MainGUI.currUser.getUserName());
