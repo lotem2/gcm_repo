@@ -3,5 +3,6 @@ package common;
 public enum Status {
 	NEW,
 	DECLINED,
-	APPROVED;
+	APPROVED,
+	INFO
 }

@@ -4,5 +4,6 @@ public enum Permission {
 	CLIENT,
 	EDITOR,
 	MANAGING_EDITOR,
-	CEO
+	CEO,
+	GCM_SYSTEM
 }

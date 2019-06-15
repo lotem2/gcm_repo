@@ -377,7 +377,7 @@ public final class Services extends TimerTask {
 			ArrayList<Purchase> cityPurchases = (ArrayList<Purchase>)data.get(1);
 
 			// Write message to user who purchases city's map
-			String content = "Got an update for city " + params.get(2).toString();
+			String content = "Got an update for city " + params.get(1).toString();
 
 			// Go through each user's purchase and send them a message about a map's update
 			for (Purchase purchase : cityPurchases) {
@@ -386,12 +386,12 @@ public final class Services extends TimerTask {
 						currentManager.getUserName(),
 						currentManager.getPermission().toString(),
 						purchase.getUserName(),
-						Permission.CLIENT.toString(),
+						Permission.GCM_SYSTEM,
 						content,
 						new String("INFO"),
 						LocalDate.now());
 				// Check if we got an error while notifying users
-				if((Integer)msg.getData().get(1) == 1)
+				if((Integer)msg.getData().get(0) == 1)
 					throw new Exception("Error while updating users about the map's version");
 			}
 			data.clear(); data.add(new Integer(0));
@@ -425,7 +425,7 @@ public final class Services extends TimerTask {
 		try {
 			// Check if a new map version is currently under management approval
 			if(SQLController.DoesRecordExist("Inbox","content", "status",
-						"Approve " + params.get(0).toString() + " new version", "APPROVED"))
+						"Approve " + params.get(2).toString() + " new version", "APPROVED"))
 				throw new Exception("New version is under approval, cannot create publish request.");
 
 			// Update success to message's data
@@ -436,15 +436,19 @@ public final class Services extends TimerTask {
 			{
 				content = msgContent.concat("Approved");
 				status  = "APPROVED";
-				//params- user entity, APPROVE/DECLINE, city name
-				data.add(params.get(0)); data.add(params.get(0)); data.add(params.get(2));
-				replyMsg = CityDB.getInstance().publishMapsCollection(data);
 			}
 			else
 			{
 				content = msgContent.concat("Declined");
 				status  = "DECLINED";
 			}
+
+			ArrayList<Object> response = new ArrayList<>(params.subList(0, 1));
+			response.add(params.get(2));
+			replyMsg = CityDB.getInstance().publishMapsCollection(response);
+
+			if((Integer)replyMsg.getData().get(0) == 1)
+				throw new Exception(replyMsg.getData().get(1).toString());
 
 			// Insert new Inbox message to managers with the approval request of a city's new price
 			common.Message msg = InboxDB.getInstance().AddInboxMessage(
@@ -459,9 +463,9 @@ public final class Services extends TimerTask {
 			//Update the sender's message status
 			try
 			{
-				data.clear(); data.add(status); data.add(((InboxMessage)params.get(1)).getID());
+				response.clear(); response.add(status); response.add(((InboxMessage)params.get(1)).getID());
 				common.Message message;
-				message = InboxDB.EditInboxMessageStatus(data);
+				message = InboxDB.EditInboxMessageStatus(response);
 				if((Integer)message.getData().get(0) == 1) throw new Exception((String)message.getData().get(1));
 			}
 			catch (Exception e)
@@ -474,9 +478,9 @@ public final class Services extends TimerTask {
 			try
 			{
 				// Add user entity and city name to data
-				data.clear(); data.add((User)params.get(3));data.add(params.get(2).toString()); 
+				response.clear(); response.add((User)params.get(3));response.add(params.get(2).toString()); 
 				common.Message message;
-				message = notifyClientsOnNewVersion(data);
+				message = notifyClientsOnNewVersion(response);
 				if((Integer)message.getData().get(0) == 1) throw new Exception((String)message.getData().get(1));
 			}
 			catch (Exception e)
@@ -485,11 +489,11 @@ public final class Services extends TimerTask {
 			}
 		}
 		catch (SQLException e) {
-			data.clear(); data.add(new Integer(1)); data.add(new String("There was a problem with the SQL service."));
+			data.add(new Integer(1)); data.add(new String("There was a problem with the SQL service."));
 			return new common.Message(Action.HANDLE_PRICE_CHANGE_REQ, data);
 		}
 		catch(Exception e) {
-			data.clear(); data.add(new Integer(1)); data.add(e.getMessage());
+			data.add(new Integer(1)); data.add(e.getMessage());
 			return new common.Message(Action.HANDLE_PRICE_CHANGE_REQ, data);
 		}
 		finally {
@@ -497,7 +501,8 @@ public final class Services extends TimerTask {
 			SQLController.Disconnect(null);
 		}
 
-		return replyMsg;
+		return new common.Message(Action.HANDLE_PRICE_CHANGE_REQ, 
+				new Integer(0), "Publishing new version was completed successfuly");
 	}
 
 	/**

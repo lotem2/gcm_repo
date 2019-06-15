@@ -70,7 +70,7 @@ public class InboxController implements ControllerListener {
 			action = Action.HANDLE_NEW_VER_REQ;
 			data.add(isApproved ? Status.APPROVED.toString() : Status.DECLINED.toString());
 			data.add(m_selectedMessage);
-			data.add(m_selectedMessage.getContent().split("city of ")[1]);
+			data.add(m_selectedMessage.getContent().split(" ")[1].substring(0, m_selectedMessage.getContent().split(" ")[1].indexOf("'")));
 			data.add(MainGUI.currUser);
 		}
 		try {
