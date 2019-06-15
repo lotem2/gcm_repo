@@ -137,7 +137,7 @@ public class MapDB {
 						 " VALUES (?, ?, ?, ?)";
 
 			// Insert new map using private editMap method
-			editMap(sql, params);
+			if (editMap(sql, params) == 0) throw new Exception("Map was not added successfuly");
 
 			// Create data to match the success pattern
 			data.add(new Integer(0)); data.add(new String("Map was added successfully."));
@@ -146,7 +146,7 @@ public class MapDB {
 			data.add(new Integer(1)); data.add(new String("There was a problem with the SQL service."));
 		}
 		catch(Exception e) {
-			data.add(new Integer(1)); data.add("Map was not added successfully");
+			data.add(new Integer(1)); data.add(e.getMessage());
 		}
 
 		return new Message(null, data);
@@ -192,7 +192,7 @@ public class MapDB {
 			}
 
 			// Update map details using private editMap method
-			editMap(sql, map_params);
+			if (editMap(sql, map_params) == 0) throw new Exception("Update was not successful");
 
 			// Create data to match the success pattern
 			data.add(new Integer(0)); data.add(new String("Map was added successfully."));
@@ -201,7 +201,7 @@ public class MapDB {
 			data.add(new Integer(1)); data.add(new String("There was a problem with the SQL service."));
 		}
 		catch(Exception e) {
-			data.add(new Integer(1)); data.add("Map was not added successfully");
+			data.add(new Integer(1)); data.add(e.getMessage());
 		}
 
 		return new Message(null, data);
@@ -238,7 +238,7 @@ public class MapDB {
 			sql = "INSERT INTO BridgeMSC (`mapID`, `siteID`, `cityID`) "
 					+ "VALUES (?, "
 					+ 		  "(SELECT id FROM Cities WHERE name = ?), "
-					+ 		  "(SELECT id FROM Sites WHERE name = ? LIMIT 1))";
+					+ 		  "(SELECT siteID FROM Sites WHERE name = ? LIMIT 1))";
 
 			// Insert parameters for next query
 			data = new ArrayList<Object>();
@@ -247,7 +247,7 @@ public class MapDB {
 			data.add(currentMap.getID()); data.add(currentMap.getCityName()); data.add(site);
 
 			// Insert the relation between the site and map using private editMap method
-			editMap(sql, data);
+			if (editMap(sql, data) == 0) throw new Exception("Site was not addded successfuly");
 			replyMsg = new Message(null, new Integer(0), "Site added successfuly to map.");
 		}
 		catch (SQLException e) {
@@ -525,23 +525,28 @@ public class MapDB {
 			map_sities = new ArrayList<Object>(params.subList(0, params.size() - 1));
 
 			// Delete sites related to the map according to the response, using map id given
-			if ((Integer)((Message)updateSitesOfMap(params)).getData().get(0) == 0)
+			if ((Integer)((Message)updateSitesOfMap(params)).getData().get(0) == 1)
 				throw new Exception();
 			
-			// Enter each site into the array list for query
-			for (Object site : sitesID)
-				map_sities.add(site);
+			if(sitesID != null) {
+				// Enter each site into the array list for query
+				for (Object site : sitesID)
+					map_sities.add(site);
 
-			SiteDB.getInstance().approveNewSites(map_sities); // Update new sites added according to the response
+				// Update new sites added according to the response
+				SiteDB.getInstance().approveNewSites(map_sities);
+			}
 
 			// Get the existing sites already in map to display their new details in map 
 			sitesID = getMapSitesID(params.get(1), 1);
 
 			map_sities.clear(); map_sities.add(params.get(0));	// Clear previous id's list and add response
 
-			// Enter each site into the array list for query
-			for (Object site : sitesID)
-				map_sities.add(site);
+			if(sitesID != null) {
+				// Enter each site into the array list for query
+				for (Object site : sitesID)
+					map_sities.add(site);
+			}
 
 			// Approve editing of sites for this new version
 			SiteDB.getInstance().approveEditedSites(map_sities);
@@ -928,15 +933,19 @@ public class MapDB {
 	 * Generic query for UPDATE queries 
 	 * @param sql - the UPDATE query 
 	 * @param params - {@link ArrayList} of parameters to complete the requested UPDATE query
+	 * @return int - represents the number of the affected rows
 	 * @throws SQLException, Exception
 	 */
-	private void editMap(String sql, ArrayList<Object> params) throws SQLException, Exception {
+	private int editMap(String sql, ArrayList<Object> params) throws SQLException {
+		// Variables
+		int changedRows = 0;
+
 		try {
 			// Connect to DB
 			SQLController.Connect();
 
 			// Execute sql query, get number of rows affected
-			int changedRows = SQLController.ExecuteUpdate(sql, params);
+			changedRows = SQLController.ExecuteUpdate(sql, params);
 
 			// Check if update was successful - result should be greater than zero
 			if (changedRows == 0)
@@ -946,11 +955,12 @@ public class MapDB {
 			throw e;
 		}
 		catch(Exception e) {
-			throw e;
 		}
 		finally {
 			// Disconnect DB
 			SQLController.Disconnect(null);
 		}
+
+		return changedRows;
 	}
 }

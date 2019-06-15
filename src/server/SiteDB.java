@@ -234,7 +234,7 @@ public class SiteDB {
 				data.add(data.get(0)); data.add(data.get(6));
 
 				// Edit site's details using private editSite method
-				editSite(sql, data);
+				if (editSite(sql, data) == 0) throw new Exception("Update of site was unsuccessful");
 			}
 			else {
 				// Add new record with updated value of a site that already exists but record that is not displayed yet
@@ -311,7 +311,7 @@ public class SiteDB {
 
 		try {
 			// If version is approved need to update exisiting sites with new details
-			if(params.get(0).toString().equals("Approve")) {
+			if(params.get(0).toString().equals("APPROVED")) {
 				// Prepare statement to insert new site
 				sql = "UPDATE  Sites s1\n" + 
 						"        CROSS JOIN Sites s2\n" + 
@@ -324,15 +324,15 @@ public class SiteDB {
 						"        s1.location = s2.location AND\n" + 
 						"        s1.is_active = 1 AND\n" + 
 						"        s2.is_active = 0 AND " +
-					    "		 s1.id IN (";
+					    "		 s1.siteID IN (";
 				
 				// Add question marks for the site's id
-				for (int i = 0; i < params.size(); i++)
+				for (int i = 0; i < params.size() - 1; i++)
 					sql += "?, ";
 	
 				// Execute query using private editSites method
 				ArrayList<Object> input = new ArrayList<Object>(params.subList(1, params.size()));
-				editSite(sql.substring(0, sql.length()-1) + ")", input);
+				editSite(sql.substring(0, sql.length() - 2) + ")", input);
 			}
 
 			// Create sql DELETE query to delete the rows which used for future update of sites
@@ -346,12 +346,12 @@ public class SiteDB {
 					"      T2.siteID IN (";
 			
 			// Add question marks for the site's id
-			for (int i = 0; i < params.size(); i++)
+			for (int i = 0; i < params.size() - 1; i++)
 				sql += "?, ";
 
 			// Execute query using private editSites method
 			ArrayList<Object> input = new ArrayList<Object>(params.subList(1, params.size()));
-			editSite(sql.substring(0, sql.length()-1) + "))", input);			
+			editSite(sql.substring(0, sql.length() - 2) + "))", input);			
 			}
 		catch (SQLException e) {
 			throw e;
@@ -372,21 +372,21 @@ public class SiteDB {
 		String sql;
 
 		try {
-			if(params.get(0).toString() == "Approve") {
+			if(params.get(0).toString().equals("APPROVED")) {
 				// Prepare statement to insert new site
 				sql = "UPDATE Sites SET is_active = 1 WHERE siteID IN (";
 			}
 			else {
-				sql = "DELETE FROM WHERE siteID IN (";
+				sql = "DELETE FROM Sites WHERE siteID IN (";
 			}
 
 			// Add question marks for the site's id
-			for (int i = 0; i < params.size(); i++)
+			for (int i = 0; i < params.size() - 1; i++)
 				sql += "?, ";
 
 			// Execute query using private editSites method
 			ArrayList<Object> input = new ArrayList<Object>(params.subList(1, params.size()));
-			editSite(sql.substring(0, sql.length()-1) + ")", input);
+			editSite(sql.substring(0, sql.length() - 2) + ")", input);
 			}
 		catch (SQLException e) {
 			throw e;
@@ -460,15 +460,19 @@ public class SiteDB {
 	 * Generic query for UPDATE queries 
 	 * @param sql - the UPDATE query 
 	 * @param params - {@link ArrayList} of parameters to complete the requested UPDATE query
-	 * @throws SQLException, Exception
+	 * @return int - number of affected rows
+	 * @throws SQLException
 	 */
-	private void editSite(String sql, ArrayList<Object> params) throws SQLException, Exception {
+	private int editSite(String sql, ArrayList<Object> params) throws SQLException {
+		// Variables
+		int changedRows = 0;
+
 		try {
 			// Connect to DB
 			SQLController.Connect();
 
 			// Execute sql query, get number of rows affected
-			int changedRows = SQLController.ExecuteUpdate(sql, params);
+			changedRows = SQLController.ExecuteUpdate(sql, params);
 
 			// Check if update was successful - result should be greater than zero
 			if (changedRows == 0)
@@ -478,11 +482,12 @@ public class SiteDB {
 			throw e;
 		}
 		catch(Exception e) {
-			throw e;
 		}
 		finally {
 			// Disconnect DB
 			SQLController.Disconnect(null);
 		}
+
+		return changedRows;
 	}
 }

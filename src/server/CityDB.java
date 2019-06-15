@@ -304,7 +304,7 @@ public class CityDB {
 
 	/**
 	 * Update details in database of the current city's new version, update the collection of maps
-	 * @param params - Contain the user entity of the manager, response - approve/decline, city name
+	 * @param params - Contains the  manager's response - approve/decline, city name
 	 * @return {@link Message} - Indicating success/failure with corresponding message
 	 */
 	public Message publishMapsCollection(ArrayList<Object> params) {
@@ -314,13 +314,13 @@ public class CityDB {
 		try {
 			// Get the maps' id that need to update their content after the management response
 			// using city name
-			ArrayList<Object> param = new ArrayList<Object>(params.subList(2, params.size()));
+			ArrayList<Object> param = new ArrayList<Object>(params.subList(1, params.size()));
 			ArrayList<Integer> maps = getToApproveMapsID(param);
 
 			// Update every maps using MapDB's publishNewVersion method
 			for (Integer mapid : maps) {
-				param.clear(); param.add(params.get(1)); param.add(mapid);
-				MapDB.getInstance().publishNewVersion(params);
+				param.clear(); param.add(params.get(0)); param.add(mapid);
+				MapDB.getInstance().publishNewVersion(param);
 			}
 			
 			// Update the details of the city's maps collection using MapDB's updateMapDetailsAfterApproval method

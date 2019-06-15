@@ -203,7 +203,7 @@ public class RouteDB {
             }
 
 			// Insert update to routes using private editRoute method
-            editRoute(sql, params);
+            if(editRoute(sql, params) == 0) throw new Exception("Route was not updated successfuly");
 
             msg = new Message(Action.EDIT_ROUTE, new Integer(0), "Update route was successful.");
 		} catch (SQLException e) {
@@ -246,7 +246,7 @@ public class RouteDB {
             }
             
             // Insert new updates to Routes table using private editRoute method
-            editRoute(sql, params);
+            if (editRoute(sql, params) == 0) throw new Exception("Route was not added successfuly");
             msg = new Message(Action.ADD_ROUTE, new Integer(0), "Route was added successfully.");
 
 		} catch (SQLException e) {
@@ -274,7 +274,7 @@ public class RouteDB {
 
 		try {
 			// If new version was approved - update details of existing maps to the changes made
-			if(response.equals("Approve")) {
+			if(response.equals("APPROVED")) {
 				// Update exisiting map's details to display the changes
 				sql = "UPDATE  Routes r1 \n" + 
 						"CROSS JOIN Routes r2 \n" + 
@@ -286,7 +286,7 @@ public class RouteDB {
 						"		r1.cityname = r2.cityname AND \n" + 
 						"		r1.is_active = 1 AND \n" + 
 						"		r2.is_active = 0 AND \n" + 
-						"        m1.cityname = ?";
+						"        r1.cityname = ?";
 
 				// Execute sql query using private editMap method
 				editRoute(sql, params);
@@ -338,15 +338,19 @@ public class RouteDB {
 	 * Generic query for UPDATE queries 
 	 * @param sql - the UPDATE query 
 	 * @param params - {@link ArrayList} of parameters to complete the requested UPDATE query
-	 * @throws SQLException, Exception
+	 * @return int - number of the affected rows
+	 * @throws SQLException
 	 */
-	private void editRoute(String sql, ArrayList<Object> params) throws SQLException, Exception {
+	private int editRoute(String sql, ArrayList<Object> params) throws SQLException {
+		// Variables
+		int changedRows = 0;
+
 		try {
 			// Connect to DB
 			SQLController.Connect();
 
 			// Execute sql query, get number of rows affected
-			int changedRows = SQLController.ExecuteUpdate(sql, params);
+			changedRows = SQLController.ExecuteUpdate(sql, params);
 
 			// Check if update was successful - result should be greater than zero
 			if (changedRows == 0)
@@ -356,11 +360,12 @@ public class RouteDB {
 			throw e;
 		}
 		catch(Exception e) {
-			throw e;
 		}
 		finally {
 			// Disconnect DB
 			SQLController.Disconnect(null);
 		}
+
+		return changedRows;
 	}
 }
