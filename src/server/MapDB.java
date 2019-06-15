@@ -164,6 +164,11 @@ public class MapDB {
 		ArrayList<Object> map_params;
 
 		try {
+			// Check if the collections of maps of the city the new map belongs is under approval
+			if(SQLController.DoesRecordExist("Inbox","content", "status", 
+					"Approve " + params.get(1).toString() + "'s new version", "New"))
+				throw new Exception("New version is under approval, cannot save new changes.");
+
 			// Check if the map to add is already in the database
 			if(SQLController.DoesRecordExist("Maps", "mapname", "cityname", "is_active", 
 					params.get(0), params.get(1), 0)) {
