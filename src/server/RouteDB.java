@@ -183,7 +183,7 @@ public class RouteDB {
 		try {
 			// Check if a new map version is currently under management approval
 			if(SQLController.DoesRecordExist("Inbox","content", "status", 
-					"Approve " + params.get(1).toString() + " new version", "New"))
+					"Approve " + params.get(1).toString() + "'s new version", "New"))
 				throw new Exception("New version is under approval, cannot save new changes.");
 
             // Check if a change to the requested route was already made
@@ -229,7 +229,7 @@ public class RouteDB {
 		try {
 			// Check if a new map version is currently under management approval
 			if(SQLController.DoesRecordExist("Inbox","content", "status", 
-					"Approve " + params.get(1).toString() + " new version", "New"))
+					"Approve " + params.get(1).toString() + "'s new version", "New"))
 				throw new Exception("New version is under approval, cannot save new changes.");
 
             // Check if a change to the requested route was already made
