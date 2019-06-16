@@ -390,15 +390,12 @@ public class ClientProfileController implements ControllerListener {
 		break;
 		case DOWNLOAD_PURCHASE:
 			if ((Integer) currMsg.getData().get(0) == 0) {
-					/*Platform.runLater(() -> {
+					Platform.runLater(() -> {
 						DirectoryChooser directoryChooser = new DirectoryChooser ();
 						directoryChooser.setTitle("Save To Folder");
 						File file = directoryChooser.showDialog(MainGUI.MainStage);
-						Message newMsg = (Message) (currMsg.getData().get(1));
-						Services.writeCityToFile((City) (newMsg.getData().get(1)), file.getAbsolutePath());
-					});*/
-				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Info",
-						JOptionPane.WARNING_MESSAGE);
+						Services.writeCityToFile((City) (currMsg.getData().get(1)), file.getAbsolutePath());
+					});
 			}
 			else {
 				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
@@ -491,18 +488,12 @@ public class ClientProfileController implements ControllerListener {
 						JOptionPane.WARNING_MESSAGE);
 			}
 			else {
-				Platform.runLater(() -> {
-					FileChooser fileChooser = new FileChooser();
-					fileChooser.setTitle("Save Image");
-					fileChooser.setInitialFileName("city");
-					File file = fileChooser.showSaveDialog(MainGUI.MainStage);
+
 					ArrayList<Object> data = new ArrayList<Object>();
 					data.add(MainGUI.currUser.getUserName());
 					data.add(city); 
 					data.add(MainGUI.currUser.getPermission().toString());
-					data.add(file.getAbsolutePath());
 					MainGUI.GUIclient.sendActionToServer(Action.DOWNLOAD_PURCHASE, data);
-				});
 			}
 		}
 		else

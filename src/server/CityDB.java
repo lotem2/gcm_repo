@@ -106,7 +106,7 @@ public class CityDB {
 	/**
 	 * Download requested city's maps and save them in a file
 	 * @param - {@link ArrayList} of type {@link Object} user name who requested download, city name to download,
-	 * the user's permission, and the directory path where to save the city's collection of maps
+	 * the user's permission
 	 * @return {@link Message} - Contains {@link ArrayList} with success message or failure message
 	 */
 	public Message downloadCity(ArrayList<Object> params){
@@ -117,20 +117,15 @@ public class CityDB {
 			// Get city entity by the city's name using getCity method
 			ArrayList<Object> input = new ArrayList<Object>(); input.add(params.get(2)); input.add(params.get(1));
 			
-
 			if(!SQLController.DoesRecordExist("Maps","cityname", "is_active", params.get(1).toString(), 1))
-				throw new Exception("There are no active maps for this city.");
+				throw new Exception("There are no maps for this city.");
 
 			Message city = getCity(input);
 			
 			// If we encountered a problem during retrieval throwing an exception
 			if (city.getData().get(1) instanceof String) throw new Exception("Download proccess encountered a problem.");
-
-			// Write the city to a file using Services' writeCityToFiles
-			if(!Services.writeCityToFile((City)city.getData().get(1), params.get(3).toString()))
-				throw new Exception("Download proccess has encountered a problem.");
 			
-			// After the download process was successful, update the user's purchase record in database
+			// After city retrieval was successful, update the download column for the current purchase
 			// add the user name and city name for next request
 			input.clear(); input.add(params.get(0)); input.add(params.get(1));
 
@@ -141,7 +136,7 @@ public class CityDB {
 
 			// Create success message
 			replyMsg = new Message(Action.DOWNLOAD_PURCHASE, 
-					new Integer(0), new String("Download completed."));
+					new Integer(0), city.getData().get(1));
 		}
 		catch(Exception e) {
 			// Create failure message
