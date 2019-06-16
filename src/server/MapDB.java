@@ -281,9 +281,16 @@ public class MapDB {
 				paramsToSQL.add(params.get(2));
 				paramsToSQL.add(getCityNameByMapID(params.get(1)));
 				
+				Message msg = PurchaseDB.getInstance().getActivePurchase(paramsToSQL);
 				// Check if current user has purchased the city's collection of maps
-				if((Integer)((Message)PurchaseDB.getInstance().getActivePurchase(paramsToSQL)).getData().get(0) == 1)
+				if((Integer)(msg).getData().get(0) == 1)
 					throw new Exception("Current user has not purchased the corresponding city.");
+
+				// Update views of current purchase
+				ArrayList<Purchase> currentPurchase = (ArrayList<Purchase>)msg.getData().get(1);
+				paramsToSQL.clear(); paramsToSQL.add(currentPurchase.get(0).getID());
+				if((Integer)(((Message)PurchaseDB.getInstance().viewPurchase(paramsToSQL)).getData().get(0)) == 1)
+					throw new Exception("Could not update current purchase.");
 
 				sql = "SELECT * FROM Maps WHERE mapID = ? AND is_active = 1"; // Prepare SELECT query
 			}
@@ -491,7 +498,7 @@ public class MapDB {
 				data.put(rs.getString("cityname"), rs.getInt("numOfMaps"));
 			}
 
-			replyMsg = new Message(null, data);	// Add content of the array list to the message
+			replyMsg = new Message(null, new Integer(0), data);	// Add content of the array list to the message
 		}
 		catch (SQLException e) {
 			replyMsg = new Message(null, new Integer(1), e.getMessage());

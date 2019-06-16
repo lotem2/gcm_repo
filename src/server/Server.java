@@ -113,7 +113,7 @@ public class Server extends AbstractServer {
 				replyMsg.setAction(Action.DOWNLOAD_PURCHASE);
 				break;
 			case GET_CITY_PRICE:
-				replyMsg = CityDB.getInstance().getCitiesList();
+				replyMsg = CityDB.getInstance().getCitiesList(currMsg.getData());
 				replyMsg.setAction(Action.GET_CITY_PRICE);
 				break;
 			case SHOW_ALL_CLIENTS:
