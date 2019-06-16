@@ -44,6 +44,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
@@ -56,6 +57,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
+import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -244,7 +246,8 @@ public class EditWindowController implements ControllerListener {
 	 *
 	 *
 	 */  
-
+	
+	
     public void setCurrentCity(City city) {
     	currentCity = city;
     }
@@ -279,34 +282,34 @@ public class EditWindowController implements ControllerListener {
     @FXML
     void SaveMap(ActionEvent event) {
 		try {
-			Message myMessage;
-			byte[] image;
+			Message myMessage = null;
 			
 			String selection = mapChoser.getSelectionModel().getSelectedItem();
 			if (selection.equals("Add New Map")) {
-				newMap = new Map(0, tfMapName.getText(), tfMapDescription.getText(), 
-						cityChoser.getSelectionModel().getSelectedItem(), 
-						null, null, false);
-				newMap.setImage(pathToMap);
-				myMessage = new Message(Action.ADD_MAP,newMap.getName(), 
-						newMap.getCityName(), newMap.getDescription(), newMap.getImageAsByte());
+				if(cityChoser.getSelectionModel().getSelectedItem().equals("Add New City")) {
+					btnSaveCity.fire();
+				}
+				else {
+					newMap = new Map(0, tfMapName.getText(), tfMapDescription.getText(), 
+							cityChoser.getSelectionModel().getSelectedItem(), 
+							null, null, false);
+					newMap.setImage(pathToMap);
+					myMessage = new Message(Action.ADD_MAP,newMap.getName(), 
+							newMap.getCityName(), newMap.getDescription(), newMap.getImageAsByte());
+				}
 			}
 			else
 			{
 				Map current = getCurrentMap(currentCity.getMaps(), 
 						mapChoser.getSelectionModel().getSelectedItem());
 				
-				if(!pathToMap.equals(""))
-					image = current.setImage(pathToMap);
-				else
-					image = current.getImageAsByte();
-				
 				newMap = new Map(0, tfMapName.getText(), tfMapDescription.getText(), 
 						cityChoser.getSelectionModel().getSelectedItem(), 
-						null, image, current.getIsActive());
+						null, current.getImageAsByte(), current.getIsActive());
 				myMessage = new Message(Action.EDIT_MAP,newMap.getName(), newMap.getCityName(),
 						newMap.getDescription(), newMap.getImageAsByte());
 			}
+
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, e.toString() + "Could not send message to server. Terminating client.",
@@ -428,6 +431,8 @@ public class EditWindowController implements ControllerListener {
         	btnBrowse.setOnAction(btnLoadEventListener);
         	setButtonsBooleanBinding();
         	setLists();
+        	setDigitsOnlyListener();
+        	btnSaveCity.setVisible(false);
     	});
 		Permission permission = MainGUI.currUser.getPermission();
 		switch (permission) {
@@ -441,31 +446,75 @@ public class EditWindowController implements ControllerListener {
 				String currCityName=ClientProfileController.currentPurchase.getCityName();
 				data.add(MainGUI.currUser.getPermission());
 				data.add(currCityName);
+				enableProressIndicator();
 				MainGUI.GUIclient.sendActionToServer(Action.GET_CITY,data);
 				cityChoser.setValue(currCityName);
 				cityChoser.setDisable(true);
 			}
+			else if(MainGUIController.selectedMap != 0) {
+				ArrayList<Object> data = new ArrayList<Object>();
+				data.add(MainGUI.currUser.getPermission());
+				data.add(MainGUIController.selectedMap);
+				data.add(MainGUI.currUser.getUserName());
+				enableProressIndicator();
+				MainGUI.GUIclient.sendActionToServer(Action.GET_MAP,data);
+				cityChoser.setDisable(true);
+				mapChoser.setDisable(true);
+			}
 			});
 			break;
 		case EDITOR:
-			GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
+			if(MainGUIController.selectedMap != 0) {
+				ArrayList<Object> data = new ArrayList<Object>();
+				data.add(MainGUI.currUser.getPermission());
+				data.add(MainGUIController.selectedMap);
+				data.add(MainGUI.currUser.getUserName());
+				enableProressIndicator();
+				MainGUI.GUIclient.sendActionToServer(Action.GET_MAP,data);
+			}
+			else {
+				GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
+			}
 			Platform.runLater(() -> {
 				btnUpdatePrice.setVisible(false);
 				btnUpdateVersion.setVisible(true);
+				btnDeleteSite.setVisible(false);
 			});
 			break;
 		case MANAGING_EDITOR:
-			GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
+			if(MainGUIController.selectedMap != 0) {
+				ArrayList<Object> data = new ArrayList<Object>();
+				data.add(MainGUI.currUser.getPermission());
+				data.add(MainGUIController.selectedMap);
+				data.add(MainGUI.currUser.getUserName());
+				enableProressIndicator();
+				MainGUI.GUIclient.sendActionToServer(Action.GET_MAP,data);
+			}
+			else {
+				GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
+			}
 			Platform.runLater(() -> {
 				btnUpdatePrice.setVisible(true);
 				btnUpdateVersion.setVisible(false);
+				btnDeleteSite.setVisible(true);
 			});
 			break;
 		case CEO:
-			GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
+			if(MainGUIController.selectedMap != 0) {
+				ArrayList<Object> data = new ArrayList<Object>();
+				data.add(MainGUI.currUser.getPermission());
+				data.add(MainGUIController.selectedMap);
+				data.add(MainGUI.currUser.getUserName());
+				enableProressIndicator();
+				MainGUI.GUIclient.sendActionToServer(Action.GET_MAP,data);
+			}
+			else {
+				GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
+			}
 			Platform.runLater(() -> {
 				btnUpdatePrice.setVisible(false);
 				btnUpdateVersion.setVisible(false);
+				btnDeleteSite.setVisible(true);
 			});
 			break;
 		default:
@@ -494,7 +543,10 @@ public class EditWindowController implements ControllerListener {
         setSaveSiteBooleanBinding();
         setSaveRouteBooleanBinding();
         setAddSiteBooleanBinding();
-        //setUpdatePriceBooleanBinding();
+        setDeleteSiteBooleanBinding();
+        setUpdatePriceBooleanBinding();
+        setSiteAccessibleBooleanBinding();
+        setSiteCategoryBooleanBinding();
     }
 	/**
 	 *
@@ -639,24 +691,27 @@ public class EditWindowController implements ControllerListener {
    void writeImage(Map map) {
 	   // Go through each site and print it's location
 	   mapView.setImage(map.getMapImage());
-	   for (Site site : map.getSites()) {
-		   Circle currentSiteCircle = new Circle(site.getLocation().getX(), site.getLocation().getY(), 3);
-		   currentSiteCircle.setFill(Color.BLUE);
-		   currentSiteCircle.setOnMouseClicked(new EventHandler<MouseEvent>() {
-		         @Override
-		         public void handle(MouseEvent event) {
-		        	if(currentSiteCircle.contains(event.getX(), event.getY()))
-		        		setSiteInfo(site);
-		        	Platform.runLater(new Runnable() {
-						
-						@Override
-						public void run() {
-							siteChoser.getSelectionModel().select(site.getName());							
-						}
-					});
-		         }
-		      });
-		   paneMap.getChildren().add(currentSiteCircle);
+	   if(map.getSites() != null) {
+		   for (Site site : map.getSites()) {
+			   Circle currentSiteCircle = new Circle(site.getLocation().getX(), 
+					   site.getLocation().getY(), 3);
+			   currentSiteCircle.setFill(Color.BLUE);
+			   currentSiteCircle.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			         @Override
+			         public void handle(MouseEvent event) {
+			        	if(currentSiteCircle.contains(event.getX(), event.getY()))
+			        		setSiteInfo(site);
+			        	Platform.runLater(new Runnable() {
+							
+							@Override
+							public void run() {
+								siteChoser.getSelectionModel().select(site.getName());							
+							}
+						});
+			         }
+			      });
+			   paneMap.getChildren().add(currentSiteCircle);
+	   }
 	}
    }
 
@@ -722,7 +777,7 @@ public class EditWindowController implements ControllerListener {
 	    	clearRouteParameters();
 	    	mapChoser.setValue(null);
 	    	routesChoser.setValue(null);
-	    	btnUpdatePrice.setDisable(true);
+	    	//btnUpdatePrice.setDisable(true);
     	});
     }
 
@@ -739,10 +794,13 @@ public class EditWindowController implements ControllerListener {
 	    	tfMapDescription.setDisable(false);
 	    	tfMapName.clear();
 	    	tfMapDescription.clear();
-	    	tfPrice.clear();
 	    	btnUpdateVersion.setDisable(true);
 	    	clearSiteParameters();
-	    	siteChoser.setValue(null);
+	    	siteChoser.getItems().clear();
+	    	if(mapView.getImage() != null) {
+	    		mapView.setImage(null);
+	    		   paneMap.getChildren().removeIf(filter -> filter instanceof Circle);
+	    	}    	
     	});}
 
     void addNewMap() {
@@ -765,6 +823,7 @@ public class EditWindowController implements ControllerListener {
 	 */ 
     void clearRouteParameters() {
     	Platform.runLater(() -> {
+    		sitesChoserForRoutes.getSelectionModel().clearSelection();
     		tfRouteName.clear();
     		tfrouteDescription.clear();
     		tableRouteDeatils.getItems().clear();
@@ -784,7 +843,6 @@ public class EditWindowController implements ControllerListener {
 	    	tfSiteDescription.clear();
 	    	tfX.clear();
 	    	tfY.clear();
-	    	btnDeleteSite.setDisable(true);
 	    	tfEstimatedTime.clear();
 	    	categoryChoser.setValue(null);
 	    	accessibilityChoser.setValue(null);
@@ -811,11 +869,13 @@ public class EditWindowController implements ControllerListener {
 			btnAddAnExistingSiteToMap.setVisible(false);
 			sitesChoserForRoutes.setVisible(false);
 			categoryChoser.setDisable(true);
+			categoryChoser.setStyle("-fx-opacity: 1.0;");
 			accessibilityChoser.setDisable(true);
+			accessibilityChoser.setStyle("-fx-opacity: 1.0;");
 			existingSiteToMapChoser.setVisible(false);
 			tfPrice.setEditable(false);
-			tfX.setVisible(false);
-			tfY.setVisible(false);
+			tfX.setEditable(false);
+			tfY.setEditable(false);
 			lbLocation.setVisible(false);
 			lblExistingSiteToMapChoser.setVisible(false);
 			tfCityDescription.setEditable(false);
@@ -827,9 +887,26 @@ public class EditWindowController implements ControllerListener {
 			tfrouteDescription.setEditable(false);
 			tfRouteName.setEditable(false);
 			tfEstimatedTime.setEditable(false);
+			lbLocation.setVisible(true);
 			//seperator.setVisible(false);
 		});
 	}
+	
+	/**
+	 * Listener for double input only for city's price
+	 */
+	void setDigitsOnlyListener() {
+		tfPrice.textProperty().addListener(new ChangeListener<String>() {
+		    @Override
+		    public void changed(ObservableValue<? extends String> observable, String oldValue, 
+		        String newValue) {
+		        if (!newValue.matches("[+]?[0-9]+(.[0-9]{1,2})?")) {
+		            tfPrice.setText(newValue.replaceAll("[^\\d.]", ""));
+		        }
+		    }
+		});
+	}
+	
 	/**
 	 *
 	 *method to initialize the binding to change the city details
@@ -839,7 +916,9 @@ public class EditWindowController implements ControllerListener {
 	void setSaveCityBooleanBinding() 
 	{
 		BooleanBinding booleanBind;
-		booleanBind = (tfCityName.textProperty().isEmpty()).or(tfCityDescription.textProperty().isEmpty());
+		booleanBind = (tfCityName.textProperty().isEmpty()).or(tfCityDescription.textProperty().isEmpty())
+				.or(tfPrice.textProperty().isEmpty().or(tfMapDescription.textProperty().isEmpty()
+						.or(tfMapName.textProperty().isEmpty())));
 		btnSaveCity.disableProperty().bind(booleanBind);
 	}
 	/**
@@ -848,12 +927,14 @@ public class EditWindowController implements ControllerListener {
 	 *
 	 *
 	 */ 
-//	void setUpdatePriceBooleanBinding() 
-//	{
-//		BooleanBinding booleanBind;
-//		booleanBind = (tfPrice.textProperty().isEmpty()).or(tfCityDescription.textProperty().isEmpty());
-//		btnUpdatePrice.disableProperty().bind(booleanBind);
-//	}
+	void setUpdatePriceBooleanBinding() 
+	{
+		if(btnUpdatePrice.isVisible()) {
+			BooleanBinding booleanBind;
+			booleanBind = (tfPrice.textProperty().isEmpty()).or(tfCityDescription.textProperty().isEmpty());
+			btnUpdatePrice.disableProperty().bind(booleanBind);
+		}
+	}
 	/**
 	 *
 	 *method to initialize the binding to change the map details
@@ -863,7 +944,9 @@ public class EditWindowController implements ControllerListener {
 	void setSaveMapBooleanBinding() 
 	{
 		BooleanBinding booleanBind;
-		booleanBind = (tfMapName.textProperty().isEmpty()).or(tfMapDescription.textProperty().isEmpty()).or(tfPrice.textProperty().isEmpty()).or(tfCityName.textProperty().isEmpty()).or(tfCityDescription.textProperty().isEmpty());
+		booleanBind = (tfMapName.textProperty().isEmpty()).or(tfMapDescription.textProperty().isEmpty()).
+				or(tfPrice.textProperty().isEmpty()).or(tfCityName.textProperty().isEmpty()).
+				or(tfCityDescription.textProperty().isEmpty().or(mapView.imageProperty().isNull()));
 		btnSaveMap.disableProperty().bind(booleanBind);
 	}
 	/**
@@ -875,8 +958,12 @@ public class EditWindowController implements ControllerListener {
 	void setSaveSiteBooleanBinding() 
 	{
 		BooleanBinding booleanBind;
-		booleanBind = (tfSiteName.textProperty().isEmpty()).or(tfSiteDescription.textProperty().isEmpty()).or(tfX.textProperty().isEmpty()).or(tfY.textProperty().isEmpty());
+		booleanBind = (tfSiteName.textProperty().isEmpty()).or
+				(tfSiteDescription.textProperty().isEmpty()).or(tfX.textProperty().isEmpty()).or
+				(tfY.textProperty().isEmpty().or(mapView.imageProperty().isNull()));
 		btnSaveSite.disableProperty().bind(booleanBind);
+		booleanBind = existingSiteToMapChoser.valueProperty().isNull();
+		btnAddAnExistingSiteToMap.disableProperty().bind(booleanBind);
 	}
 	
 	/**
@@ -902,7 +989,52 @@ public class EditWindowController implements ControllerListener {
 		booleanBind = (tfrouteDescription.textProperty().isEmpty().or(tfCityName.textProperty().isEmpty()).or(tfCityDescription.textProperty().isEmpty()));
 		btnAddSiteToRoute.disableProperty().bind(booleanBind);
 	}
-    
+
+	/**
+	 *
+	 *method to initialize the binding to delete site
+	 *
+	 *
+	 */  
+	void setDeleteSiteBooleanBinding() 
+	{
+		if(btnDeleteSite.isVisible()) {
+			BooleanBinding booleanBind;
+			booleanBind = siteChoser.valueProperty().isNull().or(siteChoser.valueProperty().isEqualTo("Add New Site"));
+			btnDeleteSite.disableProperty().bind(booleanBind);
+		}
+	}
+	
+	/**
+	 *
+	 *method to initialize the binding to site' category
+	 *
+	 *
+	 */  
+	void setSiteCategoryBooleanBinding() 
+	{
+		if(MainGUI.currUser.getPermission() != Permission.CLIENT) {
+			BooleanBinding booleanBind;
+			booleanBind = siteChoser.valueProperty().isNull();
+			categoryChoser.disableProperty().bind(booleanBind);
+		}
+	}
+	
+	/**
+	 *
+	 *method to initialize the binding to site' accessibility
+	 *
+	 *
+	 */  
+	void setSiteAccessibleBooleanBinding() 
+	{
+		if(MainGUI.currUser.getPermission() != Permission.CLIENT) {
+			BooleanBinding booleanBind;
+			booleanBind = siteChoser.valueProperty().isNull();
+			accessibilityChoser.disableProperty().bind(booleanBind);
+		}
+	}
+
 	/**
 	 *
 	 *method to initialize the choice box of the categories
@@ -918,6 +1050,7 @@ public class EditWindowController implements ControllerListener {
 	 categories.add("Mall");
 	 categories.add("Museum");
 	 categories.add("Public Institution");
+	 categories.add("Park");
 	 categories.add("Restaurant");
 	 categories.add("Shop");
 	 categories.add("University");
@@ -1027,10 +1160,19 @@ public class EditWindowController implements ControllerListener {
 					City newCity = new City(tfCityName.getText(),tfCityDescription.getText(),
 							new ArrayList<Map>(),new ArrayList<Route>(),0,Float.parseFloat(tfPrice.getText()));
 					setCurrentCity(newCity);
-					cityChoser.getItems().add(newCity.getName());
-					cityChoser.getSelectionModel().select(newCity.getName());
-					JOptionPane.showMessageDialog(null, "The city have been added succesfully", "Notification",
+					Platform.runLater(new Runnable() {
+						
+						@Override
+						public void run() {
+							cityChoser.getItems().add(newCity.getName());
+							cityChoser.getSelectionModel().select(newCity.getName());
+							cityChoser.setValue(newCity.getName());
+						}
+					});
+					
+					JOptionPane.showMessageDialog(null, "The new city has been added succesfully", "Notification",
 							JOptionPane.INFORMATION_MESSAGE);
+					btnSaveMap.fire();
 				}
 				else 
 					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
@@ -1042,8 +1184,15 @@ public class EditWindowController implements ControllerListener {
 				if ((Integer) currMsg.getData().get(0) == 0) 
 				{
 					currentCity.getMaps().add(newMap);
-					mapChoser.getItems().add(newMap.getName());
-					mapChoser.getSelectionModel().select(newMap.getName());
+					Platform.runLater(new Runnable() {
+						
+						@Override
+						public void run() {
+							mapChoser.getItems().add(newMap.getName());
+							mapChoser.getSelectionModel().select(newMap.getName());
+							mapChoser.setValue(newMap.getName());
+						}
+					});
 					JOptionPane.showMessageDialog(null, "The map have been added succesfully", "Notification",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
@@ -1064,10 +1213,17 @@ public class EditWindowController implements ControllerListener {
 						sitesChoserForRoutes.getItems().add(newSite.getName());
 					}
 					
-					getCurrentMap(currentCity.getMaps(), 
-							mapChoser.getSelectionModel().getSelectedItem()).getSites().add(newSite);
+					Map currentMap = getCurrentMap(currentCity.getMaps(), 
+							mapChoser.getSelectionModel().getSelectedItem());
+					if(currentMap.getSites() == null) {
+						currentMap.setSites(new ArrayList<Site>());
+					}
+					currentMap.getSites().add(newSite);
 					siteChoser.getItems().add(newSite.getName());
-					siteChoser.getSelectionModel().select(newSite.getName());
+			    	Platform.runLater(() -> {
+			    		siteChoser.setValue(newSite.getName());
+						siteChoser.getSelectionModel().select(newSite.getName());
+			    	});
 					JOptionPane.showMessageDialog(null, "The site have been added succesfully", "Notification",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
@@ -1150,11 +1306,19 @@ public class EditWindowController implements ControllerListener {
 			case REMOVE_SITE:
 				if ((Integer) currMsg.getData().get(0) == 0) 
 				{
+					Site currentSite = getCurrentSite(currentCity.getMaps(), currentCity.getRoutes(), 
+							siteChoser.getSelectionModel().getSelectedItem());
 					getCurrentMap(currentCity.getMaps(), 
-							mapChoser.getSelectionModel().getSelectedItem()).getSites().remove(
-							getCurrentSite(currentCity.getMaps(), currentCity.getRoutes(), 
-									siteChoser.getSelectionModel().getSelectedItem()));
-					siteChoser.getItems().remove(siteChoser.getSelectionModel().getSelectedItem());
+							mapChoser.getSelectionModel().getSelectedItem()).getSites().remove(currentSite);
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							siteChoser.getItems().remove(siteChoser.getSelectionModel().getSelectedItem());
+							paneMap.getChildren().removeIf(filter -> filter instanceof Circle && 
+									((Circle)filter).getCenterX() == currentSite.getLocation().getX() && 
+									((Circle)filter).getCenterY() == currentSite.getLocation().getY());
+						}
+					});
 					JOptionPane.showMessageDialog(null, "The changes to the site have been added succesfully", "Notification",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
@@ -1162,6 +1326,32 @@ public class EditWindowController implements ControllerListener {
 					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
 							JOptionPane.WARNING_MESSAGE);
 			break;
+			case GET_MAP:
+				if ((Integer) currMsg.getData().get(0) == 0) 
+				{
+					clearCityParameters();
+			    	Map currentMap = (Map) currMsg.getData().get(1);
+			    	disableProressIndicator();
+			    	Platform.runLater(() -> {
+			    		setMapInfo(currentMap);
+			    		tfCityName.setText(currentMap.getCityName());
+			    	});
+			    	
+			    	if(MainGUI.currUser.getPermission() != Permission.CLIENT)
+			    	{
+			    		ArrayList<Object> data = new ArrayList<Object>();
+			    		   Permission permission = MainGUI.currUser.getPermission();
+			    		   data.add(permission);
+			    		   data.add(currentMap.getCityName());
+			    		   MainGUI.GUIclient.sendActionToServer(Action.GET_ALL_SITES_LIST,data);
+			    	}
+				}
+				else {
+					disableProressIndicator();
+					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
+							JOptionPane.WARNING_MESSAGE);
+					btnBackToMain.fire();
+				}
 			default:
 			{
 			}
@@ -1180,7 +1370,7 @@ public class EditWindowController implements ControllerListener {
 		{
 			Platform.runLater(() -> {
 				tfPrice.setEditable(true);
-				btnUpdatePrice.setDisable(false);
+				//btnUpdatePrice.setDisable(false);
 			});
 		}
 	}
@@ -1198,9 +1388,15 @@ public class EditWindowController implements ControllerListener {
 		      @Override
 		      public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
 		    	  Platform.runLater(() -> {
-		    		  String currCityName = (cityChoser.getItems().get((Integer) number2));
-		    		  clearCityParameters();
-		    		  setCurrentCity(currCityName);
+		    		  if(cityChoser.getValue() != null) {
+		    			  String previousCity = number.intValue() == -1 ? "" : 
+		    				  cityChoser.getItems().get(number.intValue());
+			    		  String currCityName = cityChoser.getValue();
+			    		  if(!previousCity.equals("Add New City")) {
+				    		  clearCityParameters();
+				    		  setCurrentCity(currCityName);
+			    		  }
+		    		  }
 		    	  });
 			}
 		});
@@ -1212,10 +1408,9 @@ public class EditWindowController implements ControllerListener {
 		      public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
 		    	  Platform.runLater(() -> {
 		    	  String currMapName = "";
-		    	  if(!mapChoser.getSelectionModel().isEmpty())
+		    	  if(mapChoser.getValue() != null)
 		    	  {
-		    		  currMapName = (mapChoser.getItems().get((Integer) number2));
-		    	  }
+		    		  currMapName = mapChoser.getValue();
 					if (currMapName.equals("Add New Map"))
 					{
 						clearMapParameters();
@@ -1226,6 +1421,7 @@ public class EditWindowController implements ControllerListener {
 						clearSiteParameters();
 						setMapInfo(getCurrentMap(currentCity.getMaps(), currMapName));
 					}
+		    	  }
 		    	  });
 			}
 		});
@@ -1240,23 +1436,22 @@ public class EditWindowController implements ControllerListener {
 		    		  String currSiteName = "";
 		    		  if(!siteChoser.getSelectionModel().isEmpty()) {
 		    			  currSiteName = (siteChoser.getItems().get((Integer) number2));
+							if (currSiteName.equals("Add New Site"))
+							{
+								clearSiteParameters();
+							}
+							else
+							{
+						    	ArrayList<Site> sites = currMap.getSites();
+							    for(Site currSite : sites){
+							        if(currSite.getName() != null && currSite.getName().contains(currSiteName))
+							        	Platform.runLater(() -> {
+							        		setSiteInfo(currSite);
+							        	});
+							    }
+								
+							}
 		    		  }
-					if (currSiteName.equals("Add New Site"))
-					{
-						
-						clearSiteParameters();
-					}
-					else
-					{
-				    	ArrayList<Site> sites = currMap.getSites();
-					    for(Site currSite : sites){
-					        if(currSite.getName() != null && currSite.getName().contains(currSiteName))
-					        	Platform.runLater(() -> {
-					        		setSiteInfo(currSite);
-					        	});
-					    }
-						
-					}
 		    	 });
 			}
 		});
@@ -1295,23 +1490,27 @@ public class EditWindowController implements ControllerListener {
 		void addSiteToRoute(ActionEvent event) 
 		{
 	    	String currSiteName = sitesChoserForRoutes.getSelectionModel().getSelectedItem();
-	    	Site currSite = null;
-	    	Iterator<Site> itr = allSitesInTheCity.iterator();
-	    			      while(itr.hasNext()) 
-	    			      {
-					    	  int  currSiteIndex = allSitesInTheCity.indexOf(itr.next());
-					    	  String currentSiteName = allSitesInTheCity.get(currSiteIndex).getName();
-					    	  if (currentSiteName.equals(currSiteName))
-					    	  {
-						    	  currSite = allSitesInTheCity.get(currSiteIndex);
-					    	  }
-	    			      }
-	    	if(!tableRouteDeatils.getItems().contains(currSite))
-	    		  tableRouteDeatils.getItems().add(currSite);
-	    	else
-				JOptionPane.showMessageDialog(null, ("This site is already in the route."), "Error",
+	    	if(currSiteName == null)
+	    		JOptionPane.showMessageDialog(null, "A site was not chosen", "Error",
 						JOptionPane.WARNING_MESSAGE);
-	    		
+	    	else {
+		    	Site currSite = null;
+		    	Iterator<Site> itr = allSitesInTheCity.iterator();
+		    			      while(itr.hasNext()) 
+		    			      {
+						    	  int  currSiteIndex = allSitesInTheCity.indexOf(itr.next());
+						    	  String currentSiteName = allSitesInTheCity.get(currSiteIndex).getName();
+						    	  if (currentSiteName.equals(currSiteName))
+						    	  {
+							    	  currSite = allSitesInTheCity.get(currSiteIndex);
+						    	  }
+		    			      }
+		    	if(!tableRouteDeatils.getItems().contains(currSite))
+		    		  tableRouteDeatils.getItems().add(currSite);
+		    	else
+					JOptionPane.showMessageDialog(null, ("This site is already in the route."), "Error",
+							JOptionPane.WARNING_MESSAGE);
+	    	}
 		}
 
 	/**
@@ -1325,6 +1524,17 @@ public class EditWindowController implements ControllerListener {
 				{
 					clearCityParameters();
 					btnBrowse.setVisible(true);
+					Platform.runLater(new Runnable() {
+						
+						@Override
+						public void run() {
+						ObservableList<String> currmapList = FXCollections.observableArrayList();
+						currmapList.add("Add New Map");
+						if(mapChoser.getItems() != null) mapChoser.getItems().clear();
+						mapChoser.setItems(currmapList);
+						mapChoser.getSelectionModel().select(0);
+						}
+					});
 				}
 				else
 				{
@@ -1520,13 +1730,16 @@ public class EditWindowController implements ControllerListener {
     public void paint(MouseEvent event) {
          double x = event.getX(); double y = event.getY();
          clearSiteParameters();
-         siteChoser.getSelectionModel().select("Add New Site");
+         if(MainGUI.currUser.getPermission() != Permission.CLIENT)
+        	 siteChoser.getSelectionModel().select("Add New Site");
         	 Platform.runLater(new Runnable() {
 				
 				@Override
 				public void run() {
+			     if(MainGUI.currUser.getPermission() != Permission.CLIENT) {
 					tfX.setText(Double.toString(x).substring(0, Double.toString(x).indexOf(".") + 2));
 					tfY.setText(Double.toString(y).substring(0, Double.toString(y).indexOf(".") + 2));
+			         }
 
 				}
 			});
@@ -1561,14 +1774,17 @@ public class EditWindowController implements ControllerListener {
     @FXML
     void AddAnExistingSiteToMap(ActionEvent event) {
     	String siteName = existingSiteToMapChoser.getSelectionModel().getSelectedItem();
-    	if(getCurrentMap(currentCity.getMaps(), mapChoser.getSelectionModel().getSelectedItem()).getSites().contains(
+    	Map currentMap = getCurrentMap(currentCity.getMaps(), mapChoser.getSelectionModel().getSelectedItem());
+    	if(currentMap.getSites() != null && currentMap.getSites().contains(
     			getCurrentSite(currentCity.getMaps(), currentCity.getRoutes(), siteName)))
     		JOptionPane.showMessageDialog(null, "This site already exists in the map", "Error",
 					JOptionPane.WARNING_MESSAGE);
     	else {
 	    	newSite = getCurrentSite(currentCity.getMaps(), currentCity.getRoutes(), siteName);
 			ArrayList<Object> data = new ArrayList<Object>();
-			data.add(getCurrentMap(currentCity.getMaps(), mapChoser.getSelectionModel().getSelectedItem()));
+			Map map = new Map(currentMap.getID(), currentMap.getName(), currentMap.getDescription(), 
+					currentMap.getCityName(), currentMap.getSites(), currentMap.getImageAsByte(), currentMap.getIsActive());
+			data.add(map);
 			data.add(siteName);
 			MainGUI.GUIclient.sendActionToServer(Action.ADD_SITE,data);
     	}
@@ -1577,25 +1793,31 @@ public class EditWindowController implements ControllerListener {
 
     @FXML
     void UpdatePrice(ActionEvent event) {
-    	try {
-    		ArrayList<Object> data = new ArrayList<Object>();
-    		String cityName = String.valueOf(tfCityName.getText());
-        	float newPrice = Float.valueOf(tfPrice.getText());
-    		if (!tfPrice.getText().isBlank() && newPrice>0 && !tfCityName.getText().isBlank())
-    		{
-    			data.add(cityName);
-    			data.add(newPrice);
-    			data.add(MainGUI.currUser);
-    			MainGUI.GUIclient.sendActionToServer(Action.REQUEST_PRICE_CHANGE,data);
-    		}
-    		else
-    			JOptionPane.showMessageDialog(null, ("Please enter a valid price."), "Error",
-    					JOptionPane.WARNING_MESSAGE);
-    	}
-    	catch(Exception e) {
-    		JOptionPane.showMessageDialog(null, "Please enter a valid price.", "Error",
+    	String selection = cityChoser.getSelectionModel().getSelectedItem();
+		if(!selection.equals("Add New City")) {
+	    	try {
+	    		String cityName = String.valueOf(tfCityName.getText());
+	    		ArrayList<Object> data = new ArrayList<Object>();
+	        	float newPrice = Float.valueOf(tfPrice.getText());
+	    		if (!tfPrice.getText().isBlank() && newPrice>0 && !tfCityName.getText().isBlank())
+	    		{
+	    			data.add(cityName);
+	    			data.add(newPrice);
+	    			data.add(MainGUI.currUser);
+	    			MainGUI.GUIclient.sendActionToServer(Action.REQUEST_PRICE_CHANGE,data);
+	    		}
+	    		else
+	    			JOptionPane.showMessageDialog(null, ("Please enter a valid price."), "Error",
+	    					JOptionPane.WARNING_MESSAGE);
+	    	}
+	    	catch(Exception e) {
+	    		JOptionPane.showMessageDialog(null, "Please enter a valid price.", "Error",
+						JOptionPane.WARNING_MESSAGE);
+	    	}
+		}
+		else
+			JOptionPane.showMessageDialog(null, "City is not in the system.", "Error",
 					JOptionPane.WARNING_MESSAGE);
-    	}
     }
 
     @FXML
@@ -1712,17 +1934,21 @@ public class EditWindowController implements ControllerListener {
 	 */
 	private Site getCurrentSite(ArrayList<Map> city_maps, ArrayList<Route> city_routes, String name) {
 		for (Map map : city_maps) {
-		    for(Site currSite : map.getSites()){
-		        if(currSite.getName() != null && currSite.getName().equals(name))
-		        	return currSite;
-		    }	
+			if(map.getSites() != null) {
+			    for(Site currSite : map.getSites()){
+			        if(currSite.getName() != null && currSite.getName().equals(name))
+			        	return currSite;
+			    }	
+			}
 		}
 		
 		for (Route route : city_routes) {
-		    for(Site currSite : route.getSites()){
-		        if(currSite.getName() != null && currSite.getName().equals(name))
-		        	return currSite;
-		    }	
+			if(route.getSites() != null) {
+			    for(Site currSite : route.getSites()){
+			        if(currSite.getName() != null && currSite.getName().equals(name))
+			        	return currSite;
+			    }	
+			}
 		}
 		return null;
 	}
@@ -1734,12 +1960,12 @@ public class EditWindowController implements ControllerListener {
 	 */
 	private void updateMapsAndRoutes(Site currentSite, Site newSite) {
 		for (Map map : currentCity.getMaps()) {
-		    if(map.getSites().indexOf(currentSite) != -1)
+		    if(map.getSites() != null && map.getSites().indexOf(currentSite) != -1)
 		    	map.getSites().set(map.getSites().indexOf(currentSite), newSite);
 		}
 		
 		for (Route route : currentCity.getRoutes()) {
-			if(route.getSites().indexOf(currentSite) != -1)
+			if(route.getSites() != null && route.getSites().indexOf(currentSite) != -1)
 				route.getSites().set(route.getSites().indexOf(currentSite), newSite);
 		}
 	}

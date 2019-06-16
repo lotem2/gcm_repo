@@ -48,7 +48,7 @@
                 <Label fx:id="lbLocation" layoutX="440.0" layoutY="515.0" text="Location:" />
                 <TextField id="tf" fx:id="tfX" alignment="CENTER_LEFT" layoutX="440.0" layoutY="535.0" onAction="#SaveSite" prefWidth="97.0" promptText="X" text="" />
                 <TextField id="tf" fx:id="tfY" layoutX="547.0" layoutY="535.0" onAction="#SaveSite" prefWidth="84.0" promptText="Y" />
-                <CheckBox fx:id="checkBoxShowOnMap" layoutX="440.0" layoutY="483.0" mnemonicParsing="false" onAction="#SaveSite" text="Show on map" />
+                <!-- <CheckBox fx:id="checkBoxShowOnMap" layoutX="440.0" layoutY="483.0" mnemonicParsing="false" onAction="#SaveSite" text="Show on map" /> -->
                 <Separator layoutX="409.0" layoutY="4.0" orientation="VERTICAL" prefHeight="558.0" />
                 <Separator layoutX="-1.0" layoutY="451.0" prefWidth="409.33319091796875" />
                 <Button id="btnSave" fx:id="btnSaveMap" layoutX="259.0" layoutY="501.0" mnemonicParsing="false" onAction="#SaveMap" prefHeight="27.0" prefWidth="136.0" text="Save Map" />
