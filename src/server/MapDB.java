@@ -235,16 +235,16 @@ public class MapDB {
 				if (SiteDB.getInstance().AddSite(data) == 0) throw new Exception("Unable to add the site.");
 			}
 			// Prepare insert statement
-			sql = "INSERT INTO BridgeMSC (`mapID`, `siteID`, `cityID`) "
-					+ "VALUES (?, "
-					+ 		  "(SELECT id FROM Cities WHERE name = ?), "
-					+ 		  "(SELECT siteID FROM Sites WHERE name = ? LIMIT 1))";
+			sql = "INSERT INTO BridgeMSC (`mapID`, `siteID`, `cityID`, `is_active`, `to_delete`) "
+					+ "VALUES (?,"
+					+ 		  "(SELECT siteID FROM Sites WHERE name = ? LIMIT 1), "
+					+ 		  "(SELECT id FROM Cities WHERE name = ?), 0, 0)";
 
 			// Insert parameters for next query
 			data = new ArrayList<Object>();
 
 			// Get the correct parameters for the map-site relation query
-			data.add(currentMap.getID()); data.add(currentMap.getCityName()); data.add(site);
+			data.add(currentMap.getID()); data.add(site); data.add(currentMap.getCityName());
 
 			// Insert the relation between the site and map using private editMap method
 			if (editMap(sql, data) == 0) throw new Exception("Site was not addded successfuly");
@@ -274,9 +274,6 @@ public class MapDB {
 		String sql				 = "";
 
 		try {
-			// Connect to DB
-			SQLController.Connect();
-			
 			// Check permission of the requested user
 			if(params.get(0).toString().equals(Permission.CLIENT.toString()))
 			{
@@ -291,8 +288,8 @@ public class MapDB {
 				sql = "SELECT * FROM Maps WHERE mapID = ? AND is_active = 1"; // Prepare SELECT query
 			}
 			else
-				sql = "SELECT m2.mapname as \"name\", m2.cityname as \"cityname\", "
-						+ "m2.description as \"description\", m2.url as \"url\" \r\n" + 
+				sql = "SELECT m2.mapname as \"mapname\", m2.cityname as \"cityname\", "
+						+ "m2.description as \"description\", m2.url as \"url\", m2.is_active as \"is_active\" \r\n" + 
 						"FROM (SELECT m.mapID as \"id\", m.mapname as \"name\", m.cityname as \"cityname\", "
 						+ "m.is_active as \"is_active\" FROM Maps m WHERE m.mapID = ?) as map, Maps m2\r\n" + 
 						"WHERE m2.mapID = (SELECT m.mapID as \"id\" FROM Maps m "
@@ -304,6 +301,9 @@ public class MapDB {
 						+ "WHERE EXISTS(SELECT 1 FROM Maps WHERE Maps.mapname = m.mapname AND "
 						+ "Maps.cityname = m.cityname AND Maps.is_active = 1 "
 						+ "AND m.is_active = 0 AND Maps.mapID = map.id))";
+
+			// Connect to DB
+			SQLController.Connect();
 
 			// Prepare parameters for query
 			ArrayList<Object> cityparam = new ArrayList<Object>(params.subList(1, params.size() - 1));
@@ -332,7 +332,7 @@ public class MapDB {
 					image = getClass().getResourceAsStream("/images/" + mapname.replace(" ", "_") + ".png").readAllBytes();
 
 				// Clear lists of parameters for the next queries and add the desired parameter
-				cityparam.clear(); cityparam.addAll(params);
+				cityparam.clear(); cityparam.addAll(params.subList(0, params.size() - 1));
 
 				// Get map's list of sites
 				Object mapSites = SiteDB.getInstance().getSitesbyMap(cityparam);
@@ -579,7 +579,7 @@ public class MapDB {
 			if(params.get(0) instanceof Map) {
 				sql = "UPDATE BridgeMSC SET to_delete = 1 " +
 					  "WHERE mapID = ? AND "
-					  + "siteID = (SELECT s.siteID FROM Sites WHERE name = ? LIMIT 1) AND "
+					  + "siteID = (SELECT s.siteID FROM Sites s WHERE s.name = ? LIMIT 1) AND "
 					  + "is_active = 1";
 				
 				// Prepare parameters for the query

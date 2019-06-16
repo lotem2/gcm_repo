@@ -137,21 +137,19 @@ public class Map implements java.io.Serializable{
 	/**
 	 * Method to turn image to byte array to be saved in database
 	 * @param path - image's path
-	 * @return byte array representing image
 	 */
-	public byte[] setImage(String path) {
+	public void setImage(String path) {
 		if (path == null)
-			return null;
+			image = null;
 		else {
 			File file = new File(path); // try to open the file in path
 			try {
-					return Files.readAllBytes(file.toPath()); // reads content of image as byte
+					image = Files.readAllBytes(file.toPath()); // reads content of image as byte
 				} catch (Exception e) {
 					e.printStackTrace();
+					image = null;
 				}
 			}
-
-		return null;
 	}
 	
 	/**
