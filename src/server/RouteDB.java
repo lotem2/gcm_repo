@@ -193,7 +193,10 @@ public class RouteDB {
             	// Prepare statement to insert new route
             	sql = "UPDATE Routes SET name = ?, cityname = ?, description = ?," +
 							 "sites = ?, is_active = 0 " +
-							 "WHERE id = ?, cityName = ?, is_active = 0";
+							 "WHERE name = ? AND cityname = ? AND is_active = 0";
+
+            	// Add parameters for the WHERE clause
+            	params.add(params.get(0)); params.add(params.get(1)); 
             }
             else // A change to the requested route hasn't been made yet
             {

@@ -196,6 +196,10 @@ public class Server extends AbstractServer {
 				replyMsg = PurchaseDB.getInstance().viewPurchase(currMsg.getData());
 				replyMsg.setAction(Action.WATCH_MAP);
 				break;
+			case GET_MAP:
+				replyMsg = MapDB.getInstance().getMap(currMsg.getData());
+				replyMsg.setAction(Action.GET_MAP);
+				break;
 			default:
 				break;
 			}

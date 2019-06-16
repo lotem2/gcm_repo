@@ -383,10 +383,10 @@ public final class Services extends TimerTask {
 			for (Purchase purchase : cityPurchases) {
 				// Insert new Inbox message to clients letting them know there is a new version for the map
 				common.Message msg = InboxDB.getInstance().AddInboxMessage(
-						currentManager.getUserName(),
-						currentManager.getPermission().toString(),
+						Permission.GCM_SYSTEM.toString(),
+						Permission.GCM_SYSTEM.toString(),
 						purchase.getUserName(),
-						Permission.GCM_SYSTEM,
+						Permission.CLIENT.toString(),
 						content,
 						new String("INFO"),
 						LocalDate.now());
