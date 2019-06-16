@@ -280,24 +280,14 @@ public class UsersDB {
 
 	/**
 	 * Edit a specific user's details 
-	 * @param params - Contain {@link Action} type, user name of the requested user and the new details
+	 * @param params - Contains {@link Action} user details
 	 * @return {@link Message} - Indicating success/failure with corresponding message
 	 */
 	public Message EditUser(ArrayList<Object> params) {
 		// Variables
 		ArrayList<Object> data 	   = new ArrayList<Object>();
-		String 			  password = params.get(3).toString();
-		byte[] 			  salt 	   = params.get(4).toString().getBytes();
-		String 			  hash	   = "";
 
-		try { 
-			hash = common.Jhash.Hash.createHash(password, salt);
-
-			//Add hashed password and user's unique salt to params.
-			params.set(3, hash);
-			params.set(4, salt);
-
-			// Connect to DB
+		try {
 			SQLController.Connect();
 
 			// Prepare statement to insert new user
@@ -305,15 +295,15 @@ public class UsersDB {
 						" ,email = ?, permission = ?, telephone = ?, cardnumber = ?, id = ?, expirydate = ?" +
 						" WHERE username = ?";
 
-
 			// Execute sql query, get number of changed rows
 			int changedRows = SQLController.ExecuteUpdate(sql, params);
 
 			// Check if update was successful - result should be greater than zero
 			if (changedRows == 0) {
-				 throw new Exception("User was not added successfully.");
+				 throw new Exception("User was not updated successfully.");
 			}
 
+			data.clear();
 			// Add 0 to indicate success
 			data.add(new Integer(0));
 
@@ -337,7 +327,7 @@ public class UsersDB {
 
 		return (new Message(Action.EDIT_USER_DETAILS, data));
 	}
-	
+
 	/**
 	 * Get first name and email of users for the email reminder
 	 * @param params - {@link ArrayList} of type {@link Object} containing list of user's username

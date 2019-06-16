@@ -18,10 +18,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 
-import common.Action;
-import common.Message;
-import common.Permission;
-import common.Services;
+import common.*;
 import entity.City;
 import entity.Client;
 import entity.User;
@@ -57,9 +54,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import server.UsersDB;
 
 
-	
 public class ClientProfileController implements ControllerListener {
 
     GUIClient client;
@@ -158,10 +155,10 @@ public class ClientProfileController implements ControllerListener {
     private RadioButton rbtnPreviousCreditCard;
 
 	/**
-	 *gets all the data from the gui and sends it to the server to update the client's information
-	 *	
+	 * Get data entered by the user from the GUI and send it to the server
+	 * to update the client's information
 	 *
-	 * @param textField - textField.
+	 * @param event - Action event, executed on click on 'Save' button.
 	 */
 	@FXML
 	void Save(ActionEvent event) 
@@ -169,55 +166,47 @@ public class ClientProfileController implements ControllerListener {
 		try {
 			Message myMessage;
 			String userName = MainGUI.currClient.getUserName();
-			String firstName = MainGUI.currClient.getFirstName();
-			String lastName = MainGUI.currClient.getLastName();
-			String email = MainGUI.currClient.getEmail();
 			String password = MainGUI.currClient.getPassword();
-			long telephone = MainGUI.currClient.getTelephone();
+			long telephone  = MainGUI.currClient.getTelephone();
 			byte[] salt = MainGUI.currClient.getSalt();
-			String	permission = "Client";
+			String	permission = MainGUI.currClient.getPermission().toString();
 			long cardNumber = MainGUI.currClient.getCardNumber();
-			long id =MainGUI.currClient.getID(); 
+			long id = MainGUI.currClient.getID();
 			LocalDate expiryDate = MainGUI.currClient.getExpiryDate() ;
-			String fullCardString;
-			String newExpiryDate = getDate();
-			firstName = tfFirstName.getText();
-			lastName = tfLastName.getText();
-			userName = tfUserName.getText();
-			password = tfPassword.getText();
+			LocalDate newExpiryDate = dpCreditCardExpiryDate.getValue();
+			String firstName = tfFirstName.getText();
+			String lastName  = tfLastName.getText();
+
+			//Verify that characters entered for telephone are digits only
 			listenerForOnlyDigitsInput(tfphone);
-			if (password == null)
-				password = MainGUI.currClient.getPassword();
-			email = tfEmail.getText();
-			telephone = (tfphone.getText().length() <= 10) ?
-					Long.parseLong(tfphone.getText()) : 0L;
+			telephone = (tfphone.getText().length() <= 10) ? Long.parseLong(tfphone.getText()) : telephone;
+
+			if(newExpiryDate != null) expiryDate = newExpiryDate;
+
+			//Check whether entered email is according to an email format
+			String email = tfEmail.getText();
 			if (!isValid(email)) 
 			{
 				JOptionPane.showMessageDialog(null, "The email address is invalid", "Error",
 				JOptionPane.INFORMATION_MESSAGE);
 			}
+
+			//Update credit card number and id if radio button was chosen
 			if(rbChangeCreditNumber.isSelected())
 			{
-				//setCreditCardBooleanBinding();
-				//setInputVerification();
-				id = (tfIDNumber.getText().length() <= 9) ?
-						Long.parseLong(tfIDNumber.getText()) : 0L;
-				fullCardString = tfCreditCard1.getText() + tfCreditCard2.getText() + tfCreditCard3.getText()
-				+ tfCreditCard4.getText();						
-				cardNumber = (fullCardString.length() >= 17) 
-						? 0L : Long.parseLong(fullCardString);	
+				id = (tfIDNumber.getText().length() <= 9) ? Long.parseLong(tfIDNumber.getText()) : id;
+				String fullCardString = tfCreditCard1.getText() + tfCreditCard2.getText() +
+								 tfCreditCard3.getText() + tfCreditCard4.getText();
+				cardNumber = (fullCardString.length() >= 17) ? 0L : Long.parseLong(fullCardString);
 			}
-				//cardNumber =  Long.parseLong(fullCardString);
-				myMessage = new Message(Action.EDIT_USER_DETAILS, firstName,lastName,userName,password,salt,email,permission,
-						telephone,cardNumber,id,newExpiryDate,userName);
-				client.sendToServer(myMessage);
-			//}
-		//}
+			myMessage = new Message(Action.EDIT_USER_DETAILS, firstName,lastName,userName,password,salt,email,permission,
+					telephone,cardNumber,id,expiryDate,userName);
+			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null,
 					e.toString() + " Could not send message to server.  Terminating client.", "Error",
 					JOptionPane.WARNING_MESSAGE);
-			client.quit();
+			MainGUI.GUIclient.quit();
 		}
 	}
 	/**
@@ -291,6 +280,8 @@ public class ClientProfileController implements ControllerListener {
 					{
 						Platform.runLater(() -> {
 						tfUserName.setText(MainGUI.currClient.getUserName());
+						tfPassword.setText("***");
+						tfPassword.setEditable(false);
 						tfFirstName.setText(MainGUI.currClient.getFirstName());
 						tfLastName.setText(MainGUI.currClient.getLastName());
 						tfEmail.setText(MainGUI.currClient.getEmail());
@@ -303,12 +294,13 @@ public class ClientProfileController implements ControllerListener {
 					{
 						//lblMyProfile.setText(MainGUI.currClient.getUserName() + "'s Profile");
 						Platform.runLater(() -> {
-						tfUserName.setEditable(false);
-						tfFirstName.setEditable(false);
-						tfLastName.setEditable(false);
-						tfEmail.setEditable(false);
-						tfphone.setEditable(false);
-						btnSave.setVisible(false);
+							tfUserName.setEditable(false);
+							tfPassword.setEditable(false);
+							tfFirstName.setEditable(false);
+							tfLastName.setEditable(false);
+							tfEmail.setEditable(false);
+							tfphone.setEditable(false);
+							btnSave.setVisible(false);
 						});
 						break;
 					}
