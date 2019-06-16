@@ -127,12 +127,12 @@ public class CityDB {
 			if (city.getData().get(1) instanceof String) throw new Exception("Download proccess encountered a problem.");
 
 			// Write the city to a file using Services' writeCityToFiles
-			if(!Services.writeCityToFile((City)city.getData().get(1), params.get(2).toString()))
+			if(!Services.writeCityToFile((City)city.getData().get(1), params.get(3).toString()))
 				throw new Exception("Download proccess has encountered a problem.");
 			
 			// After the download process was successful, update the user's purchase record in database
 			// add the user name and city name for next request
-			input.clear(); input.add(params.subList(0, 2));
+			input.clear(); input.add(params.get(0)); input.add(params.get(1));
 
 			// Update download column in the user's purchase, if encountered an issue raise exception
 			Message msg = PurchaseDB.getInstance().downloadPurchase(input);
@@ -141,7 +141,7 @@ public class CityDB {
 
 			// Create success message
 			replyMsg = new Message(Action.DOWNLOAD_PURCHASE, 
-					new Integer(0), new String("Download compelted."));
+					new Integer(0), new String("Download completed."));
 		}
 		catch(Exception e) {
 			// Create failure message

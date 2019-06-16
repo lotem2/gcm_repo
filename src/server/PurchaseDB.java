@@ -163,14 +163,14 @@ public class PurchaseDB {
 			Purchase current = ((ArrayList<Purchase>)((Message)getActivePurchase(params)).getData().get(1)).get(0);
 			
 			// Prepare statement to get current client's purchase
-			String sql = "UPDATE Purchases SET downloads = downloads + 1" +
-				 	 "WHERE username = ? AND cityName = ? purchaseDate = ? AND expiryDate = ?";
+			String sql = "UPDATE Purchases SET downloads = downloads + 1 WHERE id = ?";
 
+			ArrayList<Object> sql_params = new ArrayList<>();
 			// Add parameters to match the UPDATE query
-			params.add(current.getPurchaseDate()); params.add(current.getExpirationDate());
+			sql_params.add(current.getID());
 
 			// Execute sql query by calling private method editPurchase with the requested UPDATE query
-			editPurchase(sql, params);
+			editPurchase(sql, sql_params);
 
 			data.add(new Integer(0)); // set query result as success
 
