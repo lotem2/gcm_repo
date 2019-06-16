@@ -211,14 +211,14 @@ public class BuyController implements ControllerListener {
 				data.add(m_Downloads);
 				data.add(currPrice);
 
-				if (rbBuyOnce.isSelected()) {
-					Message myTempMessage;
-					ArrayList<Object> tempData = new ArrayList<Object>();
-					tempData.add(ChoiceBoxCities.getValue());
-					tempData.add(Purchase.PurchaseType.SHORT_TERM_PURCHASE);
-					myTempMessage = new Message(Action.DOWNLOAD_PURCHASE, tempData);
-					MainGUI.GUIclient.sendToServer(myTempMessage);
-				}
+//				if (rbBuyOnce.isSelected()) {
+				//	Message myTempMessage;
+				//	ArrayList<Object> tempData = new ArrayList<Object>();
+				//	tempData.add(ChoiceBoxCities.getValue());
+				//	tempData.add(Purchase.PurchaseType.SHORT_TERM_PURCHASE);
+				//	myTempMessage = new Message(Action.DOWNLOAD_PURCHASE, tempData);
+				//	MainGUI.GUIclient.sendToServer(myTempMessage);
+	//			}
 
 				myMessage = new Message(Action.BUY, data);
 				MainGUI.GUIclient.sendToServer(myMessage);
@@ -352,7 +352,7 @@ public class BuyController implements ControllerListener {
 		rbSubscription.setToggleGroup(group);
 
 		ArrayList<Object> data = new ArrayList<Object>();
-		data.add(0);
+		data.add(MainGUI.currUser.getPermission());
 		Message myMessage = new Message(Action.GET_CITY_PRICE, data);
 		try {
 			MainGUI.GUIclient.sendToServer(myMessage);
