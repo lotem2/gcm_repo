@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 import common.Action;
 import common.Message;
@@ -38,7 +40,7 @@ public class CityDB {
 	 * Get list of cities currently in the database and their prices
 	 * @return {@link Message} - Contains {@link ArrayList} of pairs with <City, Price> or failure message
 	 */
-	public Message getCitiesList(){
+	public Message getCitiesList(ArrayList<Object> params){
 		// Variables
 		HashMap<String, Float> cities = new HashMap<String, Float>();
 		ArrayList<Object> data  = new ArrayList<Object>();
@@ -66,6 +68,23 @@ public class CityDB {
 				cities.put(rs.getString("name"), rs.getFloat("price"));
 			}
 
+			if(params.get(0).toString().equals(Permission.CLIENT.toString())) {
+				// Check if there is a city with no active maps, if so remove this city
+				Iterator<String> it = cities.keySet().iterator();
+				while (it.hasNext())
+				{
+					String city = it.next();
+					// Check if there are active maps for the current city
+					ArrayList<Object> checkIsActive = new ArrayList<>();
+					checkIsActive.add(city);
+	
+					if(!SQLController.DoesRecordExist("Maps","cityname", "is_active", 
+							city, 1))
+						it.remove();
+					
+				}
+			}
+			
 			data.add(new Integer(0)); // set query result as success
 			data.add(cities);	// adding sites' array list
 		}
@@ -88,7 +107,7 @@ public class CityDB {
 	 * Download requested city's maps and save them in a file
 	 * @param - {@link ArrayList} of type {@link Object} user name who requested download, city name to download,
 	 * the user's permission, and the directory path where to save the city's collection of maps
-	 * @return {@link Message} - Contains {@link ArrayList} with success meesage or failure message
+	 * @return {@link Message} - Contains {@link ArrayList} with success message or failure message
 	 */
 	public Message downloadCity(ArrayList<Object> params){
 		// Variables
@@ -97,6 +116,11 @@ public class CityDB {
 		try {
 			// Get city entity by the city's name using getCity method
 			ArrayList<Object> input = new ArrayList<Object>(); input.add(params.get(2)); input.add(params.get(1));
+			
+
+			if(!SQLController.DoesRecordExist("Maps","cityname", "is_active", params.get(1).toString(), 1))
+				throw new Exception("There are no active maps for this city.");
+
 			Message city = getCity(input);
 			
 			// If we encountered a problem during retrieval throwing an exception

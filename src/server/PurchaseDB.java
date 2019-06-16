@@ -43,13 +43,21 @@ public class PurchaseDB {
 		ArrayList<Object> input = new ArrayList<Object>();
 		ResultSet 		  rs   = null;
 		Message			  msg  = null;
+		String 			  sql  = "";		
 		
 		try {
 			// Connect to DB
 			SQLController.Connect();
 			
-			// Prepare statement to get current client's purchase
-			String sql = "INSERT INTO Purchases (`username`, `cityName`, `purchaseType`, `purchaseDate`," +
+			if(params.get(2).toString().equals(PurchaseType.SHORT_TERM_PURCHASE.toString())) {
+			// Prepare statement to insert new purchase to current client
+			 sql = "INSERT INTO Purchases (`username`, `cityName`, `purchaseType`, `purchaseDate`," +
+						 " `expiryDate`, `renew`, `views`, `downloads`, `price`)" +
+						 " VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?)";
+			 params.remove(7);
+			}
+			else
+				 sql = "INSERT INTO Purchases (`username`, `cityName`, `purchaseType`, `purchaseDate`," +
 						 " `expiryDate`, `renew`, `views`, `downloads`, `price`)" +
 						 " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 			
@@ -67,16 +75,18 @@ public class PurchaseDB {
 			if(msg.getData().equals(new Integer(1))) throw new Exception("Could not update city counter");
 
 			data.clear();
-			// Add 0 to indicate success
-			data.add(new Integer(0));
 			if(params.get(2).toString().equals(PurchaseType.SHORT_TERM_PURCHASE.toString()))
 			{
+				
 				// Get city entity by the city's name using getCity method
 				input.add(Permission.CLIENT);
 				input.add(params.get(1));
 				Message city = CityDB.getInstance().getCity(input);
 				if((Integer)city.getData().get(0) == 1)
 					throw new Exception("Could not retrieve city for download");
+				
+				// Add 0 to indicate success
+				data.add(new Integer(0));
 				data.add(city.getData().get(1));
 			}
 		}
