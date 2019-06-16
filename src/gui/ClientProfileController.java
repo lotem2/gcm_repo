@@ -267,33 +267,23 @@ public class ClientProfileController implements ControllerListener {
 		setPersonalInfoBooleanBinding();
 		setInputVerification();
 		ArrayList<Object> data = new ArrayList<Object>();
-		data.add(MainGUI.currUser.getUserName());
+		data.add(MainGUI.currClient.getUserName());
 		MainGUI.GUIclient.sendActionToServer(Action.GET_USER_PURCHASES,data);
-		String telephoneAsString = String.valueOf(MainGUI.currClient.getTelephone());
-		long lastFourDigitsLong=Math.abs(MainGUI.currClient.getCardNumber())%10000;
-		int lastFourDigits=Math.toIntExact(lastFourDigitsLong);
-		String LastFourDigitsString=String.valueOf(lastFourDigits);
 		Permission permission = (MainGUI.currUser.getPermission());
 				switch(permission) 
 				{
 					case CLIENT:
 					{
 						Platform.runLater(() -> {
-						tfUserName.setText(MainGUI.currClient.getUserName());
-						tfPassword.setText("***");
-						tfPassword.setEditable(false);
-						tfFirstName.setText(MainGUI.currClient.getFirstName());
-						tfLastName.setText(MainGUI.currClient.getLastName());
-						tfEmail.setText(MainGUI.currClient.getEmail());
-						tfphone.setText(telephoneAsString);
-						tfCurrLastNumbers.setText(LastFourDigitsString);
+							setCurrentClientDetails();
 						});
 						break;
 					}
 					default:
 					{
-						//lblMyProfile.setText(MainGUI.currClient.getUserName() + "'s Profile");
+						lblMyProfile.setText(MainGUI.currClient.getUserName() + "'s Profile");
 						Platform.runLater(() -> {
+							setCurrentClientDetails();
 							tfUserName.setEditable(false);
 							tfPassword.setEditable(false);
 							tfFirstName.setEditable(false);
@@ -301,12 +291,30 @@ public class ClientProfileController implements ControllerListener {
 							tfEmail.setEditable(false);
 							tfphone.setEditable(false);
 							btnSave.setVisible(false);
+							btnRenew.setVisible(false);
+							btnWatchMap.setVisible(false);
+							btnDownload.setVisible(false);
+							tabPaymentDetails.setDisable(true);
 						});
 						break;
 					}
 				}
 	}
 	
+	
+	void setCurrentClientDetails()
+	{
+		String telephoneAsString = String.valueOf(MainGUI.currClient.getTelephone());
+		long lastFourDigitsLong=Math.abs(MainGUI.currClient.getCardNumber())%10000;
+		int lastFourDigits=Math.toIntExact(lastFourDigitsLong);
+		String LastFourDigitsString=String.valueOf(lastFourDigits);
+		tfUserName.setText(MainGUI.currClient.getUserName());
+		tfFirstName.setText(MainGUI.currClient.getFirstName());
+		tfLastName.setText(MainGUI.currClient.getLastName());
+		tfEmail.setText(MainGUI.currClient.getEmail());
+		tfphone.setText(telephoneAsString);
+		tfCurrLastNumbers.setText(LastFourDigitsString);
+	}
 
 	void setRadioButtonGroup() {
 		final ToggleGroup radioButtonGroup = new ToggleGroup();
@@ -483,7 +491,7 @@ public class ClientProfileController implements ControllerListener {
 			else {
 				ArrayList<Object> data = new ArrayList<Object>();
 				data.add(city);
-				data.add(purchase.getPurchaseType());
+				data.add(Purchase.PurchaseType.LONG_TERM_PURCHASE);
 				MainGUI.GUIclient.sendActionToServer(Action.DOWNLOAD_PURCHASE, data);
 			}
 		}
