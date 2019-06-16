@@ -25,6 +25,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.cell.MapValueFactory;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -36,6 +37,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -55,7 +57,9 @@ import javafx.util.Duration;
 import javax.swing.JOptionPane;//library for popup messages
 
 public class MainGUIController implements ControllerListener {
-	static Map currentWatchedMap;
+	static int selectedMap = 0;
+	protected HashMap<Integer, String> searchMaps;
+	protected Map<String, String> currentWatchedMap = null;
 
 	@FXML
 	private ResourceBundle resources;
@@ -226,6 +230,7 @@ public class MainGUIController implements ControllerListener {
 	@FXML
 	void initialize() {
 		setSearchInfoBooleanBinding();
+		SearchResultsTable.setVisible(false);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -250,8 +255,8 @@ public class MainGUIController implements ControllerListener {
 							Platform.runLater(() -> {
 							lblClientMenu.setVisible(true);
 							btnMyProfile.setVisible(true);
-							btnEditMaps.setText("Show Maps");
-							btnEditMaps.setVisible(true);
+							//btnEditMaps.setText("Show Maps");
+							//btnEditMaps.setVisible(true);
 							btnBuy.setVisible(true);
 							InboxController.getMessagesFromServer();
 							btnInbox.setVisible(true);
@@ -262,8 +267,8 @@ public class MainGUIController implements ControllerListener {
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
 							Platform.runLater(() -> {
 							lblClientMenu.setVisible(true);
-							lblClientMenu.setText("Editor Menu:");
-							btnEditMaps.setText("Edit Maps");
+							lblClientMenu.setText("Menu:");
+							//btnEditMaps.setText("Edit Maps");
 							btnEditMaps.setVisible(true);
 							InboxController.getMessagesFromServer();
 							btnInbox.setVisible(true);
@@ -273,7 +278,7 @@ public class MainGUIController implements ControllerListener {
 							MainGUI.currEmployee = (Employee) currMsg.getData().get(1);
 							Platform.runLater(() -> {
 							lblClientMenu.setVisible(true);
-							lblClientMenu.setText("Managing Editor Menu:");
+							lblClientMenu.setText("Menu:");
 							btnEditMaps.setText("Edit Maps");
 							btnEditMaps.setVisible(true);
 							InboxController.getMessagesFromServer();
@@ -383,10 +388,22 @@ public class MainGUIController implements ControllerListener {
 	 */
 	private void setTableViewForMapsSearchResult(HashMap<Integer, String> maps, int dataSize) 
 	{
+		SearchResultsTable.setRowFactory(tv -> {
+		    TableRow<Map> row = new TableRow<>();
+		    row.setOnMouseClicked(event -> {
+		        if (!row.isEmpty()) {
+		        	currentWatchedMap = row.getItem();
+		        	showMap();
+		        }
+		    });
+		    return row ;
+		});
+
 		Platform.runLater(new Runnable() {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void run() {
+				searchMaps = maps;
 				//Create Map object and insert the Value properties from the search HashMap
 				Map<String, String> maps_string  = new HashMap<>();
 				for  (Integer currmap  :  maps.keySet())  {
@@ -445,7 +462,10 @@ public class MainGUIController implements ControllerListener {
 		SearchResultsTable.getItems().clear();
 		lblMapsNum.setVisible(false);
 		lblRoutesNum.setVisible(false);
-
+		tfCitySearch.clear();
+		tfDesSearch.clear();
+		tfSiteSearch.clear();
+		SearchResultsTable.setVisible(false);
 	}
 	
 	
@@ -478,18 +498,16 @@ public class MainGUIController implements ControllerListener {
 	/**
 	 * Opening the Edit Maps according to the permission. The user will see the show maps window,
 	 * while the employees will see the edit maps window.
-	 * @param event
 	 */
-	@FXML
-    void EditMaps(ActionEvent event) {
+    void showMap() {
 		clearSearch();
 		Permission permission = (MainGUI.currUser.getPermission());
-		currentWatchedMap = SearchResultsTable.getSelectionModel().getSelectedItem();
+		selectedMap = getKey(currentWatchedMap);
 		switch(permission) 
 		{
 			case CLIENT:
 			{
-				if(currentWatchedMap==null)
+				if(selectedMap == 0)
 				{
 					JOptionPane.showMessageDialog(null,"Plaese choose a map to watch", "Error",
 							JOptionPane.WARNING_MESSAGE);
@@ -506,6 +524,14 @@ public class MainGUIController implements ControllerListener {
 				MainGUI.openScene(SceneType.Edit);
 		}
     }
+    
+    @FXML
+    void EditMaps(ActionEvent event) {
+		clearSearch();
+		MainGUI.MainStage.setTitle("Global City Map - Edit Maps");
+		MainGUI.openScene(SceneType.Edit);
+    }
+    
 	/**
 	 * Setting the boolean binding for the search input.
 	 * @param event
@@ -574,5 +600,20 @@ public class MainGUIController implements ControllerListener {
 				alert.showAndWait();
 			}
 		});
+	}
+	
+	private int getKey(Map value) {
+		ArrayList<String> values = new ArrayList<>();
+		for (Object key : value.keySet()) {
+			values.add(value.get(key).toString());
+		}
+		
+		String map_value = values.get(1) + "," + values.get(0);
+		
+		for (Entry<Integer, String> mapID : searchMaps.entrySet()) {
+			if(mapID.getValue().equals(map_value))
+				return mapID.getKey();
+		}
+		return 0;
 	}
 }
