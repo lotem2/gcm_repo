@@ -13,6 +13,7 @@ import common.Status;
 import entity.Client;
 import entity.InboxMessage;
 import entity.Map;
+import entity.Purchase;
 import gui.MainGUI.SceneType;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -65,6 +66,8 @@ GUIClient client;
     private Button btnEditMaps;
     @FXML
     private Button btnInbox;
+    @FXML
+    private Button btnWatchPurchases;
     @FXML
     private Label lblWelcome;
 
@@ -169,6 +172,21 @@ GUIClient client;
 		MainGUI.openScene(SceneType.Edit);
     }
 
+    @FXML
+    void WatchPurchases(ActionEvent event) {
+		Client currentWatchedClient = clientsTable.getSelectionModel().getSelectedItem();
+		MainGUI.currClient = currentWatchedClient;
+		if (currentWatchedClient!=null) 
+		{
+		MainGUI.MainStage.setTitle("Global City Map - Client's Profile");
+		MainGUI.openScene(SceneType.ClientProfile);
+		}
+		else
+			JOptionPane.showMessageDialog(null, "You haven't selected any client to view.", "Error",
+					JOptionPane.WARNING_MESSAGE);
+    }
+	
+	
 }
 
 

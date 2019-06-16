@@ -41,5 +41,6 @@
       </font>
     </Label>
     <Button id="btnMain" fx:id="btnInbox" layoutX="562.0" layoutY="137.0" mnemonicParsing="false" onAction="#OpenInbox" prefHeight="27.0" prefWidth="124.0" text="Inbox" />
+    <Button fx:id="btnWatchPurchases" layoutX="559.0" layoutY="689.0" mnemonicParsing="false" onAction="#WatchPurchases" prefWidth="131.0" text="View Purchases" />
   </children>
 </AnchorPane>
