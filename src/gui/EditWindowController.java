@@ -473,7 +473,9 @@ public class EditWindowController implements ControllerListener {
 				MainGUI.GUIclient.sendActionToServer(Action.GET_MAP,data);
 			}
 			else {
-				GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
+				ArrayList<Object> data = new ArrayList<>();
+				data.add(MainGUI.currUser.getPermission());
+				MainGUI.GUIclient.sendActionToServer(Action.GET_CITY_PRICE, data);
 			}
 			Platform.runLater(() -> {
 				btnUpdatePrice.setVisible(false);
@@ -491,7 +493,9 @@ public class EditWindowController implements ControllerListener {
 				MainGUI.GUIclient.sendActionToServer(Action.GET_MAP,data);
 			}
 			else {
-				GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
+				ArrayList<Object> data = new ArrayList<>();
+				data.add(MainGUI.currUser.getPermission());
+				MainGUI.GUIclient.sendActionToServer(Action.GET_CITY_PRICE, data);
 			}
 			Platform.runLater(() -> {
 				btnUpdatePrice.setVisible(true);
@@ -509,7 +513,9 @@ public class EditWindowController implements ControllerListener {
 				MainGUI.GUIclient.sendActionToServer(Action.GET_MAP,data);
 			}
 			else {
-				GUIClient.sendActionToServer(Action.GET_CITY_PRICE);
+				ArrayList<Object> data = new ArrayList<>();
+				data.add(MainGUI.currUser.getPermission());
+				MainGUI.GUIclient.sendActionToServer(Action.GET_CITY_PRICE, data);
 			}
 			Platform.runLater(() -> {
 				btnUpdatePrice.setVisible(false);
@@ -693,8 +699,13 @@ public class EditWindowController implements ControllerListener {
 	   mapView.setImage(map.getMapImage());
 	   if(map.getSites() != null) {
 		   for (Site site : map.getSites()) {
-			   Circle currentSiteCircle = new Circle(site.getLocation().getX(), 
-					   site.getLocation().getY(), 3);
+			   double xLocation = mapView.getBoundsInParent().getMinX() + site.getLocation().getX();
+			   double yLocation = mapView.getBoundsInParent().getMinY() + site.getLocation().getY();
+			   if (xLocation > mapView.getImage().getWidth())
+				   xLocation = site.getLocation().getX();
+			   if(yLocation > mapView.getImage().getHeight())
+					   yLocation = site.getLocation().getY();
+			   Circle currentSiteCircle = new Circle(xLocation, yLocation, 3);
 			   currentSiteCircle.setFill(Color.BLUE);
 			   currentSiteCircle.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			         @Override
@@ -1146,6 +1157,17 @@ public class EditWindowController implements ControllerListener {
 				if ((Integer) currMsg.getData().get(0) == 0) 
 				{
 					JOptionPane.showMessageDialog(null, "Your request to update the price was sent!", "Notification",
+							JOptionPane.INFORMATION_MESSAGE);
+				}
+				else 
+					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
+							JOptionPane.WARNING_MESSAGE);
+			}
+			case REQUEST_NEW_VER_APPROVAL:
+			{
+				if ((Integer) currMsg.getData().get(0) == 0) 
+				{
+					JOptionPane.showMessageDialog(null, "Your request to publish new version was sent!", "Notification",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
 				else 

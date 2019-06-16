@@ -341,8 +341,11 @@ public class MainGUIController implements ControllerListener {
 						if(message.getStatus().equals(Status.NEW) )
 							newMsg++;
 					}
-					String inboxTxt = "Inbox("+ newMsg +")";
+					String inboxTxt = MainGUI.currUser.getPermission() == Permission.CEO ? 
+							"Manage(" + newMsg + ")": "Inbox("+ newMsg +")";
 					Platform.runLater(() -> {
+						if(MainGUI.currUser.getPermission() == Permission.CEO)
+							btnManage.setText(inboxTxt);
 						btnInbox.setText(inboxTxt);
 					});
 				}
@@ -500,28 +503,30 @@ public class MainGUIController implements ControllerListener {
 	 * while the employees will see the edit maps window.
 	 */
     void showMap() {
-		clearSearch();
-		Permission permission = (MainGUI.currUser.getPermission());
-		selectedMap = getKey(currentWatchedMap);
-		switch(permission) 
-		{
-			case CLIENT:
+		if(MainGUI.currUser != null) {
+			clearSearch();
+			Permission permission = (MainGUI.currUser.getPermission());
+			selectedMap = getKey(currentWatchedMap);
+			switch(permission) 
 			{
-				if(selectedMap == 0)
+				case CLIENT:
 				{
-					JOptionPane.showMessageDialog(null,"Plaese choose a map to watch", "Error",
-							JOptionPane.WARNING_MESSAGE);
+					if(selectedMap == 0)
+					{
+						JOptionPane.showMessageDialog(null,"Plaese choose a map to watch", "Error",
+								JOptionPane.WARNING_MESSAGE);
+					}
+					else
+					{
+						MainGUI.MainStage.setTitle("Global City Map - View Maps");
+						MainGUI.openScene(SceneType.Edit);
+					}
+					break;
 				}
-				else
-				{
-					MainGUI.MainStage.setTitle("Global City Map - View Maps");
+				default:
+					MainGUI.MainStage.setTitle("Global City Map - Edit Maps");
 					MainGUI.openScene(SceneType.Edit);
-				}
-				break;
 			}
-			default:
-				MainGUI.MainStage.setTitle("Global City Map - Edit Maps");
-				MainGUI.openScene(SceneType.Edit);
 		}
     }
     
