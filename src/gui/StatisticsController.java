@@ -308,6 +308,7 @@ public class StatisticsController implements ControllerListener {
 	void initialize() {
 		lblWelcome.setText("Welcome " + MainGUI.currUser.getUserName() + "!");
 		ArrayList<Object> data = new ArrayList<Object>();
+		data.add(MainGUI.currUser.getPermission());
 		Message myMessage = new Message(Action.DAILY_REPORT, data);
 		try {
 			MainGUI.GUIclient.sendToServer(myMessage);
