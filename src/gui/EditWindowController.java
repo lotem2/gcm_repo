@@ -346,7 +346,7 @@ public class EditWindowController implements ControllerListener {
 				getCurrentMap(currentCity.getMaps(), map).getSites().add(newSite);
 			}
 			else {
-				myMessage = new Message(Action.EDIT_SITE,selection,city,classification,description,accessible,visitDuration,location);
+				myMessage = new Message(Action.EDIT_SITE,name,city,classification,description,accessible,visitDuration,location);
 				updateMapsAndRoutes(getCurrentSite(currentCity.getMaps(), currentCity.getRoutes(), name), newSite);
 			}
 			MainGUI.GUIclient.sendToServer(myMessage);
@@ -806,7 +806,6 @@ public class EditWindowController implements ControllerListener {
 	    	tfMapName.clear();
 	    	tfMapDescription.clear();
 	    	btnUpdateVersion.setDisable(true);
-	    	mapChoser.setValue(null);
 	    	clearSiteParameters();
 	    	siteChoser.getItems().clear();
 	    	if(mapView.getImage() != null) {
@@ -814,18 +813,6 @@ public class EditWindowController implements ControllerListener {
 	    		   paneMap.getChildren().removeIf(filter -> filter instanceof Circle);
 	    	}    	
     	});}
-
-    void addNewMap() {
-    	tfMapName.setDisable(false);
-    	tfMapDescription.setDisable(false);
-    	tfMapName.clear();
-    	tfMapDescription.clear();
-    	tfPrice.clear();
-    	btnUpdateVersion.setDisable(true);
-    	clearSiteParameters();
-    	siteChoser.setValue(null);
-
-    }
 
 	/**
 	 *
@@ -840,7 +827,6 @@ public class EditWindowController implements ControllerListener {
     		tfrouteDescription.clear();
     		tableRouteDeatils.getItems().clear();
     		tfrouteDescription.setDisable(false);
-	    	routesChoser.setValue(null);
     	});
     }
     
@@ -1419,9 +1405,9 @@ public class EditWindowController implements ControllerListener {
 			    		  if(!previousCity.equals("Add New City")) {
 				    		  clearCityParameters();
 				    		  setCurrentCity(currCityName);
-				    		  tfCityName.setEditable(true);
+				    		  //tfCityName.setEditable(true);
 			    		  }
-			    		  tfCityName.setEditable(false);
+			    		  //tfCityName.setEditable(false);
 		    		  }
 		    	  });
 			}
@@ -1442,6 +1428,12 @@ public class EditWindowController implements ControllerListener {
 						clearMapParameters();
 						btnBrowse.setVisible(true);
 						tfMapName.setEditable(true);
+						ObservableList<String> currSitesList = FXCollections.observableArrayList();
+						currSitesList.add("Add New Site");
+						if(siteChoser.getItems() != null) 
+							siteChoser.getItems().clear();
+						siteChoser.setItems(currSitesList);
+					
 					}
 					else
 					{
@@ -1495,20 +1487,27 @@ public class EditWindowController implements ControllerListener {
 		      public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) 
 		      {
 		    	  Platform.runLater(() -> {
-		    	  String currRouteName = (routesChoser.getItems().get((Integer) number2));
-					if (currRouteName.equals("Add New Route"))
-					{
-						clearRouteParameters();
-					}
-					else
-					{
-						setRouteInfo(getCurrentRoute(currentCity.getRoutes(), currRouteName));
-						tfRouteName.setEditable(false);
-					}
+		    		   String currRouteName = "";
+						if(routesChoser.getValue() != null) 
+						{  
+						currRouteName = (routesChoser.getItems().get((Integer) number2));
+							if (currRouteName.equals("Add New Route"))
+							{
+								clearRouteParameters();
+							}
+							else
+							{
+								setRouteInfo(getCurrentRoute(currentCity.getRoutes(), currRouteName));
+								tfRouteName.setEditable(false);
+							}
+						}
 		    	  });
 		      }
 		  });
 	}
+		
+		
+
 
 		/**
 		 *
@@ -1565,6 +1564,7 @@ public class EditWindowController implements ControllerListener {
 						if(mapChoser.getItems() != null) mapChoser.getItems().clear();
 						mapChoser.setItems(currmapList);
 						mapChoser.getSelectionModel().select(0);
+		
 						}
 					});
 				}
