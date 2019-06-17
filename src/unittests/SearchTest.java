@@ -27,6 +27,7 @@ import java.util.concurrent.TimeoutException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 
 import org.mockito.*;
@@ -239,5 +240,9 @@ public class SearchTest extends ApplicationTest {
 		arr.add(var2);
 		arr.add(var3);
 		return arr;
+	}
+	
+	public static void main(String[] args) throws Exception {                    
+	       JUnitCore.main("unittests.SearchTest");            
 	}
 }
