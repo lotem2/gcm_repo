@@ -34,6 +34,9 @@ import entity.User;
 
 public class MainGUI extends Application {
 
+	/**
+	 * Enum of all scene types.
+	 */
 	enum SceneType {
 		MAIN_GUI,
 		REGISTER,
@@ -45,6 +48,9 @@ public class MainGUI extends Application {
 		Inbox
 	}
 
+	/**
+	 * Map between SceneType enum to FXML resource file name.
+	 */
 	static final Map<SceneType, String> sceneFxmlLocationMapping = Map.ofEntries(
 	    Map.entry(SceneType.MAIN_GUI, "/MainGUIScene.fxml"),
 	    Map.entry(SceneType.REGISTER, "/RegisterScene.fxml"),
@@ -66,6 +72,13 @@ public class MainGUI extends Application {
 	public static Employee currEmployee;
 	public static User currUser;
 
+	/**
+	 * Set up connection to server. If args were passed in, use those, otherwise
+	 * assume the server is on the same IP with port 5555.
+	 * If connection was not establised correctly, show an error message and
+	 * close the application.
+	 * @param primaryStage
+	 */
 	@Override
 	public void start(Stage primaryStage) throws IOException {
 		MainGUI.MainStage = primaryStage;
@@ -118,6 +131,7 @@ public class MainGUI extends Application {
 
 
 	/**
+	 * Helper function when wanting to create a new scene and not pass a variable.
 	 * @param sceneType
 	 */
 	public static void openScene(SceneType sceneType) {
@@ -125,6 +139,8 @@ public class MainGUI extends Application {
 	}
 
 	/**
+	 * Open the specified scene type on the main stage, if restorePreviousScene is set
+	 * to true, will re-use previous scene, otherwise will create a new scene.
 	 * @param sceneType
 	 * @param restorePreviousScene
 	 */
