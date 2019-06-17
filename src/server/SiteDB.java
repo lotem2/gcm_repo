@@ -226,7 +226,7 @@ public class SiteDB {
 			if(SQLController.DoesRecordExist("Sites","name", "location","is_active", 
 					data.get(0), data.get(6), 0)) {
 				// Prepare statement to insert new site
-				sql = "UPDATE Sites SET name = ?, cityname = ?, classification = ?, description = ?, accessible = ?, " +
+				sql = "UPDATE Sites SET name = ?, cityname = ?, classification = ?, description = ?, `accessible` = ?, " +
 							 "visitDuration = ?, location = ? " +
 							 "WHERE name = ? AND location = ? AND is_active = 0";	
 
