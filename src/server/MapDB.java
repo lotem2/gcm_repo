@@ -517,8 +517,7 @@ public class MapDB {
 	/**
 	 * Update details in database of the current map's new version, set current version as active
 	 * @param params - response - approve/decline of publishing new version, map id
-	 * @return {@link Message} - Indicating success/failure with corresponding message
-	 * @throws Exception 
+	 * @throws Exception - an exception has occurred
 	 */
 	public void publishNewVersion(ArrayList<Object> params) throws Exception{
 		// Variables
@@ -572,7 +571,8 @@ public class MapDB {
 	 * @param params - contains map entity that we want to remove the site from, and site name in case
 	 * manager decides to remove the site from the map, or manager's response to publishing city's maps collection 
 	 * and map id of current city's map
-	 * @throws Exception 
+	 * @return message that indicates success/ failure
+	 * @throws Exception - throws an exception 
 	 */
 	public Message updateSitesOfMap(ArrayList<Object> params) throws Exception{
 		// Variables
@@ -641,7 +641,7 @@ public class MapDB {
 	/**
 	 * Responsible to update Maps table according to the management response
 	 * @param params - Contains management response - approve/decline and city name
-	 * @throws Exception 
+	 * @throws Exception - an exception was thrown
 	 */
 	public void updateMapDetailsAfterApproval(ArrayList<Object> params) throws Exception{
 		// Variables

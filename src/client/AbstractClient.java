@@ -22,11 +22,11 @@ import java.util.*;
 * Several public service methods are provided to
 * application that use this framework.<p>
 *
-* Project Name: OCSF (Object Client-Server Framework)<p>
+* Project Name: OCSF (Object Client-Server Framework)
 *
-* @author Dr. Robert Lagani&egrave;re
+* @author Dr. Robert 
 * @author Dr. Timothy C. Lethbridge
-* @author Fran&ccedil;ois  B&eacutel;langer
+* @author Fran , ccedil
 * @author Paul Holden
 * @version February 2001 (2.12)
 */
@@ -74,23 +74,7 @@ public abstract class AbstractClient implements Runnable
   */
   private int port;
 
-// CONSTRUCTORS *****************************************************
-
-  /**
-   * Constructs the client.
-   *
-   * @param  host  the server's host name.
-   * @param  port  the port number.
-   */
-//  public AbstractClient(String host)
-//  {
-//    // Initialize variables
-//    this.host = host;
-//    this.port = port;
-//  }
-
-// INSTANCE METHODS *************************************************
-
+  
 public AbstractClient() {
 	// TODO Auto-generated constructor stub
 }

@@ -292,9 +292,9 @@ public class BuyController implements ControllerListener {
 	}
 
 	/**
-	 * @param isSubscription
-	 * @param city
-	 * @param term
+	 * @param isSubscription - boolean to indicate whether ther is a subscription
+	 * @param city - city to set price to
+	 * @param term - the length of the subscription
 	 * @return String - updated price
 	 */
 	public String setPrice(boolean isSubscription, String city, String term) {

@@ -30,7 +30,7 @@ import java.io.*;
 * @author Fran&ccedil;ois B&eacute;langer
 * @author Paul Holden
 * @version February 2001 (2.12)
-* @see ocsf.server.ConnectionToClient
+*
 */
 public abstract class AbstractServer implements Runnable
 {

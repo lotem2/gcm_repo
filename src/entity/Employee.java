@@ -17,7 +17,7 @@ public class Employee extends User implements java.io.Serializable{
 	 * Constructor that builds the User entity
 	 * @param first - The user's first name
 	 * @param last - The user's last name
-	 * @param email - The user's password
+	 * @param password - The user's password
 	 * @param username - Username of a client as it appears in database
 	 * @param email - The user's email
 	 * @param permission - The user's permission

@@ -23,6 +23,7 @@ public class Hash {
      * Returns a salted PBKDF2 hash of the password.
      *
      * @param   password    the password to hash
+     * @param	salt		the user's salt
      * @return              a salted PBKDF2 hash of the password
      */
     public static String createHash(String password, byte[] salt)
@@ -35,6 +36,8 @@ public class Hash {
      * Returns a salted PBKDF2 hash of the password.
      *
      * @param   password    the password to hash
+     * @param   salt    the user's salt
+     * @throws  java.security.spec.InvalidKeySpecException
      * @return              a salted PBKDF2 hash of the password
      */
     public static String createHash(char[] password, byte[] salt)
@@ -51,6 +54,7 @@ public class Hash {
      *
      * @param   password    the password to check
      * @param   goodHash    the hash of the valid password
+     * @param   salt    the user's salt
      * @return              true if the password is correct, false if not
      */
     public static boolean validatePassword(String password, String goodHash, byte[] salt)
@@ -64,6 +68,7 @@ public class Hash {
      *
      * @param   password    the password to check
      * @param   goodHash    the hash of the valid password
+     * @param	salt		the user's salt
      * @return              true if the password is correct, false if not
      */
     public static boolean validatePassword(char[] password, String goodHash, byte[] salt)

@@ -58,7 +58,7 @@ public class Route implements java.io.Serializable{
 
 	/**
 	 * Set the city the route belongs to
-	 * @param city name
+	 * @param cityname - given city name
 	 */
 	public void setCityName(String cityname) {
 		this.cityname = cityname;
@@ -74,7 +74,7 @@ public class Route implements java.io.Serializable{
 
 	/**
 	 * Set the list of sites that belong to the route
-	 * @param {@link ArrayList} of type {@link Site} representing list of sites
+	 * @param sites - {@link ArrayList} of type {@link Site} representing list of sites
 	 */
 	public void setSites(ArrayList<Site> sites) {
 		this.sites = sites;
@@ -90,7 +90,7 @@ public class Route implements java.io.Serializable{
 
 	/**
 	 * Set route's description
-	 * @param description
+	 * @param description - given description
 	 */
 	public void setDescription(String description) {
 		this.description = description;

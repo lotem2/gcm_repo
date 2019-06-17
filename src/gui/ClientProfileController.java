@@ -408,7 +408,7 @@ public class ClientProfileController implements ControllerListener {
 	/**
 	 *
 	 *sets the table for the purchases that the user bought
-	 *
+	 *@param currPurchasesList - user's purchase list
      */
 	
 	public void setTableViewForPurchases(ObservableList<Purchase> currPurchasesList) {

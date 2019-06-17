@@ -265,7 +265,7 @@ public class RouteDB {
 	/**
 	 * Responsible to update route 
 	 * @param params - Contains manager's response to the publishing and city name
-	 * @throws Exception 
+	 * @throws Exception - an exception was thown
 	 */
 	public void publishRoutes(ArrayList<Object> params) throws Exception {
 		// Variables

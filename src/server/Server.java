@@ -32,7 +32,7 @@ public class Server extends AbstractServer {
 
 	/**
 	 * Public constructor of class Server which handles the client-server process
-	 * @param port
+	 * @param port - the port's number
 	 */
 	public Server(int port) {
 		super(port);

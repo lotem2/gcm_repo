@@ -64,7 +64,7 @@ public class Map implements java.io.Serializable{
 
 	/**
 	 * Set map's name
-	 * @param name
+	 * @param mapname - given map name
 	 */
 	public void setName(String mapname) {
 		this.mapname = mapname;
@@ -80,7 +80,7 @@ public class Map implements java.io.Serializable{
 
 	/**
 	 * Set map's description
-	 * @param description
+	 * @param description - given description
 	 */
 	public void setDescription(String description) {
 		this.description = description;
@@ -96,7 +96,7 @@ public class Map implements java.io.Serializable{
 
 	/**
 	 * Set the city the map belongs to
-	 * @param city name
+	 * @param cityname - given city name
 	 */
 	public void setCityName(String cityname) {
 		this.cityname = cityname;
@@ -112,7 +112,7 @@ public class Map implements java.io.Serializable{
 
 	/**
 	 * Set the list of sites that belong to the map
-	 * @param {@link ArrayList} of type {@link Site} representing list of sites
+	 * @param sites {@link ArrayList} of type {@link Site} representing list of sites
 	 */
 	public void setSites(ArrayList<Site> sites) {
 		this.sites = sites;

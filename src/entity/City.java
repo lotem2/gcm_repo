@@ -61,7 +61,7 @@ public class City implements java.io.Serializable{
 
 	/**
 	 * Set city's description
-	 * @param name - city's description
+	 * @param description - city's description
 	 */
 	public void setDescription(String description) {
 		this.description = description;
@@ -125,7 +125,7 @@ public class City implements java.io.Serializable{
 
 	/**
 	 * Set city's price
-	 * @param price
+	 * @param price - new price to set
 	 */
 	public void setPrice(float price) {
 		this.price = price;

@@ -23,15 +23,15 @@ public class Client extends User implements java.io.Serializable{
 	 * Constructor that builds the User entity
 	 * @param first - The user's first name
 	 * @param last - The user's last name
-	 * @param email - The user's password
-	 * @param id - The user's salt
+	 * @param password - The user's password
+	 * @param salt - The user's salt
 	 * @param username - Username of a client as it appears in database
 	 * @param email - The user's email
 	 * @param permission - The user's permission
-	 * @param id - The user's telephone number
-	 * @param id - The user's card number
+	 * @param tel - The user's telephone number
+	 * @param cardnumber - The user's card number
 	 * @param id - The user's id
-	 * @param id - The user's expiry date of credit card
+	 * @param expirydate - The user's expiry date of credit card
 	 */
 	/* Constructor */
 	public Client(String first, String last, String password, byte[] salt, String username,

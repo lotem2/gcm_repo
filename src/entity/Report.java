@@ -21,7 +21,7 @@ public class Report implements java.io.Serializable{
 
 	/**
 	 * Constructor that builds the Report entity
-	 * @param name - city's name
+	 * @param cityName - city's name
 	 * @param numOfMembers - number of subscribed members
 	 * @param numOfRenew - the number of time users renewed their subscription
 	 * @param numOfViews - the total number of views per each city maps

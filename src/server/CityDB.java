@@ -37,8 +37,9 @@ public class CityDB {
 	}
 
 	/**
+	 * @param params - given user's permission
 	 * Get list of cities currently in the database and their prices
-	 * @return {@link Message} - Contains {@link ArrayList} of pairs with <City, Price> or failure message
+	 * @return {@link Message} - Contains {@link ArrayList} of pairs with (City, Price) or failure message
 	 */
 	public Message getCitiesList(ArrayList<Object> params){
 		// Variables
@@ -105,7 +106,7 @@ public class CityDB {
 	
 	/**
 	 * Download requested city's maps and save them in a file
-	 * @param - {@link ArrayList} of type {@link Object} user name who requested download, city name to download,
+	 * @param params - {@link ArrayList} of type {@link Object} user name who requested download, city name to download,
 	 * the user's permission
 	 * @return {@link Message} - Contains {@link ArrayList} with success message or failure message
 	 */
@@ -149,7 +150,7 @@ public class CityDB {
 	
 	/**
 	 * Edit requested city's price
-	 * @param - {@link ArrayList} of type {@link Object} containing new price and city name
+	 * @param params - {@link ArrayList} of type {@link Object} containing new price and city name
 	 * @return {@link Message} - Contains {@link ArrayList} with success message or failure message
 	 */
 	public Message UpdateCityPriceAfterApproval(ArrayList<Object> params){

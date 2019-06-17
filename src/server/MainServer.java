@@ -1,6 +1,6 @@
 package server;
 
-import java.io.IOException;
+//import java.io.IOException;
 
 import gui.MainGUI;
 import javafx.application.Application;
@@ -15,7 +15,7 @@ import javafx.stage.WindowEvent;
 public class MainServer extends Application {
 	// Variables
 	private static ServerController m_currentServer;
-	@Override
+	//@Override
 	public void start(Stage primaryStage) throws Exception {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/ServerScene.fxml"));
 		AnchorPane root = (AnchorPane)loader.load();
@@ -47,13 +47,13 @@ public class MainServer extends Application {
 	
 	/**
 	 * Start of MainServer
-	 * @param args
+	 * @param args -given arguments
 	 */
 	public static void main(String[] args) {
 		launch(args);
 	}
 	
-	@Override
+	//@Override
 	public void stop(){
 		try {
 			// Close server when pressing the exit button

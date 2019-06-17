@@ -360,7 +360,7 @@ public class PurchaseDB {
 	 * Method that runs every start of a new day, sends reminders to clients that their purchase is 
 	 * about to expire in 3 days from today
 	 * @param expireDate - the expire date of 3 days prior to today
-	 * @return {@link ArrayList} - an {@link ArrayList} of type {@link Purchase} which satisfies the conditions
+	 * 
 	 */
 	public void sendReminders(LocalDate expireDate){
 		// Variables

@@ -252,7 +252,10 @@ public class UsersDB {
 	
 	/**
 	 * Verify the user's password
-	 * @param params -   given password, password from the db, client's salt from the db and user's permission.
+	 * @param password -   given password 
+	 * @param dbPassword - password from the db
+	 * @param salt - client's salt from the db
+	 * @param permission - user's permission.
 	 * @return Boolean - Indicates whether there was a match between given password and password from the db.
 	 */
 	public boolean verifyUsersPassword(String password, byte[] dbPassword, byte[] salt,String permission )//false;
@@ -331,7 +334,7 @@ public class UsersDB {
 	/**
 	 * Get first name and email of users for the email reminder
 	 * @param params - {@link ArrayList} of type {@link Object} containing list of user's username
-	 * @return {@link HashMap} - pairs of <first name-email> 
+	 * @return {@link HashMap} - pairs of (first name,email) 
 	 */
 	public HashMap<String, String> getUsersDetails(ArrayList<Object> params){
 		// Variables

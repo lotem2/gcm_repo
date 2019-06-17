@@ -7,7 +7,9 @@ import common.Status;
 
 /**
  * Entity that represents a message between employees and clients
+ *
  */
+
 public class InboxMessage implements java.io.Serializable {
 
 	private int m_id;
@@ -22,13 +24,13 @@ public class InboxMessage implements java.io.Serializable {
 	/**
 	 * Constructor that builds the User entity
 	 * @param id - The message identifier
-	 * @param m_senderUsername - The sender's user name
-	 * @param m_senderPermission - The sender's {@link Permission}
-	 * @param m_receiverUsername - The receiver's user name
-	 * @param m_receiverPermission - The reciever's {@link Permission}
-	 * @param m_content - The content of the message
-	 * @param m_status - The {@link Status} of the message
-	 * @param m_receiveDate - The {@link LocalDate} of the message
+	 * @param senderUsername - The sender's user name
+	 * @param senderPermission - The sender's {@link Permission}
+	 * @param receiverUsername - The receiver's user name
+	 * @param receiverPermission - The reciever's {@link Permission}
+	 * @param content - The content of the message
+	 * @param status - The {@link Status} of the message
+	 * @param receiveDate - The {@link LocalDate} of the message
 	 */
 	public InboxMessage (int id, String senderUsername, Permission senderPermission, String receiverUsername,
 			Permission receiverPermission, String content, Status status, LocalDate receiveDate)
@@ -59,7 +61,7 @@ public class InboxMessage implements java.io.Serializable {
 
 	/**
 	 * Get sender's classification
-	 * @return {@link classification}
+	 * @return {@link  common.Classification}
 	 */
 	public Permission getSenderPermission() { return m_senderPermission; }
 
@@ -71,7 +73,7 @@ public class InboxMessage implements java.io.Serializable {
 
 	/**
 	 * Get receiver's classification
-	 * @return {@link classification}
+	 * @return {@link common.Classification}
 	 */
 	public Permission getReceiverPermission() { return m_receiverPermission; }
 

@@ -91,6 +91,7 @@ public class Purchase implements java.io.Serializable{
 
 	/**
 	 * Set the date the purchase was done
+	 * @param newdate - new date to set
 	 */
 	public void setPurchaseDate(LocalDate newdate) { m_purchaseDate = newdate; }
 
@@ -102,6 +103,7 @@ public class Purchase implements java.io.Serializable{
 
 	/**
 	 * Set the expiry date for this purchase
+	 * @param newdate - new expiry date to set
 	 */
 	public void setExpirationDate(LocalDate newdate) { m_expirationDate = newdate; }
 
@@ -131,6 +133,7 @@ public class Purchase implements java.io.Serializable{
 
 	/**
 	 * Set the price of the purchase
+	 * @param newprice - new price to set
 	 */
 	public void setPrice(float newprice) { m_price = newprice; }
 

@@ -115,8 +115,7 @@ public class SQLController {
 
 	/**
 	 * Synchronized method which is responsible to check if a record exists in the database
-	 * @param sql - a SELECT sql query
-	 * @param input - {@link ArrayList} of type {@link Object} which are needed to complete the query
+	 * @param inputs - {@link ArrayList} of type {@link Object} which are needed to complete the query
 	 * @return boolean - true if the row exists, false otherwise
 	 */
 	public static synchronized boolean DoesRecordExist(Object...inputs) {

@@ -140,7 +140,7 @@ GUIClient client;
 	/**
 	 *
 	 *Setting the table for the client list
-	 *
+	 *@param  clients - clients list 
 	 * 
 	 */
 	public void setTableViewForClients(ArrayList<Client> clients) {

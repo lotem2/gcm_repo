@@ -82,7 +82,7 @@ public class InboxController implements ControllerListener {
 	}
 	
 	/**
-	 * @param event
+	 * @param event - an event happened
 	 */
 	@FXML
 	public void Approve(ActionEvent event) {
@@ -91,7 +91,7 @@ public class InboxController implements ControllerListener {
 	}
 	
 	/**
-	 * @param event
+	 * @param event - an event happened
 	 */
 	@FXML
 	public void Decline(ActionEvent event) {
@@ -101,7 +101,7 @@ public class InboxController implements ControllerListener {
 
 	/**
 	 * When press "Refresh" button, asks for all current messages
-	 * @param event
+	 * @param event - an event happened
 	 */
 	@FXML
 	public void Refresh(ActionEvent event) {
@@ -120,7 +120,7 @@ public class InboxController implements ControllerListener {
 	}
 	
 	/**
-	 * @param event
+	 * @param event - an event happened
 	 */
 	@FXML
 	public void Close(ActionEvent event) {

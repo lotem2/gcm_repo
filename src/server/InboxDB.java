@@ -30,7 +30,7 @@ public class InboxDB {
 	
 	/**
 	 * Add a new inbox message to database
-	 * @param params - Contain dynamic new message's details
+	 * @param objects - Contain dynamic new message's details
 	 * @return {@link Message} - Indicating success/failure with corresponding message
 	 */
 	public Message AddInboxMessage(Object...objects) {
@@ -170,7 +170,7 @@ public class InboxDB {
 	/**
 	 * Get inbox message from database by the sender user name
 	 * @param params - Contain the sender user name
-	 * @return {@link Message} - contains {@link ArrayList} of type {@link Inbox} messages or a failure message
+	 * @return {@link Message} - contains {@link ArrayList} of type {@link entity.InboxMessage} messages or a failure message
 	 */
 	public Message getInboxMessagesBySender(ArrayList<Object> params) {
 		// Variables
@@ -201,7 +201,7 @@ public class InboxDB {
 	/**
 	 * Get inbox message from database by the reciever's user name
 	 * @param params - Contain the reciever's user name
-	 * @return {@link Message} - contains {@link ArrayList} of type {@link Inbox} messages or a failure message
+	 * @return contains {@link ArrayList} of inbox messages or a failure message
 	 */
 	public Message getInboxMessagesByReciever(ArrayList<Object> params) {
 		// Variables
@@ -232,7 +232,7 @@ public class InboxDB {
 	/**
 	 * get inbox message from database by the receiver's permission
 	 * @param params - Contain the receiver's permission
-	 * @return {@link Message} - contains {@link ArrayList} of type {@link Inbox} messages or a failure message
+	 * @return {@link Message} - contains {@link ArrayList} of type {@link entity.InboxMessage} messages or a failure message
 	 */
 	public Message getInboxMessagesByPermission(ArrayList<Object> params) {
 		// Variables
@@ -263,7 +263,7 @@ public class InboxDB {
 	/**
 	 * get inbox messages from database according to user permissions and username.
 	 * @param params - Contains the Receiver username and it's permission.
-	 * @return {@link Message} - contains {@link ArrayList} of type {@link Inbox} messages or a failure message
+	 * @return {@link common.Message} - contains {@link ArrayList} of type {@link entity.InboxMessage} messages or a failure message
 	 */
 	public Message getInboxMessages(ArrayList<Object> params) {
 		// Variables

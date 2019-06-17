@@ -259,7 +259,7 @@ public class SiteDB {
 	 * Generic add site method
 	 * @param params - Contains new site's details
 	 * @return int - Indicating number of rows affected
-	 * @throws Exception 
+	 * @throws Exception - an exception has occurred 
 	 */
 	public int AddSite(ArrayList<Object> params) throws Exception {
 		// Variables
@@ -302,7 +302,7 @@ public class SiteDB {
 	/**
 	 * Decline or approve existing sites with the new details provided until the maps' new version's publish
 	 * @param params - {@link ArrayList} containing the new sites' id
-	 * @throws Exception 
+	 * @throws Exception - an exception has occurred
 	 */
 	public void approveEditedSites(ArrayList<Object> params) throws Exception {
 		// Variables
@@ -364,7 +364,7 @@ public class SiteDB {
 	/**
 	 * Decline or approve new sites according to the manager's response
 	 * @param params - {@link ArrayList} containing the new sites' id
-	 * @throws Exception 
+	 * @throws Exception - an exception has occurred
 	 */
 	public void approveNewSites(ArrayList<Object> params) throws Exception {
 		// Variables

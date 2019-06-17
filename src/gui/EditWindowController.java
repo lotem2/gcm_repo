@@ -243,7 +243,7 @@ public class EditWindowController implements ControllerListener {
 	/**
 	 *
 	 *gets the parameters of the map to and sends it to the server
-	 *
+	 * @param city - given City
 	 *
 	 */  
 	
@@ -1783,7 +1783,7 @@ public class EditWindowController implements ControllerListener {
 	/**
 	 *
 	 *Button handler to choose an image for a map
-	 * @param <onMouseClicked>
+	 * @param event - mouse click event happened
 	 *
 	 */    
      @FXML

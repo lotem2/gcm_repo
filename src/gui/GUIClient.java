@@ -19,7 +19,7 @@ public class GUIClient extends AbstractClient {
 	ControllerListener currListener;
 
 	/**
-	 * @param contollerListener
+	 * @param contollerListener - chosen controller listener
 	 */
 	public void setCurrentControllerListener(ControllerListener contollerListener) {
 		currListener = contollerListener;
@@ -44,8 +44,8 @@ public class GUIClient extends AbstractClient {
 	
 	/**
 	 * Makes new entity of Message and sends it to the server
-	 * @param action
-	 * @param data
+	 * @param action  - action to be executed
+	 * @param data - given data
 	 */
 	public void sendActionToServer(Action action,ArrayList<Object> data) {
 		Message myMessage = new Message(action,data);
@@ -58,7 +58,7 @@ public class GUIClient extends AbstractClient {
 	}
 	
 	/**
-	 * @param action
+	 * @param action - action to be executed
 	 */
 	public static void sendActionToServer(Action action) {
 		Message myMessage = new Message(action);

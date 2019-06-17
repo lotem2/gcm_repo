@@ -39,8 +39,8 @@ public class ReportsDB implements IReport{
 	/**
 	 * Update report in the DB on users's activity.
 	 * 
-	 * @param username
-	 * @param Insert a new user activity into the Reports DB.
+	 * @param username - given user name
+	 * @param params - report details for a given user
 	 * @return - Return true whether activity was added successfully, else returns false.
 	 * 
 	 */
@@ -157,7 +157,7 @@ public class ReportsDB implements IReport{
 	* name, number of subscribers, number of renewed purchases, number of views,
 	* number of downloads, amount of long term purchases and short term purchases.
 	*
-	* @param  - Contains purchase date and expiry purchase date.
+	* @param  params - Contains purchase date and expiry purchase date.
 	* @return - Return Message that contain data per each city on the daily report.
 	*
 	*/
@@ -231,7 +231,7 @@ public class ReportsDB implements IReport{
 	* name, number of subscribers, number of renewed purchases, number of views,
 	* number of downloads, amount of long term purchases and short term purchases.
 	*
-	* @param  - Contains purchase date, expiry purchase date and the city name.
+	* @param  params - Contains purchase date, expiry purchase date and the city name.
 	* @return - Return Message that contain data per each city on the daily report.
 	*
 	*/

@@ -73,11 +73,11 @@ public class MainGUI extends Application {
 	public static User currUser;
 
 	/**
-	 * Set up connection to server. If args were passed in, use those, otherwise
+	 * Set up connection to server. If arguments were passed in, use those, otherwise
 	 * assume the server is on the same IP with port 5555.
-	 * If connection was not establised correctly, show an error message and
+	 * If connection was not established correctly, show an error message and
 	 * close the application.
-	 * @param primaryStage
+	 * @param primaryStage - the given stage
 	 */
 	@Override
 	public void start(Stage primaryStage) throws IOException {
@@ -132,7 +132,7 @@ public class MainGUI extends Application {
 
 	/**
 	 * Helper function when wanting to create a new scene and not pass a variable.
-	 * @param sceneType
+	 * @param sceneType		given scence type
 	 */
 	public static void openScene(SceneType sceneType) {
 		openScene(sceneType, false);
@@ -141,8 +141,8 @@ public class MainGUI extends Application {
 	/**
 	 * Open the specified scene type on the main stage, if restorePreviousScene is set
 	 * to true, will re-use previous scene, otherwise will create a new scene.
-	 * @param sceneType
-	 * @param restorePreviousScene
+	 * @param sceneType - given scene type
+	 * @param restorePreviousScene - a previous scene to restore to
 	 */
 	public static void openScene(SceneType sceneType, boolean restorePreviousScene) {
 		Platform.runLater(() -> {

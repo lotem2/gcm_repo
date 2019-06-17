@@ -26,7 +26,7 @@ public abstract class User implements java.io.Serializable{
 	 * @param first - The user's first name
 	 * @param last - The user's last name
 	 * @param email - The user's email
-	 * @param email - The user's password
+	 * @param password - The user's password
 	 * @param permission - The user's permission
 	 * @param id - The user's id
 	 */

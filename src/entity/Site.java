@@ -51,6 +51,7 @@ public class Site implements java.io.Serializable{
 
 	/**
 	 * Set site's name
+	 * @param name - given name
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -66,6 +67,7 @@ public class Site implements java.io.Serializable{
 	
 	/**
 	 * Set site's classification
+	 * @param cityname - given city name
 	 */
 	public void setcityName(String cityname) {
 		this.cityname = cityname;
@@ -80,7 +82,7 @@ public class Site implements java.io.Serializable{
 	}
 
 	/**
-	 * Set site's classification
+	 * @param classification - Set site's classification
 	 */
 	public void setClassification(Classification classification) {
 		this.classification = classification;
@@ -95,7 +97,7 @@ public class Site implements java.io.Serializable{
 	}
 
 	/**
-	 * Set site's visit duration
+	 * @param visitTime - Set site's visit duration
 	 */
 	public void setVisitTime(float visitTime) {
 		this.visitDuration = visitTime;
@@ -110,7 +112,7 @@ public class Site implements java.io.Serializable{
 	}
 
 	/**
-	 * Set site's description
+	 * @param description - Set site's description
 	 */
 	public void setDescription(String description) {
 		this.description = description;
