@@ -427,9 +427,11 @@ public class MainGUIController implements ControllerListener {
 					SearchResultsTable.setVisible(true);
 					// Create the columns necessary for the current search  of city
 					col_cityName  = new  TableColumn<>("Map Description");
+					col_cityName.setPrefWidth(409);
 					col_cityName.setCellValueFactory(new MapValueFactory("mapDescription"));
 					col_description  =  new  TableColumn<>("Sites Number");
 					col_description.setCellValueFactory(new MapValueFactory("sitesNumber"));
+					col_description.setMinWidth(137);
 				}
 				else
 				{
@@ -443,10 +445,11 @@ public class MainGUIController implements ControllerListener {
 					SearchResultsTable.setVisible(true);
 					// Create the columns necessary for the current search  of site (or site with other param)
 					col_cityName  =  new  TableColumn<>("City Name");
+					col_cityName.setMinWidth(137);
 					col_cityName.setCellValueFactory(new MapValueFactory("cityName"));
 					col_description  = new  TableColumn<>("Map Description");
 					col_description.setCellValueFactory(new MapValueFactory("mapDescription"));
-
+					col_description.setPrefWidth(409);
 				}
 
 				// Set columns as children of the table view

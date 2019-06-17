@@ -25,11 +25,11 @@
        <Button fx:id="btnMyProfile" layoutX="513.0" layoutY="51.0" mnemonicParsing="false" onAction="#MyProfile" prefHeight="27.0" prefWidth="94.0" text="My Profile" visible="false" />
        <Button fx:id="btnLogout" cancelButton="false" layoutX="614.0" layoutY="51.0" mnemonicParsing="false" onAction="#Logout" prefHeight="27.0" prefWidth="78.0" text="Log out" visible="false" />
        <Button fx:id="btnManage" layoutX="513.0" layoutY="51.0" mnemonicParsing="false" onAction="#Manage" prefHeight="27.0" prefWidth="94.0" text="Manage" visible="false" />
-       <TableView fx:id="SearchResultsTable" layoutX="30.0" layoutY="266.0" prefHeight="488.0" prefWidth="381.0">
+       <TableView fx:id="SearchResultsTable" layoutX="30.0" layoutY="266.0" prefHeight="488.0" prefWidth="547.0">
          <columns>
-           <TableColumn fx:id="col_cityName" maxWidth="5000.0" minWidth="10.0" prefWidth="69.0" text="City" visible="false" />
-           <TableColumn fx:id="col_cityDescription" maxWidth="5000.0" minWidth="10.0" prefWidth="214.0" text="Description Map" />
-           <TableColumn fx:id="col_mapsNumber" maxWidth="5000.0" minWidth="10.0" prefWidth="166.0" text="Maps Number" />
+           <TableColumn fx:id="col_cityName" maxWidth="5000.0" minWidth="10.0" prefWidth="137.0" text="City" visible="false" />
+           <TableColumn fx:id="col_cityDescription" maxWidth="5000.0" minWidth="10.0" prefWidth="409.0" text="Description Map" />
+           <TableColumn fx:id="col_mapsNumber" maxWidth="5000.0" minWidth="10.0" prefWidth="137.0" text="Maps Number" />
            <!--  <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="57.0" text="City" fx:id="col_city" />
            <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="128.0" text="City description" fx:id="col_cityDescription" />
            <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="108.0" text="Sites Numebr" fx:id="col_sitesNumber" />

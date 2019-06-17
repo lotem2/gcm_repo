@@ -259,6 +259,7 @@ public class BuyController implements ControllerListener {
 				}
 				ObservableList<String> currCitiesList = FXCollections.observableArrayList(citiesList);
 				ChoiceBoxCities.setItems(currCitiesList);
+				ChoiceBoxCities.setDisable(false);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -269,7 +270,7 @@ public class BuyController implements ControllerListener {
 					Platform.runLater(() -> {
 						FileChooser fileChooser = new FileChooser();
 						fileChooser.setTitle("Save Image");
-						fileChooser.setInitialFileName("citymap.png");
+						fileChooser.setInitialFileName("citymap");
 						File file = fileChooser.showSaveDialog(MainGUI.MainStage);
 						Services.writeCityToFile((City) (currMsg.getData().get(1)), file.getAbsolutePath());
 					});
