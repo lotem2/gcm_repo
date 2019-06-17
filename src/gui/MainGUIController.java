@@ -200,6 +200,7 @@ public class MainGUIController implements ControllerListener {
 		String userName = MainGUI.currUser.getUserName();
 		data.add(userName);
 		MainGUI.GUIclient.sendActionToServer(Action.LOGOUT,data);
+		MainGUI.currUser = null;
 	}
 
 	/**

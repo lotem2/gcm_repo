@@ -97,7 +97,7 @@ public class EditWindowController implements ControllerListener {
 	City currentCity = null;
 	Map newMap = null;
 	Site newSite = null;
-	
+	boolean IsnewCity = false;
 	
 
 	
@@ -286,7 +286,9 @@ public class EditWindowController implements ControllerListener {
 			
 			String selection = mapChoser.getSelectionModel().getSelectedItem();
 			if (selection.equals("Add New Map")) {
-				if(cityChoser.getSelectionModel().getSelectedItem().equals("Add New City")) {
+				if(cityChoser.getSelectionModel().getSelectedItem().equals("Add New City") &&
+					!cityChoser.getItems().contains(tfCityName.getText()) && (currentCity == null)) {
+					IsnewCity = true;
 					btnSaveCity.fire();
 				}
 				else {
@@ -342,12 +344,12 @@ public class EditWindowController implements ControllerListener {
 			newSite = new Site(name,city,setClassification(classification),description,accessible,visitDuration,locationPoint);
 			if (selection.equals("Add New Site")) {
 				myMessage = new Message(Action.ADD_SITE, getCurrentMap(currentCity.getMaps(), map),name,city,classification,description,accessible,visitDuration,location);
-				siteChoser.getItems().add(name);
-				getCurrentMap(currentCity.getMaps(), map).getSites().add(newSite);
+				/*siteChoser.getItems().add(name);
+				getCurrentMap(currentCity.getMaps(), map).getSites().add(newSite);*/
 			}
 			else {
-				myMessage = new Message(Action.EDIT_SITE,name,city,classification,description,accessible,visitDuration,location);
-				updateMapsAndRoutes(getCurrentSite(currentCity.getMaps(), currentCity.getRoutes(), name), newSite);
+				myMessage = new Message(Action.EDIT_SITE,selection,city,classification,description,accessible,visitDuration,location);
+				//updateMapsAndRoutes(getCurrentSite(currentCity.getMaps(), currentCity.getRoutes(), name), newSite);
 			}
 			MainGUI.GUIclient.sendToServer(myMessage);
 		} catch (IOException e) {
@@ -458,8 +460,8 @@ public class EditWindowController implements ControllerListener {
 				data.add(MainGUI.currUser.getUserName());
 				enableProressIndicator();
 				MainGUI.GUIclient.sendActionToServer(Action.GET_MAP,data);
-				cityChoser.setDisable(true);
-				mapChoser.setDisable(true);
+				//cityChoser.setDisable(true);
+				//mapChoser.setDisable(true);
 			}
 			});
 			break;
@@ -753,6 +755,8 @@ public class EditWindowController implements ControllerListener {
 		   tfCityName.setText(city.getName());
 		   tfCityDescription.setText(city.getDescription());
 		   tfPrice.setText(Float.toString(city.getPrice()));
+		   if(!tfMapDescription.getText().isBlank()) tfMapDescription.clear();
+		   if(!tfMapName.getText().isBlank()) tfMapName.clear();
 		   setMapsChoiceBox(city);//loading the maps in the city to the choice box
 		   setRoutesChoiceBox(city);//loading the routes in the city to the choice box
 		   
@@ -788,6 +792,8 @@ public class EditWindowController implements ControllerListener {
 	    	clearRouteParameters();
 	    	existingSiteToMapChoser.getItems().clear();
 	    	sitesChoserForRoutes.getItems().clear();
+	    	mapChoser.getItems().clear();
+	    	routesChoser.getItems().clear();
 	    	//btnUpdatePrice.setDisable(true);
     	});
     }
@@ -1110,9 +1116,12 @@ public class EditWindowController implements ControllerListener {
 			    		setUpdateVersions();
 			    	});
 				}
-				else 
+				else {
 					JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
 							JOptionPane.WARNING_MESSAGE);
+			    	disableProressIndicator();
+				}
+				
 			}
 			break;	
 			case GET_ALL_SITES_LIST:
@@ -1165,6 +1174,7 @@ public class EditWindowController implements ControllerListener {
 							cityChoser.getItems().add(newCity.getName());
 							cityChoser.getSelectionModel().select(newCity.getName());
 							cityChoser.setValue(newCity.getName());
+							allSitesInTheCity = new ArrayList<Site>();
 						}
 					});
 					
@@ -1199,6 +1209,10 @@ public class EditWindowController implements ControllerListener {
 							JOptionPane.WARNING_MESSAGE);
 
 				newMap = null;
+				if(IsnewCity) {
+					setCityInfo(currentCity);
+					IsnewCity = false;
+				}
 			break;
 			}
 			case ADD_SITE:
@@ -1206,9 +1220,20 @@ public class EditWindowController implements ControllerListener {
 				if ((Integer) currMsg.getData().get(0) == 0) 
 				{
 					if(getCurrentSite(currentCity.getMaps(), currentCity.getRoutes(), newSite.getName()) == null) {
+						if(allSitesInTheCity != null) {
 						allSitesInTheCity.add(newSite);
-						existingSiteToMapChoser.getItems().add(newSite.getName());
-						sitesChoserForRoutes.getItems().add(newSite.getName());
+						setAddSitesToRouteAndMapsChoiceBox(allSitesInTheCity);
+						//existingSiteToMapChoser.getItems().add(newSite.getName());
+						//sitesChoserForRoutes.getItems().add(newSite.getName());
+						}
+						else {
+							allSitesInTheCity = new ArrayList<Site>();
+							allSitesInTheCity.add(newSite);
+							ObservableList<Site> currSitesList = FXCollections.observableArrayList(allSitesInTheCity);
+							Platform.runLater(() -> {
+								setAddSitesToRouteAndMapsChoiceBox(allSitesInTheCity);
+							});
+						}
 					}
 					
 					Map currentMap = getCurrentMap(currentCity.getMaps(), 
@@ -1221,6 +1246,7 @@ public class EditWindowController implements ControllerListener {
 			    	Platform.runLater(() -> {
 			    		siteChoser.setValue(newSite.getName());
 						siteChoser.getSelectionModel().select(newSite.getName());
+						writeImage(currentMap);
 			    	});
 					JOptionPane.showMessageDialog(null, "The site have been added succesfully", "Notification",
 							JOptionPane.INFORMATION_MESSAGE);
@@ -1241,7 +1267,17 @@ public class EditWindowController implements ControllerListener {
 					}
 					Route newRoute = new Route(0, tfRouteName.getText(), cityChoser.getSelectionModel().getSelectedItem(),
 							sites, tfrouteDescription.getText());
+					if(currentCity.getRoutes() == null) currentCity.setRoutes(new ArrayList<Route>());
 					currentCity.getRoutes().add(newRoute);
+					Platform.runLater(new Runnable() {
+						
+						@Override
+						public void run() {
+							routesChoser.getItems().add(newRoute.getName());
+							routesChoser.getSelectionModel().select(newRoute.getName());
+							routesChoser.setValue(newRoute.getName());
+						}
+					});
 
 					JOptionPane.showMessageDialog(null, "The route have been added succesfully", "Notification",
 							JOptionPane.INFORMATION_MESSAGE);
@@ -1387,15 +1423,17 @@ public class EditWindowController implements ControllerListener {
 		      public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) {
 		    	  Platform.runLater(() -> {
 		    		  if(cityChoser.getValue() != null) {
-		    			  String previousCity = number.intValue() == -1 ? "" : 
-		    				  cityChoser.getItems().get(number.intValue());
 			    		  String currCityName = cityChoser.getValue();
-			    		  if(!previousCity.equals("Add New City")) {
-				    		  clearCityParameters();
+			    		  if(currCityName.equals("Add New City")) {
+				    		  currentCity = null;
+			    			  clearCityParameters();
+				    		  tfCityName.setEditable(true);
 				    		  setCurrentCity(currCityName);
-				    		  //tfCityName.setEditable(true);
 			    		  }
-			    		  //tfCityName.setEditable(false);
+			    		  else if(!IsnewCity){
+				    		  setCurrentCity(currCityName);
+			    			  tfCityName.setEditable(false);
+			    		  }
 		    		  }
 		    	  });
 			}
@@ -1423,11 +1461,6 @@ public class EditWindowController implements ControllerListener {
 						clearMapParameters();
 						btnBrowse.setVisible(true);
 						tfMapName.setEditable(true);
-						ObservableList<String> currSitesList = FXCollections.observableArrayList();
-						currSitesList.add("Add New Site");
-						if(siteChoser.getItems() != null) 
-							siteChoser.getItems().clear();
-						siteChoser.setItems(currSitesList);
 					
 					}
 					else
@@ -1465,13 +1498,15 @@ public class EditWindowController implements ControllerListener {
 							else
 							{
 						    	ArrayList<Site> sites = currMap.getSites();
-							    for(Site currSite : sites){
-							        if(currSite.getName() != null && currSite.getName().contains(currSiteName))
-							        	Platform.runLater(() -> {
-							        		setSiteInfo(currSite);
-							        		tfSiteName.setEditable(false);
-							        	});
-							    }
+						    	if(sites != null) {
+								    for(Site currSite : sites){
+								        if(currSite.getName() != null && currSite.getName().contains(currSiteName))
+								        	Platform.runLater(() -> {
+								        		setSiteInfo(currSite);
+								        		tfSiteName.setEditable(false);
+								        	});
+								    }
+						    	}
 								
 							}
 		    		  }
@@ -1495,20 +1530,20 @@ public class EditWindowController implements ControllerListener {
 		      public void changed(ObservableValue<? extends Number> observableValue, Number number, Number number2) 
 		      {
 		    	  Platform.runLater(() -> {
-		    		   String currRouteName = "";
-						if(routesChoser.getValue() != null) 
-						{  
-						currRouteName = (routesChoser.getItems().get((Integer) number2));
+		    		  String currRouteName = "";
+		    		  if(routesChoser.getValue() != null) {  
+				    	  currRouteName = routesChoser.getValue();
 							if (currRouteName.equals("Add New Route"))
 							{
 								clearRouteParameters();
+								tfRouteName.setEditable(true);
 							}
 							else
 							{
 								setRouteInfo(getCurrentRoute(currentCity.getRoutes(), currRouteName));
 								tfRouteName.setEditable(false);
 							}
-						}
+		    		  }
 		    	  });
 		      }
 		  });
@@ -1764,11 +1799,12 @@ public class EditWindowController implements ControllerListener {
             //Show open file dialog
             File file = fileChooser.showOpenDialog(null);
             try {
-            	
-                BufferedImage bufferedImage = ImageIO.read(file);
-                Image image = SwingFXUtils.toFXImage(bufferedImage, null);
-                pathToMap = file.getAbsolutePath(); //saving the URL for using later
-                mapView.setImage(image);
+            	if(file != null) {
+	                BufferedImage bufferedImage = ImageIO.read(file);
+	                Image image = SwingFXUtils.toFXImage(bufferedImage, null);
+	                pathToMap = file.getAbsolutePath(); //saving the URL for using later
+	                mapView.setImage(image);
+            	}
             } 
             catch (IOException ex) 
             {
@@ -2019,21 +2055,25 @@ public class EditWindowController implements ControllerListener {
 	 * @return - {@link Site}
 	 */
 	private Site getCurrentSite(ArrayList<Map> city_maps, ArrayList<Route> city_routes, String name) {
-		for (Map map : city_maps) {
-			if(map.getSites() != null) {
-			    for(Site currSite : map.getSites()){
-			        if(currSite.getName() != null && currSite.getName().equals(name))
-			        	return currSite;
-			    }	
+		if(city_maps != null ) {
+			for (Map map : city_maps) {
+				if(map.getSites() != null) {
+				    for(Site currSite : map.getSites()){
+				        if(currSite.getName() != null && currSite.getName().equals(name))
+				        	return currSite;
+				    }	
+				}
 			}
 		}
 		
-		for (Route route : city_routes) {
-			if(route.getSites() != null) {
-			    for(Site currSite : route.getSites()){
-			        if(currSite.getName() != null && currSite.getName().equals(name))
-			        	return currSite;
-			    }	
+		if(city_routes != null) {
+			for (Route route : city_routes) {
+				if(route.getSites() != null) {
+				    for(Site currSite : route.getSites()){
+				        if(currSite.getName() != null && currSite.getName().equals(name))
+				        	return currSite;
+				    }	
+				}
 			}
 		}
 		return null;
@@ -2045,14 +2085,18 @@ public class EditWindowController implements ControllerListener {
 	 * @param newSite - the updated site's instance
 	 */
 	private void updateMapsAndRoutes(Site currentSite, Site newSite) {
-		for (Map map : currentCity.getMaps()) {
-		    if(map.getSites() != null && map.getSites().indexOf(currentSite) != -1)
-		    	map.getSites().set(map.getSites().indexOf(currentSite), newSite);
+		if(currentCity.getMaps() != null) {
+			for (Map map : currentCity.getMaps()) {
+			    if(map.getSites() != null && map.getSites().indexOf(currentSite) != -1)
+			    	map.getSites().set(map.getSites().indexOf(currentSite), newSite);
+			}
 		}
 		
-		for (Route route : currentCity.getRoutes()) {
-			if(route.getSites() != null && route.getSites().indexOf(currentSite) != -1)
-				route.getSites().set(route.getSites().indexOf(currentSite), newSite);
+		if(currentCity.getRoutes() != null) {
+			for (Route route : currentCity.getRoutes()) {
+				if(route.getSites() != null && route.getSites().indexOf(currentSite) != -1)
+					route.getSites().set(route.getSites().indexOf(currentSite), newSite);
+			}
 		}
 	}
 }

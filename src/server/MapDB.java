@@ -234,17 +234,30 @@ public class MapDB {
 				// Throwing exception in case the site's addition to Sites table was unsuccessful
 				if (SiteDB.getInstance().AddSite(data) == 0) throw new Exception("Unable to add the site.");
 			}
-			// Prepare insert statement
-			sql = "INSERT INTO BridgeMSC (`mapID`, `siteID`, `cityID`, `is_active`, `to_delete`) "
-					+ "VALUES (?,"
-					+ 		  "(SELECT siteID FROM Sites WHERE name = ? LIMIT 1), "
-					+ 		  "(SELECT id FROM Cities WHERE name = ?), 0, 0)";
 
-			// Insert parameters for next query
-			data = new ArrayList<Object>();
+			data = new ArrayList<Object>(); // prepare parameters for next query
+			
+			if(currentMap.getID() == 0)
+			{
+				// Prepare insert statement
+				sql = "INSERT INTO BridgeMSC (`mapID`, `siteID`, `cityID`, `is_active`, `to_delete`) "
+						+ "VALUES ((SELECT mapID FROM Maps WHERE mapname = ?),"
+						+ 		  "(SELECT siteID FROM Sites WHERE name = ? LIMIT 1), "
+						+ 		  "(SELECT id FROM Cities WHERE name = ?), 0, 0)";
 
-			// Get the correct parameters for the map-site relation query
-			data.add(currentMap.getID()); data.add(site); data.add(currentMap.getCityName());
+				// Get the correct parameters for the map-site relation query
+				data.add(currentMap.getName()); data.add(site); data.add(currentMap.getCityName());
+			}
+			else {
+				// Prepare insert statement
+				sql = "INSERT INTO BridgeMSC (`mapID`, `siteID`, `cityID`, `is_active`, `to_delete`) "
+						+ "VALUES (?,"
+						+ 		  "(SELECT siteID FROM Sites WHERE name = ? LIMIT 1), "
+						+ 		  "(SELECT id FROM Cities WHERE name = ?), 0, 0)";
+
+				// Get the correct parameters for the map-site relation query
+				data.add(currentMap.getID()); data.add(site); data.add(currentMap.getCityName());
+			}
 
 			// Insert the relation between the site and map using private editMap method
 			if (editMap(sql, data) == 0) throw new Exception("Site was not addded successfuly");

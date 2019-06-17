@@ -382,17 +382,19 @@ public final class Services extends TimerTask {
 			// Go through each user's purchase and send them a message about a map's update
 			for (Purchase purchase : cityPurchases) {
 				// Insert new Inbox message to clients letting them know there is a new version for the map
-				common.Message msg = InboxDB.getInstance().AddInboxMessage(
-						Permission.GCM_SYSTEM.toString(),
-						Permission.GCM_SYSTEM.toString(),
-						purchase.getUserName(),
-						Permission.CLIENT.toString(),
-						content,
-						new String("INFO"),
-						LocalDate.now());
-				// Check if we got an error while notifying users
-				if((Integer)msg.getData().get(0) == 1)
-					throw new Exception("Error while updating users about the map's version");
+				if(purchase.getPurchaseType() == PurchaseType.LONG_TERM_PURCHASE) {
+					common.Message msg = InboxDB.getInstance().AddInboxMessage(
+							Permission.GCM_SYSTEM.toString(),
+							Permission.GCM_SYSTEM.toString(),
+							purchase.getUserName(),
+							Permission.CLIENT.toString(),
+							content,
+							new String("INFO"),
+							LocalDate.now());
+					// Check if we got an error while notifying users
+					if((Integer)msg.getData().get(0) == 1)
+						throw new Exception("Error while updating users about the map's version");
+				}
 			}
 			data.clear(); data.add(new Integer(0));
 		}
@@ -480,8 +482,10 @@ public final class Services extends TimerTask {
 				// Add user entity and city name to data
 				response.clear(); response.add((User)params.get(3));response.add(params.get(2).toString()); 
 				common.Message message;
-				message = notifyClientsOnNewVersion(response);
-				if((Integer)message.getData().get(0) == 1) throw new Exception((String)message.getData().get(1));
+				if(status.equals("APPROVED")) {
+					message = notifyClientsOnNewVersion(response);
+					if((Integer)message.getData().get(0) == 1) throw new Exception((String)message.getData().get(1));
+				}
 			}
 			catch (Exception e)
 			{

@@ -29,7 +29,7 @@ public class SQLController {
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
@@ -51,7 +51,7 @@ public class SQLController {
 				conn = null;
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 	}
 
@@ -77,7 +77,7 @@ public class SQLController {
 			return prep_stmt.executeQuery();
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		
 		// In case there was an exception returning null
@@ -106,7 +106,7 @@ public class SQLController {
 			return prep_stmt.executeUpdate();
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		
 		// In case there was an exception returning 0
@@ -154,7 +154,7 @@ public class SQLController {
 			if(rs.next()) RecordExists = true;
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		
 		// Return result
