@@ -89,6 +89,8 @@ public class PurchaseDB {
 				data.add(new Integer(0));
 				data.add(city.getData().get(1));
 			}
+			// Add 0 to indicate success
+			data.add(new Integer(0));
 		}
 		catch (SQLException e) {
 			data.add(new Integer(1));
