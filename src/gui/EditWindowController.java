@@ -729,7 +729,7 @@ public class EditWindowController implements ControllerListener {
 	/**
 	 *
 	 *method to put the route info in the fields, gotten from the server, for the editor
-	 *
+	 *@param route - the current route that the server sent
 	 *
 	 */ 
    void setRouteInfo(Route route) {
@@ -743,8 +743,8 @@ public class EditWindowController implements ControllerListener {
    }
 	/**
 	 *
-	 *method to put the city info in the fields, gotten from the server, for the editor
-	 *
+	 *method to put the city info in the fields, gotten from the server, for the editor and requests the sites of the city from the server
+	 *@param city - the current city that the server sent 
 	 *
 	 */ 
    void setCityInfo(City city) {
@@ -770,7 +770,7 @@ public class EditWindowController implements ControllerListener {
 
 	/**
 	 *
-	 *method to clear the fields, in the case that the editor wishes to add a new city
+	 *method to clear the fields of the city, the routes and the maps if they have been loaded before
 	 *
 	 *
 	 */ 
@@ -794,7 +794,7 @@ public class EditWindowController implements ControllerListener {
 
 	/**
 	 *
-	 *method to clear the fields, in the case that the editor wishes to add a new map
+	 *method to clear the fields of the map and the sites, if they have been loaded before
 	 *
 	 *
 	 */ 
@@ -816,7 +816,7 @@ public class EditWindowController implements ControllerListener {
 
 	/**
 	 *
-	 *method to clear the fields, in the case that the editor wishes to add a new Route
+	 *method to clear the fields of the route and the sites on the route, if they have been loaded before
 	 *
 	 *
 	 */ 
@@ -832,7 +832,7 @@ public class EditWindowController implements ControllerListener {
     
 	/**
 	 *
-	 *method to clear the fields, in the case that the editor wishes to add a new site
+	 *method to clear the fields of the site
 	 *
 	 *
 	 */ 
@@ -887,7 +887,6 @@ public class EditWindowController implements ControllerListener {
 			tfRouteName.setEditable(false);
 			tfEstimatedTime.setEditable(false);
 			lbLocation.setVisible(true);
-			//seperator.setVisible(false);
 		});
 	}
 	
@@ -1074,8 +1073,8 @@ public class EditWindowController implements ControllerListener {
      });
     }
 	/**
-	 *
-	 *handle from server the responses for getting the cities list, the city object and the sites list
+	 *handle the responses from server for getting the cities list, the city object and the sites list, all the add/edit actions for city/routes/maps and sites
+	 *handles the message for getting map for the case of the clients views.
 	 *
 	 *
 	 */  
@@ -1085,17 +1084,6 @@ public class EditWindowController implements ControllerListener {
 		Message currMsg = (Message) msg;
 		switch (currMsg.getAction()) 
 		{
-//			case GET_CITIES_LIST:
-//			if ((Integer) currMsg.getData().get(0) == 0) 
-//			{
-//				    	ArrayList<String> citiesList = (ArrayList<String>) currMsg.getData().get(1);
-//				    	citiesList.add(0, "Add New City");
-//						ObservableList<String> currCitiesList = FXCollections.observableArrayList(citiesList);
-//						cityChoser.setItems(currCitiesList);
-//			}
-//			else 
-//				JOptionPane.showMessageDialog(null, (currMsg.getData().get(1)).toString(), "Error",
-//						JOptionPane.WARNING_MESSAGE);
 			case GET_CITY_PRICE:
 				if ((Integer) currMsg.getData().get(0) == 0) 
 				{
@@ -1413,6 +1401,13 @@ public class EditWindowController implements ControllerListener {
 			}
 		});
 	}
+	
+	/**
+	 *
+	 *method to listen to the maps choice box
+     *the choice box gives two options: add new map or watch a map that already exists.
+	 *@param currCity - the current city that the user had chosen.
+	 */  
 		void mapsChoiceBoxListener(City currCity) 
 		{
 		mapChoser.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
@@ -1446,7 +1441,13 @@ public class EditWindowController implements ControllerListener {
 			}
 		});
 		}
-		
+		/**
+		 *
+		 *method to listen to the maps choice box
+		 *the choice box gives two options: add new site or watch a site that already exists.
+		 * @param currMap - the current map that the user had chosen.
+		 * 
+		 */
 		void sitesChoiceBoxListener(Map currMap) 
 		{
 			siteChoser.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
@@ -1479,6 +1480,13 @@ public class EditWindowController implements ControllerListener {
 		});
 
 	}
+		/**
+		 *
+		 *method to listen to the maps choice box
+		 *the choice box gives two options: add new route or watch a route that already exists.
+		 * @param currCity - the current city that the user had chosen.
+		 * 
+		 */
 		void routesChoiceBoxListener(City currCity) 
 		{
 			routesChoser.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() 
@@ -1511,7 +1519,7 @@ public class EditWindowController implements ControllerListener {
 
 		/**
 		 *
-		 *method to add sites to the Route
+		 *method to add existing sites in the city to the Route
 		 * 
 		 *
 		 */  
@@ -1545,8 +1553,8 @@ public class EditWindowController implements ControllerListener {
 
 	/**
 	 *
-	 *method to initialize the choice box of the cities
-	 * 
+	 *method to set the current city
+	 *in the case of a new city, a new map should be created
 	 *
 	 */  
 	void setCurrentCity(String currCityName) {
@@ -1577,7 +1585,12 @@ public class EditWindowController implements ControllerListener {
 					MainGUI.GUIclient.sendActionToServer(Action.GET_CITY,data);
 				}
 			}
-
+	/**
+	 *
+	 *method to initialize the choice box of the names of the cities
+	 *adds the option to add a new city only for users that aren't clients.
+	 *@param citiesAndPrices - contains the list of the names of the cities.
+	 */
 	void setCityChoiceBox(HashMap<String, Float> citiesAndPrices)
 	{
 			if (citiesAndPrices != null) {
@@ -1594,7 +1607,10 @@ public class EditWindowController implements ControllerListener {
 	}
 	/**
 	 *
-	 *method to initialize the choice box of the maps
+	 *method to initialize the choice box of the names of the maps:
+	 *searches through the names of the array list of maps in the city and makes a list of their names.
+	 *adds the option to add a new map only for users that aren't clients.
+	 *@param currCity - the city object. 
 	 * 
 	 *
 	 */  
@@ -1619,10 +1635,13 @@ public class EditWindowController implements ControllerListener {
 	}
 	/**
 	 *
-	 *method to initialize the choice box of the routes
+	 *method to initialize the choice box of the names of the routes:
+	 *searches through the names of the array list of routes in the city and makes a list of their names.
+	 *adds the option to add a new route only for users that aren't clients.
+	 *@param currCity - the city object. 
 	 * 
 	 *
-	 */  
+	 */ 
 	void setRoutesChoiceBox(City currCity) 
 	{
     	ArrayList<Route> routes = currCity.getRoutes();
@@ -1645,10 +1664,13 @@ public class EditWindowController implements ControllerListener {
 	
 	/**
 	 *
-	 *method to initialize the choice box of the sites
+	 *method to initialize the choice box of the names of the sites:
+	 *searches through the names of the array list of sites in the city and makes a list of their names.
+	 *adds the option to add a new site only for users that aren't clients.
+	 *@param currMap - the city object. 
 	 * 
 	 *
-	 */  
+	 */ 
 	void setSitesChoiceBox(Map currMap) 
 	{
     	ArrayList<Site> sites = currMap.getSites();
@@ -1668,33 +1690,39 @@ public class EditWindowController implements ControllerListener {
 		//});
 	}
 	
-	/**
-	 *
-	 *method for setting up the Route List
-	 *
-	 */
-	void setSitesOnRouteChoiceBox(Route currRoute) 
-	{
-    	ArrayList<Site> sites = currRoute.getSites();
-    	ArrayList<String> sitesList = new ArrayList<String>();
-		if (sites != null) {
-		      Iterator<Site> itr = sites.iterator();
-		      while(itr.hasNext()) {
-		    	  int  currSiteIndex = sites.indexOf(itr.next());
-		    	  sitesList.add(sites.get(currSiteIndex).getName());
-		      }
-		}
-		ObservableList<String> currSitesList = FXCollections.observableArrayList(sitesList);
-		Platform.runLater(() -> {
-			routesChoser.setItems(currSitesList);
-		});
-	}
+//	/**
+//	 *
+//	 *method to initialize the choice box of the names of the existing sites that can be added to the route.
+//	 *searches through the names of the array list of sites in the city and makes a list of their names.
+//	 *@param currRoute - the route object. 
+//	 * 
+//	 *
+//	 */ 
+//	void setSitesOnRouteChoiceBox(Route currRoute) 
+//	{
+//    	ArrayList<Site> sites = currRoute.getSites();
+//    	ArrayList<String> sitesList = new ArrayList<String>();
+//		if (sites != null) {
+//		      Iterator<Site> itr = sites.iterator();
+//		      while(itr.hasNext()) {
+//		    	  int  currSiteIndex = sites.indexOf(itr.next());
+//		    	  sitesList.add(sites.get(currSiteIndex).getName());
+//		      }
+//		}
+//		ObservableList<String> currSitesList = FXCollections.observableArrayList(sitesList);
+//		Platform.runLater(() -> {
+//			routesChoser.setItems(currSitesList);
+//		});
+//	}
 	
 	/**
 	 *
-	 *method for setting up the sites that can be added to the route
+	 *method to initialize the choice box of the names of the existing sites that can be added to the map or to the route
+	 *searches through the names of the array list of sites in the city and makes a list of their names.
+	 *@param allSitesList - an array list of sites (all the sites in the city)
+	 * 
 	 *
-	 */
+	 */ 
 	void setAddSitesToRouteAndMapsChoiceBox(ArrayList<Site> allSitesList) 
 	{
     	ArrayList<String> sitesList = new ArrayList<String>();
@@ -1777,6 +1805,12 @@ public class EditWindowController implements ControllerListener {
 			});
     }
 
+ 	/**
+	 *
+	 *sets the table with the details of the sites in the chosen route
+	 * @param currSitesList
+	 *
+	 */  
 	public void setTableViewForRouteSites(ObservableList<Site> currSitesList) {
 		Platform.runLater(new Runnable() {
 			@SuppressWarnings("unchecked")
@@ -1792,7 +1826,12 @@ public class EditWindowController implements ControllerListener {
 		});
 	}
     
-
+ 	/**
+	 *
+	 *method to delete a site from the current shown map
+	 *
+	 *
+	 */  
     @FXML
     void DeleteSite(ActionEvent event) {
     	String mapName = mapChoser.getSelectionModel().getSelectedItem();
@@ -1802,7 +1841,12 @@ public class EditWindowController implements ControllerListener {
 		data.add(siteName);
 		MainGUI.GUIclient.sendActionToServer(Action.REMOVE_SITE,data);
     }
-    
+ 	/**
+	 *
+	 *method to add a site that already exists in the city to add it to the map
+	 *
+	 *
+	 */  
     @FXML
     void AddAnExistingSiteToMap(ActionEvent event) {
     	String siteName = existingSiteToMapChoser.getSelectionModel().getSelectedItem();
@@ -1821,7 +1865,12 @@ public class EditWindowController implements ControllerListener {
 			MainGUI.GUIclient.sendActionToServer(Action.ADD_SITE,data);
     	}
     }
-	
+ 	/**
+	 *
+	 *method to request from the server the option to update the price of the city
+	 *
+	 *
+	 */  
 
     @FXML
     void UpdatePrice(ActionEvent event) {
@@ -1851,7 +1900,12 @@ public class EditWindowController implements ControllerListener {
 			JOptionPane.showMessageDialog(null, "City is not in the system.", "Error",
 					JOptionPane.WARNING_MESSAGE);
     }
-
+ 	/**
+	 *
+	 *method to request to update the version of the city
+	 *
+	 *
+	 */  
     @FXML
     void UpdateVersion(ActionEvent event) {
 		ArrayList<Object> data = new ArrayList<Object>();
