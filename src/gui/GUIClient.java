@@ -27,7 +27,6 @@ public class GUIClient extends AbstractClient {
 
 	/**
 	 * This method handles all data that comes in from the server.
-	 *
 	 * @param msg The message from the server.
 	 */
 	public void handleMessageFromServer(Object msg) {
@@ -44,6 +43,7 @@ public class GUIClient extends AbstractClient {
 	}
 	
 	/**
+	 * Makes new entity of Message and sends it to the server
 	 * @param action
 	 * @param data
 	 */

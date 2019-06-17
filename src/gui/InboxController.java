@@ -50,6 +50,7 @@ public class InboxController implements ControllerListener {
 	InboxMessage m_selectedMessage;
 	
 	/**
+	 * Send to the server the status of the request
 	 * @param isApproved
 	 */
 	private void sendApprovalOrDeclineMessage(boolean isApproved) {
@@ -99,6 +100,7 @@ public class InboxController implements ControllerListener {
 	}
 
 	/**
+	 * When press "Refresh" button, asks for all current messages
 	 * @param event
 	 */
 	@FXML
