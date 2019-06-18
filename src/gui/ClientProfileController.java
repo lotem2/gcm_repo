@@ -527,24 +527,32 @@ public class ClientProfileController implements ControllerListener {
     void Renew(ActionEvent event) 
     {
     	Purchase purchase = purchasesTable.getSelectionModel().getSelectedItem();
-		if (purchase!=null) 
+    	if (purchase!=null) 
 		{
-			double newprice = (purchase.getPrice()*0.9);
-			newprice = Double.parseDouble(new DecimalFormat("##.##").format(newprice));
-			Period period = Period.between(purchase.getPurchaseDate() , purchase.getExpirationDate());
-			Integer daysElapsed = period.getDays();
-			LocalDate purchaseDate=LocalDate.now();
-			LocalDate expiryDate=LocalDate.now().plusDays(daysElapsed);
-			ArrayList<Object> data = new ArrayList<Object>();
-			purchase.setPrice((float)newprice);
-			purchase.setPurchaseDate(purchaseDate);
-			purchase.setExpirationDate(expiryDate);
-			data.add(purchase);
-			MainGUI.GUIclient.sendActionToServer(Action.RENEW,data);
-		}
-		else
-			JOptionPane.showMessageDialog(null, "You haven't selected any purchase to Renew.", "Error",
+    		Period period = Period.between(purchase.getPurchaseDate() , purchase.getExpirationDate());
+	    	if(period.getDays()<=3)
+	    	{
+				double newprice = (purchase.getPrice()*0.9);
+				newprice = Double.parseDouble(new DecimalFormat("##.##").format(newprice));
+				Integer daysElapsed = period.getDays();
+				LocalDate purchaseDate=LocalDate.now();
+				LocalDate expiryDate=LocalDate.now().plusDays(daysElapsed);
+				ArrayList<Object> data = new ArrayList<Object>();
+				purchase.setPrice((float)newprice);
+				purchase.setPurchaseDate(purchaseDate);
+				purchase.setExpirationDate(expiryDate);
+				data.add(purchase);
+				MainGUI.GUIclient.sendActionToServer(Action.RENEW,data);
+			}
+			else
+				JOptionPane.showMessageDialog(null, "You have more than 3 days.\nPlease come later to renew!", "Error",
 					JOptionPane.WARNING_MESSAGE);
+    	}
+    	else
+    	{
+				JOptionPane.showMessageDialog(null, "You haven't selected any purchase to Renew.", "Error",
+						JOptionPane.WARNING_MESSAGE);
+    	}
     }
 	/**
 	 *
