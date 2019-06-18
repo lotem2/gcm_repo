@@ -71,7 +71,7 @@ public final class Services extends TimerTask {
 				if(city_map.getImageAsByte() != null) {
 					BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(city_map.getImageAsByte()));
 					File newImage = new File(directory.getPath() + "\\" + city_map.getName().replace(" ", "_") + ".jpg"); // Create output file				
-				    ImageIO.write(bImage, "jpg", newImage); // Write image to the specified path	
+				    ImageIO.write(bImage, "png", newImage); // Write image to the specified path	
 				}
 			}
 
