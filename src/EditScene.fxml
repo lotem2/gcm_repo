@@ -86,6 +86,7 @@
                   <Button id="btnSaveSite" fx:id="btnAddAnExistingSiteToMap" layoutX="486.0" layoutY="53.0" mnemonicParsing="false" onAction="#AddAnExistingSiteToMap" prefHeight="27.0" prefWidth="103.0" text="Add Site" />
                   <Label id="lblMapName" fx:id="lblExistingSiteToMapChoser" font="$x1" layoutX="431.0" layoutY="-2.0" text="Choose an existing site:" />
                   <Separator id="seperator" fx:id="seperatorSites" layoutX="409.0" layoutY="88.0" prefWidth="270.0" />
+                  <Label fx:id="lblCityNameOfMap" font="$x1" layoutX="242.0" layoutY="35.0" text="City:" />
                 </children>
               </AnchorPane>
             </content>
