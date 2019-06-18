@@ -350,20 +350,22 @@ public class MapDB {
 				// Check if the image was null - reading from resourse
 				if(image == null)
 					image = getClass().getResourceAsStream("/images/" + mapname.replace(" ", "_") + ".png").readAllBytes();
-
-				// Clear lists of parameters for the next queries and add the desired parameter
-				cityparam.clear(); cityparam.addAll(params.subList(0, params.size() - 1));
-
-				// Get map's list of sites
-				Object mapSites = SiteDB.getInstance().getSitesbyMap(cityparam);
-
-				// Set the list of sites as null in case of a prbolem with the database/no sites for this map
-				sites = ((Message)mapSites).getData().get(1) instanceof String ? null : 
-					(ArrayList<Site>)((Message)mapSites).getData().get(1);
 				
 				currentMap = new Map(Integer.parseInt(params.get(1).toString()), mapname, description, 
-						cityname, sites, image, is_active);
+						cityname, null, image, is_active);
 			}
+
+			// Clear lists of parameters for the next queries and add the desired parameter
+			cityparam.clear(); cityparam.addAll(params.subList(0, params.size() - 1));
+
+			// Get map's list of sites
+			Object mapSites = SiteDB.getInstance().getSitesbyMap(cityparam);
+
+			// Set the list of sites as null in case of a prbolem with the database/no sites for this map
+			sites = ((Message)mapSites).getData().get(1) instanceof String ? null : 
+				(ArrayList<Site>)((Message)mapSites).getData().get(1);
+			
+			currentMap.setSites(sites);
 			
 			replyMsg = new Message(null, new Integer(0), currentMap);	// Add content of the array list to the message
 		}

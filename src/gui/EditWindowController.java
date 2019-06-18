@@ -419,6 +419,8 @@ public class EditWindowController implements ControllerListener {
     	Platform.runLater(() -> {
     		MainGUI.MainStage.setTitle("Global City Map");
     	});
+    	//currentCity = null;
+    	ClientProfileController.currentPurchase = null;
 		MainGUI.openScene(MainGUI.SceneType.MAIN_GUI);
     }
 	/**
