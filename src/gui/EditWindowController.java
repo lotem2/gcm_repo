@@ -1354,9 +1354,23 @@ public class EditWindowController implements ControllerListener {
 						public void run() {
 							clearSiteParameters();
 							siteChoser.getItems().remove(siteChoser.getSelectionModel().getSelectedItem());
+							   double xLocation = (mapView.getBoundsInParent().getMinX() + 
+									   currentSite.getLocation().getX()) > mapView.getImage().getWidth() ?
+											   currentSite.getLocation().getX() :   
+												   mapView.getBoundsInParent().getMinX() + 
+												   currentSite.getLocation().getX();
+							   double yLocation = (mapView.getBoundsInParent().getMinY() + 
+									   currentSite.getLocation().getY()) > mapView.getImage().getHeight() ?
+											   currentSite.getLocation().getY() : 
+												   mapView.getBoundsInParent().getMinY() + 
+												   currentSite.getLocation().getY();
+							   //if (xLocation > mapView.getImage().getWidth())
+								  // xLocation = currentSite.getLocation().getX();
+							   //if(yLocation > mapView.getImage().getHeight())
+									 //  yLocation = currentSite.getLocation().getY();
 							paneMap.getChildren().removeIf(filter -> filter instanceof Circle && 
-									((Circle)filter).getCenterX() == currentSite.getLocation().getX() && 
-									((Circle)filter).getCenterY() == currentSite.getLocation().getY());
+									((Circle)filter).getCenterX() == xLocation && 
+									((Circle)filter).getCenterY() == yLocation);
 						}
 					});
 					JOptionPane.showMessageDialog(null, "The changes to the site have been added succesfully", "Notification",
