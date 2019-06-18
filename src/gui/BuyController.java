@@ -270,7 +270,7 @@ public class BuyController implements ControllerListener {
 					Platform.runLater(() -> {
 						FileChooser fileChooser = new FileChooser();
 						fileChooser.setTitle("Save Image");
-						fileChooser.setInitialFileName("citymap");
+						fileChooser.setInitialFileName("citymap.png");
 						File file = fileChooser.showSaveDialog(MainGUI.MainStage);
 						Services.writeCityToFile((City) (currMsg.getData().get(1)), file.getAbsolutePath());
 					});
