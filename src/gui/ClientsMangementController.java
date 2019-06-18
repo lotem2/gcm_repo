@@ -170,6 +170,7 @@ GUIClient client;
     void EditMaps(ActionEvent event) {
 		MainGUI.MainStage.setTitle("Global City Map - Edit Maps");
 		MainGUI.openScene(SceneType.Edit);
+		MainGUIController.selectedMap = 0;
     }
 
     @FXML

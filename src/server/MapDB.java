@@ -599,8 +599,7 @@ public class MapDB {
 			if(params.get(0) instanceof Map) {
 				sql = "UPDATE BridgeMSC SET to_delete = 1 " +
 					  "WHERE mapID = ? AND "
-					  + "siteID = (SELECT s.siteID FROM Sites s WHERE s.name = ? LIMIT 1) AND "
-					  + "is_active = 1";
+					  + "siteID = (SELECT s.siteID FROM Sites s WHERE s.name = ? LIMIT 1)";
 				
 				// Prepare parameters for the query
 				sql_params = new ArrayList<Object>(); 

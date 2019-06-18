@@ -676,10 +676,10 @@ public class EditWindowController implements ControllerListener {
 	 */ 
    void setMapInfo(Map map) {
 	   siteChoser.getItems().clear();
+	   Platform.runLater(() -> {
 	   setSitesChoiceBox(map);
 	   sitesChoiceBoxListener(map);
 	   btnBrowse.setVisible(false);
-	   Platform.runLater(() -> {
 		   tfMapName.setText(map.getName());
 		   tfMapDescription.setText(map.getDescription());
 	   });
@@ -849,9 +849,10 @@ public class EditWindowController implements ControllerListener {
 	    	tfX.clear();
 	    	tfY.clear();
 	    	tfEstimatedTime.clear();
-	    	categoryChoser.setValue(null);
+	        categoryChoser.setValue(null);
 	    	accessibilityChoser.setValue(null);
-    	});
+	    	});
+
     }
 	/**
 	 *
@@ -1347,6 +1348,7 @@ public class EditWindowController implements ControllerListener {
 					Platform.runLater(new Runnable() {
 						@Override
 						public void run() {
+							clearSiteParameters();
 							siteChoser.getItems().remove(siteChoser.getSelectionModel().getSelectedItem());
 							paneMap.getChildren().removeIf(filter -> filter instanceof Circle && 
 									((Circle)filter).getCenterX() == currentSite.getLocation().getX() && 
@@ -1832,7 +1834,7 @@ public class EditWindowController implements ControllerListener {
 				
 				@Override
 				public void run() {
-			     if(MainGUI.currUser.getPermission() != Permission.CLIENT) {
+			     if(MainGUI.currUser.getPermission() != Permission.CLIENT && mapChoser.getSelectionModel().getSelectedItem()!=null) {
 					tfX.setText(Double.toString(x).substring(0, Double.toString(x).indexOf(".") + 2));
 					tfY.setText(Double.toString(y).substring(0, Double.toString(y).indexOf(".") + 2));
 			         }
