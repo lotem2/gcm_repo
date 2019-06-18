@@ -141,16 +141,19 @@ public class RouteDB {
 				String cityname = rs.getString("cityname");
 				String description = rs.getString("description");
 
+				// Add the new route to the array list
+				routes.add(new Route(id, name, cityname, null, description));
+			}
+
+			for (Route route : routes) {
 				// Get current route's sites list using SiteDB's getSitesByRoute
 				ArrayList<Object> routeid = new ArrayList<Object>(params.subList(0, 1)); 
-				routeid.add(id);
+				routeid.add(route.getID());
 				Message msg = SiteDB.getInstance().getSitesbyRoute(routeid);
 
 				// Set the list of sites as null in case of a problem with the database/no sites for this route
 				sites = msg.getData().get(1) instanceof String ? null : (ArrayList<Site>)msg.getData().get(1);
-
-				// Add the new route to the array list
-				routes.add(new Route(id, name, cityname, sites, description));
+				route.setSites(sites);
 			}
 
 			replyMsg = new Message(null, new Integer(0), routes);	// Create success message

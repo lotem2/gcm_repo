@@ -52,27 +52,28 @@ public class SiteDB {
 						 " WHERE b.mapID = ? AND b.is_active = 1 AND m.mapID = b.mapID AND s.siteID = b.siteID";
 			}
 			else {
-				sql = "SELECT s.name as \"name\", s.cityname as \"cityname\", s.classification as \"classification\", " + 
-						"s.description as \"description\", s.accessible as \"accessible\"," + 
-						" s.visitDuration as \"visitDuration\", s.location as \"location\" " + 
-						"FROM Sites s, (SELECT BridgeMSC.siteID as \"id\", BridgeMSC.is_active as \"is_active\" "
-						+ "				FROM BridgeMSC "
-						+ "				WHERE BridgeMSC.mapID = ? and BridgeMSC.to_delete <> 1) as maps_sites \n" + 
-						"WHERE s.siteID IN ((SELECT b.siteID \n" + 
-						"                   FROM   Sites b, BridgeMSC c \r\n" + 
-						"                   WHERE  b.siteID = maps_sites.id AND maps_sites.is_active = 0 "
-						+ "UNION \n" + 
-						"               SELECT s.siteID \n" + 
-						"               FROM Sites s \n" + 
-						"    			JOIN Sites as s1 ON s.name = s1.name AND \n" + 
-						"        		(s.location = s1.location AND s.is_active = 0 AND s1.is_active = 1) " +
-						"				WHERE s1.siteID = maps_sites.id) " +
-						"UNION \n" + 
-						"                SELECT a.siteID as \"id2\" " +
-						"				 FROM Sites a\r\n" + 
-						"				 WHERE NOT EXISTS (SELECT 1 FROM Sites s "
-						+ "								   WHERE s.name = a.name AND s.location = a.location AND s.is_active = 0) "
-						+ "								   AND maps_sites.id = a.siteID) ";
+				sql = "SELECT s.name as \"name\", s.cityname as \"cityname\", s.classification as \"classification\",  \r\n" + 
+						"						s.description as \"description\", s.accessible as \"accessible\", \r\n" + 
+						"						 s.visitDuration as \"visitDuration\", s.location as \"location\"\r\n" + 
+						"						FROM Sites s, (SELECT BridgeMSC.siteID as \"id\", BridgeMSC.is_active as \"is_active\"\r\n" + 
+						"						 				FROM BridgeMSC \r\n" + 
+						"										WHERE BridgeMSC.mapID = ? and BridgeMSC.to_delete <> 1) as maps_sites \r\n" + 
+						"						WHERE s.siteID IN ((SELECT b.siteID \r\n" + 
+						"						                   FROM   Sites b, BridgeMSC c \r\n" + 
+						"						                   WHERE  b.siteID = maps_sites.id AND maps_sites.is_active = 0 AND\r\n" + 
+						"                                            NOT EXISTS (SELECT 1 FROM Sites s\r\n" + 
+						"						 								   WHERE s.name = b.name AND s.location = b.location AND s.is_active = 1)\r\n" + 
+						"						 UNION \r\n" + 
+						"						               SELECT i.siteID as \"id\"\r\n" + 
+						"										 FROM Sites i \r\n" + 
+						"										 WHERE EXISTS (SELECT 1 FROM Sites s\r\n" + 
+						"						 								   WHERE s.name = i.name AND s.location = i.location AND i.is_active = 0 AND s.is_active = 1 AND maps_sites.id = s.siteID))\r\n" + 
+						"						UNION  \r\n" + 
+						"						                SELECT a.siteID as \"id2\"\r\n" + 
+						"										 FROM Sites a \r\n" + 
+						"										 WHERE NOT EXISTS (SELECT 1 FROM Sites s\r\n" + 
+						"						 								   WHERE s.name = a.name AND s.location = a.location AND s.is_active = 0)\r\n" + 
+						"						 								   AND maps_sites.id = a.siteID)";
 			}
 			// Exclude the permission type for the query
 			data = new ArrayList<Object>(params.subList(1, params.size()));
