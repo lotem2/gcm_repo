@@ -192,6 +192,8 @@ public class EditWindowController implements ControllerListener {
     @FXML
     private Label lblWelcome;
     @FXML
+    private Label lblCityNameOfMap;
+    @FXML
     private ChoiceBox<String> mapChoser;
     @FXML
     private ImageView mapView;
@@ -1018,7 +1020,8 @@ public class EditWindowController implements ControllerListener {
 	 */  
 	void setSiteCategoryBooleanBinding() 
 	{
-		if(MainGUI.currUser.getPermission() != Permission.CLIENT) {
+		//if(MainGUI.currUser.getPermission() != Permission.CLIENT) {
+		if((MainGUI.currUser.getPermission()!= Permission.CLIENT)&&MainGUIController.selectedMap==0) {
 			BooleanBinding booleanBind;
 			booleanBind = siteChoser.valueProperty().isNull();
 			categoryChoser.disableProperty().bind(booleanBind);
@@ -1033,7 +1036,8 @@ public class EditWindowController implements ControllerListener {
 	 */  
 	void setSiteAccessibleBooleanBinding() 
 	{
-		if(MainGUI.currUser.getPermission() != Permission.CLIENT) {
+		if((MainGUI.currUser.getPermission()!= Permission.CLIENT)&&MainGUIController.selectedMap==0) {
+		//if(MainGUI.currUser.getPermission() != Permission.CLIENT) {
 			BooleanBinding booleanBind;
 			booleanBind = siteChoser.valueProperty().isNull();
 			accessibilityChoser.disableProperty().bind(booleanBind);
@@ -1113,7 +1117,7 @@ public class EditWindowController implements ControllerListener {
 			    	disableProressIndicator();
 			    	Platform.runLater(() -> {
 			    		setCityInfo(currCity);
-
+			    		lblCityNameOfMap.setText("City: " + currCity.getName());
 			    		setUpdateVersions();
 			    	});
 				}
@@ -1367,12 +1371,15 @@ public class EditWindowController implements ControllerListener {
 				{
 					clearCityParameters();
 			    	Map currentMap = (Map) currMsg.getData().get(1);
+			        accPaneCities.setDisable(true);
 			    	disableProressIndicator();
 			    	Platform.runLater(() -> {
+			    		lblCityNameOfMap.setText("City: " + currentMap.getCityName());
+			    		lblEditorTool.setText("Map Viewer");
 			    		setMapInfo(currentMap);
 			    		tfCityName.setText(currentMap.getCityName());
+			    		setShowWindow();
 			    	});
-			    	
 			    	if(MainGUI.currUser.getPermission() != Permission.CLIENT)
 			    	{
 			    		ArrayList<Object> data = new ArrayList<Object>();
@@ -1719,38 +1726,12 @@ public class EditWindowController implements ControllerListener {
 		    	  sitesList.add(sites.get(currSiteIndex).getName());
 		      }
 		}
-		if((MainGUI.currUser.getPermission()!= Permission.CLIENT))
+		if((MainGUI.currUser.getPermission()!= Permission.CLIENT)&&MainGUIController.selectedMap==0)
 			sitesList.add(0, "Add New Site");
 		ObservableList<String> currSitesList = FXCollections.observableArrayList(sitesList);
-		//Platform.runLater(() -> {
 			siteChoser.setItems(currSitesList);
-		//});
 	}
 	
-//	/**
-//	 *
-//	 *method to initialize the choice box of the names of the existing sites that can be added to the route.
-//	 *searches through the names of the array list of sites in the city and makes a list of their names.
-//	 *@param currRoute - the route object. 
-//	 * 
-//	 *
-//	 */ 
-//	void setSitesOnRouteChoiceBox(Route currRoute) 
-//	{
-//    	ArrayList<Site> sites = currRoute.getSites();
-//    	ArrayList<String> sitesList = new ArrayList<String>();
-//		if (sites != null) {
-//		      Iterator<Site> itr = sites.iterator();
-//		      while(itr.hasNext()) {
-//		    	  int  currSiteIndex = sites.indexOf(itr.next());
-//		    	  sitesList.add(sites.get(currSiteIndex).getName());
-//		      }
-//		}
-//		ObservableList<String> currSitesList = FXCollections.observableArrayList(sitesList);
-//		Platform.runLater(() -> {
-//			routesChoser.setItems(currSitesList);
-//		});
-//	}
 	
 	/**
 	 *
