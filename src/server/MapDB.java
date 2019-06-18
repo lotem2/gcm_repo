@@ -438,15 +438,20 @@ public class MapDB {
 				if(image == null)
 					image = getClass().getResourceAsStream("/images/" + mapname.replace(" ", "_") + ".png").readAllBytes();
 
+				// Add current instance of Map to the array list
+				maps.add(new Map(id, mapname, description, cityname, null, image, is_active));
+			}
+			
+			for (Map map : maps) {
 				// If current map's is_active = false and there is a record with same name and city name -
 				// represents map's details change - get the id of the currently displayed map
 				// for further connections of sites to map
-				if(!is_active && SQLController.DoesRecordExist("Maps", "mapname", "cityname", "is_active",
-						mapname, cityname, 1)) {
-					id = getActiveMap(mapname, cityname);
+				if(!map.getIsActive() && SQLController.DoesRecordExist("Maps", "mapname", "cityname", "is_active",
+						map.getName(), map.getCityName(), 1)) {
+					map.setID(getActiveMap(map.getName(), map.getCityName()));
 				}
 				// Clear lists of parameters for the next queries and add the desired parameter
-				cityparam.clear(); cityparam.add(params.get(0)); cityparam.add(id);
+				cityparam.clear(); cityparam.add(params.get(0)); cityparam.add(map.getID());
 
 				// Get map's list of sites
 				Object mapSites = SiteDB.getInstance().getSitesbyMap(cityparam);
@@ -454,9 +459,8 @@ public class MapDB {
 				// Set the list of sites as null in case of a prbolem with the database/no sites for this map
 				sites = ((Message)mapSites).getData().get(1) instanceof String ? null : 
 					(ArrayList<Site>)((Message)mapSites).getData().get(1);
-
-				// Add current instance of Map to the array list
-				maps.add(new Map(id, mapname, description, cityname, sites, image, is_active));
+				
+				map.setSites(sites);
 			}
 
 			replyMsg = new Message(null, new Integer(0), maps);	// Add content of the array list to the message

@@ -53,6 +53,14 @@ public class Map implements java.io.Serializable{
 	public int getID() {
 		return id;
 	}
+	
+	/**
+	 * Set map's id
+	 * @param id - id of map
+	 */
+	public void setID(int id) {
+		this.id = id;
+	}
 
 	/**
 	 * Get map's name
